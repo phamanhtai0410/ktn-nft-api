@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  serivce:
+    image: micro-api
+    build: .
+    restart: always
+    volumes:
+      - ./:/webapps
+
+    ports:
+      - 6006:5005
+    networks:
+      - base-network
+
+    command: supervisord -n -c /etc/supervisor.d/service.conf
+
+  worker:
+    image: worker-micro-api
+    build: .
+    restart: always
+    volumes:
+      - ./:/webapps
+    networks:
+      - base-network
+
+    command: supervisord -n -c /etc/supervisor.d/worker.conf
+
+networks:
+  base-network:
+    external: true
