@@ -5,5 +5,5 @@
         -
 """
 
-from .hello import task_hello
-
+from .model import task_model
+from .order import task_on_payment, task_confirm_tx

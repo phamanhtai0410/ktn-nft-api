@@ -10,11 +10,18 @@ from enums.order import Units, Chains
 from lib import NotBlank
 
 
+class ItemSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
+
+    _id = fields.Str()
+
+
 class OrderSchema(Schema):
     class Meta:
         unknown = EXCLUDE
 
-    items = fields.List(fields.Nested(), required=True, validate=validate.Length(min=1))
+    items = fields.List(fields.Nested(ItemSchema), required=True, validate=validate.Length(min=1))
     address = fields.Str(required=True, validate=NotBlank())
     unit = fields.Str(required=True, validate=validate.OneOf([
         Units.BNB,
@@ -46,4 +53,3 @@ class ResOrderSchema(Schema):
     ]))
 
     address_of_counter = fields.Str(required=True)
-
