@@ -66,7 +66,7 @@ build_stag:
   before_script:
     - apk add --no-cache curl jq python py-pip wget git bash
     - pip install awscli 
-    - git submodule add -f --branch stag https://read-token:$GITLAB_TOKEN@gitlab.rinznetwork.com/vebank/vb-lib.git lib
+    - git submodule add -f --branch stag https://read-token:$GITLAB_TOKEN@gitlab.rinznetwork.com/ktn/ktn-lib.git lib
     - export VERIFY_CHECKSUM=false && curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod +x ./get_helm.sh && ./get_helm.sh
     - curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v1.38.0/skaffold-linux-amd64 && chmod +x skaffold &&  mv skaffold /usr/local/bin
     - git submodule sync --recursive
