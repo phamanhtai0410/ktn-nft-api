@@ -12,12 +12,11 @@ class ItemsResponseSchema(Schema):
         unknown = EXCLUDE
         ordered = True
 
-    item_id = fields.String(default='', missing='')
     name = fields.String(default='', missing='')
-    rarity = fields.String(default='',missing='')
+    rarity_code = fields.String(default='',missing='')
     description = fields.String(default='',missing='')
     image = fields.String(default='',missing='')
-    price = fields.String(default='',missing='')
+    price = fields.Float(default='',missing='')
 
 class ItemsListResponseSchema(Schema):
     class Meta:
@@ -29,7 +28,7 @@ class ItemsRequestParams(Schema):
     class Meta:
         unknown = EXCLUDE
         
-    rarity = fields.String(required=False)
+    rarity_code = fields.String(required=False)
         
     
     
