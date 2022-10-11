@@ -9,7 +9,7 @@ from pydash import get
 from helper.items import ItemsHelper
 
 from connect import security
-from schemas.items import ItemsRequestParams, ItemsResponseSchema, ItemsListResponseSchema
+from schemas.items import ItemsRequestParams, ItemsListResponseSchema
 
 
 class ItemsResource(Resource):
@@ -19,10 +19,15 @@ class ItemsResource(Resource):
         response=ItemsListResponseSchema()
     )
     def get(self,params):
-        _rarity_code = get(params, 'rarity_code') 
-        if not _rarity_code:
-            res = ItemsHelper.get_items()
+        _rarity = get(params, 'rarity') 
+        _id = get(params,'_id')
+        if _id:
+            res = ItemsHelper.get_items_with_id(_id)
+           
+        elif _rarity:
+            res = ItemsHelper.get_items_with_rarity(_rarity)
+                    
         else:
-            res = ItemsHelper.get_items_with_rarity(_rarity_code)
+            res = ItemsHelper.get_items()
         return res
         
