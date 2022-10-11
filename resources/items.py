@@ -19,10 +19,10 @@ class ItemsResource(Resource):
         response=ItemsListResponseSchema()
     )
     def get(self,params):
-        _rarity = get(params, 'rarity') 
-        if not _rarity:
+        _rarity_code = get(params, 'rarity_code') 
+        if not _rarity_code:
             res = ItemsHelper.get_items()
         else:
-            res = ItemsHelper.get_items_with_rarity(_rarity)
+            res = ItemsHelper.get_items_with_rarity(_rarity_code)
         return res
         

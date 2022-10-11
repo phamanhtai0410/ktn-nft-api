@@ -13,10 +13,10 @@ class ItemsHelper:
             'items':items
         }
     @staticmethod
-    def get_items_with_rarity(_rarity):
+    def get_items_with_rarity(_rarity_code):
         items = list(ItemsModel.find(
             filter={
-                'rarity': _rarity
+                'rarity_code': _rarity_code
             }
         ))
         return {
