@@ -1,7 +1,7 @@
 variables:
   REGION: asia-southeast1
   IMAGE_NAME: ktn-nft-api
-  APP_NAME_API: ktn-api
+  APP_NAME_API: ktn-nft-api
   APP_NAME_NFT_CONFIRM_TX_QUEUE: ktn-nft-confirm-tx-queue
   APP_NAME_DAPP_NFT_API_QUEUE: ktn-nft-dapp-api-queue
   APP_NAME_NFT_PAYMENT_QUEUE: ktn-nft-payment-queue
