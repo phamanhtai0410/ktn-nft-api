@@ -1,12 +1,12 @@
 
 
-from models import ItemModel
+from models import ItemsModel
 import pydash as py_
 
 class ItemsHelper:
     @staticmethod 
     def get_items():
-        items = list(ItemModel.find(
+        items = list(ItemsModel.find(
             filter={}
         ))
         return {
@@ -14,7 +14,7 @@ class ItemsHelper:
         }
     @staticmethod
     def get_items_with_rarity(_rarity):
-        items = list(ItemModel.find(
+        items = list(ItemsModel.find(
             filter={
                 'rarity': _rarity
             }

@@ -15,6 +15,7 @@ class ItemsResponseSchema(Schema):
     item_id = fields.String(default='', missing='')
     name = fields.String(default='', missing='')
     rarity = fields.String(default='',missing='')
+    description = fields.String(default='',missing='')
     image = fields.String(default='',missing='')
     price = fields.String(default='',missing='')
 
