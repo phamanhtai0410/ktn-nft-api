@@ -8,7 +8,12 @@ from marshmallow import Schema, EXCLUDE, RAISE, fields, validate
 from enums.items import Items
 from lib.schema import ObjectIdField
 
-class ItemsResponseSchema(Schema):
+
+class ItemRequestParams(Schema):
+    class Meta:
+        unknown = EXCLUDE        
+    _id   = fields.String(required=True)
+class ItemResponseSchema(Schema):
     class Meta:
         unknown = EXCLUDE
         ordered = True
@@ -24,20 +29,29 @@ class ItemsListResponseSchema(Schema):
     class Meta:
         unknown = EXCLUDE
         ordered = True
-    items = fields.List(fields.Nested(ItemsResponseSchema))
+    items = fields.List(fields.Nested(ItemResponseSchema))
 
-class ItemsRequestParams(Schema):
+class CollectionRequestParams(Schema):
     class Meta:
         unknown = EXCLUDE
         
-    rarity = fields.String(validate=validate.OneOf([
-        Items.UNCOMMON,
-        Items.RARE,
-        Items.MYTHICAL,
-        Items.LEGENDARY,
-        Items.IMMORTAL
+    rarity = fields.String(required = True, validate=validate.OneOf([
+        Items.UNCOMMON['type'],
+        Items.RARE['type'],
+        Items.MYTHICAL['type'],
+        Items.LEGENDARY['type'],
+        Items.IMMORTAL['type']
     ]))
-    _id    = fields.String()
+    
+
+class CollectionResponseSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
+        ordered = True
+    items = fields.List(fields.Nested(ItemResponseSchema))
+    image = fields.String(default='',missing='')
+    
+
         
     
     

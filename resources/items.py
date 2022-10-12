@@ -9,25 +9,28 @@ from pydash import get
 from helper.items import ItemsHelper
 
 from connect import security
-from schemas.items import ItemsRequestParams, ItemsListResponseSchema
+from schemas.items import ItemRequestParams, ItemsListResponseSchema, ItemResponseSchema
 
 
-class ItemsResource(Resource):
+class ItemsListResource(Resource):
 
     @security.http(
-        params = ItemsRequestParams(),
         response=ItemsListResponseSchema()
     )
-    def get(self,params):
-        _rarity = get(params, 'rarity') 
-        _id = get(params,'_id')
-        if _id:
-            res = ItemsHelper.get_items_with_id(_id)
-           
-        elif _rarity:
-            res = ItemsHelper.get_items_with_rarity(_rarity)
-                    
-        else:
-            res = ItemsHelper.get_items()
+    def get(self):          
+        res = ItemsHelper.get_items()
         return res
+    
+class ItemResource(Resource):
+    
+    @security.http(
+        params = ItemRequestParams(),
+        response=ItemResponseSchema()
+    )
+    def get(self,params):
+        _id = get(params,'_id')
+        res = ItemsHelper.get_items_with_id(_id)
+        return res
+
+
         
