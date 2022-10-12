@@ -9,6 +9,7 @@ from resources.hello import HelloWorld
 from resources.iapi import iapi_resources
 from resources.items import ItemResource, ItemsListResource
 from resources.collection import CollectionResource
+from resources.my_nfts import MyNFTsResource
 
 api_resources = {
     '/hello': HelloWorld,
@@ -16,6 +17,6 @@ api_resources = {
     **{f'/iapi{k}': val for k, val in iapi_resources.items()},
     '/item': ItemResource,
     '/items_list': ItemsListResource,
-    '/collection': CollectionResource
-    
+    '/collection': CollectionResource,
+    '/my_nfts': MyNFTsResource
 }
