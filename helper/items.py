@@ -1,22 +1,33 @@
 
 
-from models import ItemsModel
-import pydash as py_
+from bson import ObjectId
+from models import NFTDetailModel
+
 
 class ItemsHelper:
     @staticmethod 
     def get_items():
-        items = list(ItemsModel.find(
+        items = list(NFTDetailModel.find(
             filter={}
         ))
         return {
             'items':items
         }
     @staticmethod
-    def get_items_with_rarity(_rarity_code):
-        items = list(ItemsModel.find(
+    def get_items_with_rarity(_rarity):
+        items = list(NFTDetailModel.find(
             filter={
-                'rarity_code': _rarity_code
+                'rarity': _rarity
+            }
+        ))
+        return {
+            'items':items
+        }
+    @staticmethod
+    def get_items_with_id(_id):
+        items = list(NFTDetailModel.find(
+            filter={
+                '_id': ObjectId(_id)
             }
         ))
         return {
