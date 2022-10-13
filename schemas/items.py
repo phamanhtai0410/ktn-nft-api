@@ -12,13 +12,13 @@ from lib.schema import ObjectIdField
 class ItemRequestParams(Schema):
     class Meta:
         unknown = EXCLUDE        
-    _id   = fields.String(required=True)
+    nft_id   = fields.Integer(required=True)
 class ItemResponseSchema(Schema):
     class Meta:
         unknown = EXCLUDE
         ordered = True
 
-    _id = ObjectIdField()
+    nft_id = fields.Integer(default='',missing='')
     name = fields.String(default='', missing='')
     rarity = fields.String(default='',missing='')
     description = fields.String(default='',missing='')
@@ -42,7 +42,7 @@ class CollectionRequestParams(Schema):
     #     Items.LEGENDARY,
     #     Items.IMMORTAL
     # ]))
-    _id = fields.String(required=False)
+    collection_id = fields.Integer(required=False)
     
 
 class CollectionResponseSchema(Schema):
@@ -50,7 +50,7 @@ class CollectionResponseSchema(Schema):
         unknown = EXCLUDE
         ordered = True
     
-    _id = ObjectIdField()
+    collection_id = fields.Integer(default='',missing='')
     collection_name  = fields.String(default='',missing='')
     collection_description = fields.String(default='',missing='')
     collection_rarity = fields.String(default='',missing='')   

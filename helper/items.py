@@ -23,10 +23,11 @@ class ItemsHelper:
         if not collections: return {}
         return {'collection': collections}   
     @staticmethod
-    def get_collection(_id):
+    def get_collection(_collection_id):
+        print("=====", _collection_id)
         collection = CollectionModel.find(
             filter={
-                '_id': ObjectId(_id)
+                'collection_id': _collection_id
             }
         )
         if not collection: return {}
@@ -35,7 +36,7 @@ class ItemsHelper:
     def get_items_with_id(_id):
         item = NFTDetailModel.find_one(
             filter={
-                '_id': ObjectId(_id)
+                'nft_id': _id
             }
         )
         return item

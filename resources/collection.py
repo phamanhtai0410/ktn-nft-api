@@ -19,9 +19,10 @@ class CollectionResource(Resource):
         response=CollectionListResponseSchema()
     )
     def get(self,params):
-        _id = get(params, '_id')    
-        if not _id:
+        _id = get(params, 'collection_id')            
+        if _id is None:
             res = ItemsHelper.get_collections_list()
+            
         else:
             res = ItemsHelper.get_collection(_id)
         return res
