@@ -14,7 +14,7 @@ from web3 import Web3
 
 from config import Config
 from connect import web3_providers
-from enums.items import rarity_codes
+# from enums.items import rarity_codes
 from enums.order import Status
 from helper.ipfs import IPFSHelper
 from helper.socket import SocketEmitter
@@ -65,7 +65,7 @@ def task_generate_metadata_file(order_id):
         res = requests.post(f'{Config.WALLET_IAPI}/mint', json={
             'address': get(_order, 'address'),
             'items': [{
-                'rarity': rarity_codes[get(_item, 'rarity')],
+                'rarity': get(_item, 'rarity'),
                 'cid': get(_item, 'cid')
             } for _item in _items],
             'order_id': order_id,
