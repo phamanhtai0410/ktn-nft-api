@@ -18,4 +18,9 @@ PaymentConfigModel = DaoModel(col=connect_db.db.counters, redis=redis_cluster)
 
 OrderModel = OrderDao(col=connect_db.db.orders, redis=redis_cluster)
 
+<<<<<<< HEAD
 NFTsModel = DaoModel(col=connect_db.db.nfts, redis=redis_cluster)
+=======
+CollectionModel = DaoModel(col=connect_db.db.collection, redis=redis_cluster)
+
+>>>>>>> thanh
