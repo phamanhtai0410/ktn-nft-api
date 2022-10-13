@@ -7,7 +7,7 @@
 from resources.health_check import HealthCheck
 from resources.hello import HelloWorld
 from resources.iapi import iapi_resources
-from resources.items import ItemsResource
+from resources.items import ItemsListResource
 from resources.order import OrderResource
 from resources.items import ItemResource, ItemsListResource
 from resources.collection import CollectionResource
@@ -18,9 +18,9 @@ api_resources = {
     '/common/health_check': HealthCheck,
     **{f'/iapi{k}': val for k, val in iapi_resources.items()},
     '/order': OrderResource,
-    '/items': ItemsResource,
+    '/items': ItemsListResource,
     '/item': ItemResource,
-    '/items_list': ItemsListResource,
+    # '/items_list': ItemsListResource,
     '/collection': CollectionResource,
     '/my_nfts': MyNFTsResource
 }
