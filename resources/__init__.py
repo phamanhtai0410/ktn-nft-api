@@ -21,6 +21,6 @@ api_resources = {
     '/items': ItemsListResource,
     '/item': ItemResource,
     # '/items_list': ItemsListResource,
-    '/collection': CollectionResource,
+    '/collections': CollectionResource,
     '/my_nfts': MyNFTsResource
 }
