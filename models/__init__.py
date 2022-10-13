@@ -16,3 +16,5 @@ PaymentConfigModel = DaoModel(col=connect_db.db.payment_config, redis=redis_clus
 
 OrderModel = OrderDao(col=connect_db.db.orders, redis=redis_cluster)
 
+CollectionModel = DaoModel(col=connect_db.db.collection, redis=redis_cluster)
+

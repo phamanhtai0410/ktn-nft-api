@@ -35,21 +35,34 @@ class CollectionRequestParams(Schema):
     class Meta:
         unknown = EXCLUDE
         
-    rarity = fields.String(required = True, validate=validate.OneOf([
-        Items.UNCOMMON['type'],
-        Items.RARE['type'],
-        Items.MYTHICAL['type'],
-        Items.LEGENDARY['type'],
-        Items.IMMORTAL['type']
-    ]))
+    # rarity = fields.Integer(validate=validate.OneOf([
+    #     Items.UNCOMMON,
+    #     Items.RARE,
+    #     Items.MYTHICAL,
+    #     Items.LEGENDARY,
+    #     Items.IMMORTAL
+    # ]))
+    _id = fields.String(required=False)
     
 
 class CollectionResponseSchema(Schema):
     class Meta:
         unknown = EXCLUDE
         ordered = True
+    
+    _id = ObjectIdField()
+    collection_name  = fields.String(default='',missing='')
+    collection_description = fields.String(default='',missing='')
+    collection_rarity = fields.String(default='',missing='')   
     items = fields.List(fields.Nested(ItemResponseSchema))
-    image = fields.String(default='',missing='')
+    collection_image = fields.String(default='',missing='')
+
+class CollectionListResponseSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
+        ordered = True
+    
+    collection  = fields.List(fields.Nested(CollectionResponseSchema))
     
 
         

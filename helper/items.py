@@ -3,7 +3,7 @@
 from bson import ObjectId
 from models import NFTDetailModel
 from enums.items import Items
-
+from models import CollectionModel
 
 class ItemsHelper:
     @staticmethod 
@@ -14,18 +14,23 @@ class ItemsHelper:
         return {
             'items':items
         }
+        
     @staticmethod
-    def get_items_with_rarity(_rarity):
-        items = NFTDetailModel.find(
+    def get_collections_list():
+        collections = CollectionModel.find(
+            filter={}
+        )
+        if not collections: return {}
+        return {'collection': collections}   
+    @staticmethod
+    def get_collection(_id):
+        collection = CollectionModel.find(
             filter={
-                'rarity': _rarity
+                '_id': ObjectId(_id)
             }
         )
-        rarity = getattr(Items, _rarity)
-        return {
-            'items':items,
-            'image': rarity['image']
-        }
+        if not collection: return {}
+        return {'collection': collection} 
     @staticmethod
     def get_items_with_id(_id):
         item = NFTDetailModel.find_one(

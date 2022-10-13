@@ -9,18 +9,21 @@ from pydash import get
 from helper.items import ItemsHelper
 
 from connect import security
-from schemas.items import CollectionRequestParams, CollectionResponseSchema
+from schemas.items import CollectionRequestParams, CollectionListResponseSchema
 
 
 class CollectionResource(Resource):
 
     @security.http(
         params = CollectionRequestParams(),
-        response=CollectionResponseSchema()
+        response=CollectionListResponseSchema()
     )
     def get(self,params):
-        _rarity = get(params, 'rarity')            
-        res = ItemsHelper.get_items_with_rarity(_rarity)
+        _id = get(params, '_id')    
+        if not _id:
+            res = ItemsHelper.get_collections_list()
+        else:
+            res = ItemsHelper.get_collection(_id)
         return res
 
 
