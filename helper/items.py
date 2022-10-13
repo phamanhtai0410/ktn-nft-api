@@ -11,6 +11,7 @@ class ItemsHelper:
         items = NFTDetailModel.find(
             filter={}
         )
+        if not items: return {}
         return {
             'items':items
         }
@@ -24,7 +25,6 @@ class ItemsHelper:
         return {'collection': collections}   
     @staticmethod
     def get_collection(_collection_id):
-        print("=====", _collection_id)
         collection = CollectionModel.find(
             filter={
                 'collection_id': _collection_id
@@ -39,6 +39,7 @@ class ItemsHelper:
                 'nft_id': _id
             }
         )
+        if not item: return {}
         return item
 
         
