@@ -16,11 +16,11 @@ class NFTResponseSchema(Schema):
     class Meta:
         unknown = EXCLUDE
 
-    owner = fields.String()
-    image = fields.String()
-    desc = fields.String()
-    price = fields.Decimal()
-    timestamp = fields.Integer(default=0)
+    token_id = fields.Integer()
+    address = fields.String()
+    rarity = fields.Integer()
+    token_uri = fields.String()
+    created_time = fields.DateTime()
 
 
 class MyNFTsResponseSchema(Schema):
