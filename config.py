@@ -20,6 +20,7 @@ class Config:
     MONGO_URI = os.getenv('MONGO_URI')
     # Authentication
     AUTH_ADDRESS = os.getenv('AUTH_ADDRESS', '')
+    AUTH_PRIVATE_KEY = os.getenv('AUTH_PRIVATE_KEY', '')
 
     CELERY_IMPORTS = ['tasks']
     ENABLE_UTC = True

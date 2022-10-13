@@ -8,6 +8,7 @@ from resources.health_check import HealthCheck
 from resources.hello import HelloWorld
 from resources.iapi import iapi_resources
 from resources.items import ItemsListResource
+from resources.metadata import MetaDataResource
 from resources.order import OrderResource
 from resources.items import ItemResource, ItemsListResource
 from resources.collection import CollectionResource
@@ -22,5 +23,6 @@ api_resources = {
     '/item': ItemResource,
     # '/items_list': ItemsListResource,
     '/collections': CollectionResource,
-    '/my_nfts': MyNFTsResource
+    '/my_nfts': MyNFTsResource,
+    '/metadata': MetaDataResource
 }
