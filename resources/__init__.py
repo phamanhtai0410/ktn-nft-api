@@ -15,5 +15,5 @@ api_resources = {
     '/common/health_check': HealthCheck,
     **{f'/iapi{k}': val for k, val in iapi_resources.items()},
     '/order': OrderResource,
-    '/items': ItemsResource
+    '/items': ItemsResource,
 }

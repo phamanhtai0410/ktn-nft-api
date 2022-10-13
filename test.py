@@ -5,5 +5,7 @@
         -
 """
 from bson import ObjectId
-
-print(ObjectId())
+items = [{"name": 1}]
+for _item in items:
+    _item['id'] = 1
+print(items)

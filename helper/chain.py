@@ -10,14 +10,10 @@ from blockchain.abi import erc20_abi
 from connect import web3_providers
 
 
-
-
-
 class ChainHelper:
 
     @staticmethod
     def _web3(chain):
-
         return get(web3_providers, chain)
 
     @staticmethod
@@ -29,5 +25,4 @@ class ChainHelper:
 
     @classmethod
     def get_tx_detail(cls, tx_hash, chain):
-
         return

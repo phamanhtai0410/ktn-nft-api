@@ -33,7 +33,7 @@ class Blockchain(Web3):
             _smc = getattr(self, f'{token.lower()}_smc')
             if not _smc:
                 return None, None
-            _tx = _smc.eth.wait_for_transaction_receipt(tx_hash)
+            _tx = self.eth.wait_for_transaction_receipt(tx_hash)
             # _tx = _smc.eth.get_transaction_receipt(tx_hash)
             _log_smc = _smc.events.Transfer().processReceipt(_tx)
             if _log_smc:
@@ -43,7 +43,7 @@ class Blockchain(Web3):
         except TransactionNotFound as e:
             return str(e), None
         except:
-            sentry_sdk.capture_message()
+            sentry_sdk.capture_exception()
             traceback.print_exc()
             return -1, None
 
@@ -56,7 +56,7 @@ class Blockchain(Web3):
             get(Config.ASSETS, f'{self.chain}.ETH'),
             abi=erc20_abi
         )
-        self.decimals[Units.ETH] = _smc.functions.decimal().call()
+        self.decimals[Units.ETH] = _smc.functions.decimals().call()
         return _smc
 
     @property
@@ -67,7 +67,7 @@ class Blockchain(Web3):
             get(Config.ASSETS, f'{self.chain}.USDT'),
             abi=erc20_abi
         )
-        self.decimals[Units.USDT] = _smc.functions.decimal().call()
+        self.decimals[Units.USDT] = _smc.functions.decimals().call()
         return _smc
 
     @property
@@ -78,7 +78,7 @@ class Blockchain(Web3):
             get(Config.ASSETS, f'{self.chain}.BNB'),
             abi=erc20_abi
         )
-        self.decimals[Units.BNB] = _smc.functions.decimal().call()
+        self.decimals[Units.BNB] = _smc.functions.decimals().call()
         return _smc
 
     def to_wei(self, amount, decimal):

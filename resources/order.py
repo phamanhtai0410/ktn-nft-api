@@ -9,7 +9,7 @@ from pydash import get
 
 from connect import security
 from helper.order import OrderHelper
-from schemas.order import OrderSchema, ResOrderSchema
+from schemas.order import OrderSchema, ResOrderSchema, PaymentSchema, ResPaymentSchema
 
 
 class OrderResource(Resource):
@@ -23,8 +23,8 @@ class OrderResource(Resource):
         return _result
 
     @security.http(
-        form_data=OrderSchema(),
-        response=ResOrderSchema()
+        form_data=PaymentSchema(),
+        response=ResPaymentSchema()
     )
     def put(self, form_data):
         return OrderHelper.make_payment(form_data)

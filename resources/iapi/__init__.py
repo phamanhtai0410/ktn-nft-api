@@ -4,6 +4,8 @@
         -
         -
 """
-iapi_resources = {
+from resources.iapi.order import IAPIOrderResource
 
+iapi_resources = {
+    '/order': IAPIOrderResource
 }

@@ -30,4 +30,4 @@ class ItemsResource(Resource):
         else:
             res = ItemsHelper.get_items()
         return res
-        
+

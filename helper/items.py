@@ -1,17 +1,16 @@
 
-
 from bson import ObjectId
 from models import NFTDetailModel
 
 
 class ItemsHelper:
-    @staticmethod 
+    @staticmethod
     def get_items():
         items = list(NFTDetailModel.find(
             filter={}
         ))
         return {
-            'items':items
+            'items' :items
         }
     @staticmethod
     def get_items_with_rarity(_rarity):
@@ -21,7 +20,7 @@ class ItemsHelper:
             }
         ))
         return {
-            'items':items
+            'items' :items
         }
     @staticmethod
     def get_items_with_id(_id):
@@ -31,6 +30,5 @@ class ItemsHelper:
             }
         ))
         return {
-            'items':items
+            'items' :items
         }
-        

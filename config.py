@@ -12,7 +12,7 @@ load_dotenv()
 
 
 class Config:
-    DEBUG = False
+    DEBUG = os.getenv("DEBUG")
     PROJECT = "nft-api"
     PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
     SENTRY_DSN = os.getenv('SENTRY_DSN')
@@ -32,12 +32,16 @@ class Config:
     CELERY_ROUTES = {
         'worker.task_on_payment': {'queue': 'nft-payment-queue'},
         'worker.task_record_tx': {'queue': 'nft-payment-queue'},
-        'worker.task_confirm_tx': {'queue': 'nft-confirm-tx-queue'}
+        'worker.task_confirm_tx': {'queue': 'nft-confirm-tx-queue'},
+        'worker.task_generate_metadata_file': {'queue': 'nft-tx-queue'}
     }
     PUBLIC_PATH = os.getenv('PUBLIC_PATH')
     REDIS_CLUSTER = json.loads(os.getenv('REDIS_CLUSTER'))
     ADDRESS_OF_COUNTER = os.getenv('ADDRESS_OF_COUNTER')
-    REDLOCK_REDIS =  json.loads(os.getenv('REDLOCK_REDIS','[]'))
+    REDLOCK_REDIS = json.loads(os.getenv('REDLOCK_REDIS', '[]'))
     BSC_RPC_URI = os.getenv('BSC_RPC_URI')
     ETH_RPC_URI = os.getenv('ETH_RPC_URI')
     ASSETS = json.loads(os.getenv('ASSETS', '{}'))
+    IPFS_TOKEN = os.getenv('IPFS_TOKEN')
+    WALLET_IAPI = os.getenv('WALLET_IAPI')
+    NFT_ADDRESS = os.getenv('NFT_ADDRESS')

@@ -17,6 +17,7 @@ from config import Config
 from redlock import Redlock
 
 from enums.order import Chains
+from socket_io_emitter import Emitter
 
 
 class InterfaceAsync:
@@ -42,6 +43,7 @@ web3_providers = {
     Chains.ETHEREUM_CHAIN: Blockchain(Chains.ETHEREUM_CHAIN,
                                       Web3.HTTPProvider(Config.ETH_RPC_URI, request_kwargs={'timeout': 60}))
 }
+socket_io = Emitter(Config.REDIS_CLUSTER[0])
 
 from lib import HTTPSecurity
 
