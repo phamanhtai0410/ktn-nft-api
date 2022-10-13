@@ -51,6 +51,11 @@ class MetaDataResource(Resource):
         _signature = MetaDataHelper.generate_signature(data=_data)
 
         return {
-            'data': _data,
+            'data': {
+                'discount': get(_data, 'discount'),
+                'cids': get(_data, 'cids'),
+                'rarities': get(_data, 'rarities'),
+                'deadline': get(_data, 'deadline'),
+            },
             'signature': str(_signature)
         }
