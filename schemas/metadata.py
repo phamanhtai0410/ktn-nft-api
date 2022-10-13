@@ -1,5 +1,7 @@
 from marshmallow import Schema, EXCLUDE, fields, validate
 
+from lib import NotBlank
+
 
 class ItemSchema(Schema):
     class Meta:
@@ -16,6 +18,7 @@ class MetaDataSchema(Schema):
         unknown = EXCLUDE
 
     promotion_code = fields.String(required=False, default=None)
+    address = fields.String(required=True, validate=NotBlank())
     items = fields.List(fields.Nested(ItemSchema), required=True, validate=validate.Length(min=1))
 
 

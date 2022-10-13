@@ -35,6 +35,7 @@ _signed_message = _w3.eth.account.sign_message(
 print(message)
 print(_signed_message.messageHash.hex())
 print(_signed_message.signature.hex())
+print(type(_w3.eth.chain_id))
 
 # _result = _w3.eth.account.recover_message(message, signature=_signed_message.signature)
 #

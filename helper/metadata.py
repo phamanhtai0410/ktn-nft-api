@@ -36,11 +36,27 @@ class MetaDataHelper:
 
     @staticmethod
     def generate_signature(data):
+        print(data)
         _w3 = get(web3_providers, Chains.BSC_CHAIN)
         _base_message = Web3.solidityKeccak(
-            ['uint256', 'uint256', 'string[]', 'string', 'uint256'],       # [chain_id, discount, cids, items, deadline]
-            [get(data, 'chain_id'), get(data, 'discount'), get(data, 'cids'), get(data, 'items'), get(data, 'deadline')]
-            # testnet chain_id=97, mainnet chain_id=56
+            [
+                'uint256',
+                'address',
+                'address',
+                'uint256',
+                'string[]',
+                'uint8[]',
+                'uint256'
+            ],  # [chain_id, user_address, contract_address, discount, cids, rarities, deadline]
+            [
+                _w3.eth.chain_id,
+                get(data, 'address'),
+                get(data, 'contract'),
+                get(data, 'discount'),
+                get(data, 'cids'),
+                get(data, 'rarities'),
+                get(data, 'deadline')
+            ]
         )
         message = encode_defunct(_base_message)
         _signed_message = _w3.eth.account.sign_message(
