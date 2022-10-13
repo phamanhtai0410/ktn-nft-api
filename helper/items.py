@@ -1,9 +1,11 @@
 
 
+from distutils.log import error
 from bson import ObjectId
 from models import NFTDetailModel
 from enums.items import Items
 from models import CollectionModel
+from lib.exception import BadRequest
 
 class ItemsHelper:
     @staticmethod 
@@ -11,7 +13,8 @@ class ItemsHelper:
         items = NFTDetailModel.find(
             filter={}
         )
-        if not items: return {}
+        if not items: 
+            raise BadRequest("list nft is null")
         return {
             'items':items
         }
@@ -21,7 +24,8 @@ class ItemsHelper:
         collections = CollectionModel.find(
             filter={}
         )
-        if not collections: return {}
+        if not collections: 
+            raise BadRequest("list collection is null")
         return {'collection': collections}   
     @staticmethod
     def get_collection(_collection_id):
@@ -30,7 +34,10 @@ class ItemsHelper:
                 'collection_id': _collection_id
             }
         )
-        if not collection: return {}
+        if not collection: 
+            raise BadRequest("collection_id does not exist.", errors =[{
+                'collection_id': 'not found'
+            }])
         return {'collection': collection} 
     @staticmethod
     def get_items_with_id(_id):
@@ -39,7 +46,10 @@ class ItemsHelper:
                 'nft_id': _id
             }
         )
-        if not item: return {}
+        if not item: 
+            raise BadRequest("nft_id does not exist.", errors =[{
+                'nft_id': 'not found'
+            }])
         return item
 
         
