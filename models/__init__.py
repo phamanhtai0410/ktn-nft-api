@@ -16,4 +16,6 @@ PromotionCodeModel = DaoModel(col=connect_db.db.promotion_codes, redis=redis_clu
 
 PaymentConfigModel = DaoModel(col=connect_db.db.counters, redis=redis_cluster)
 
-OrderModel = OrderDao(col=connect_db.db.orders, redis=redis_cluster, project=Config.PROJECT, broker=Config.BROKER_URL)
+OrderModel = OrderDao(col=connect_db.db.orders, redis=redis_cluster)
+
+NFTsModel = DaoModel(col=connect_db.db.nfts, redis=redis_cluster)

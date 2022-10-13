@@ -1,34 +1,37 @@
 
 from bson import ObjectId
 from models import NFTDetailModel
+from enums.items import Items
 
 
 class ItemsHelper:
-    @staticmethod
+    @staticmethod 
     def get_items():
-        items = list(NFTDetailModel.find(
+        items = NFTDetailModel.find(
             filter={}
-        ))
+        )
         return {
-            'items' :items
+            'items':items
         }
     @staticmethod
     def get_items_with_rarity(_rarity):
-        items = list(NFTDetailModel.find(
+        items = NFTDetailModel.find(
             filter={
                 'rarity': _rarity
             }
-        ))
+        )
+        rarity = getattr(Items, _rarity)
         return {
-            'items' :items
+            'items':items,
+            'image': rarity['image']
         }
     @staticmethod
     def get_items_with_id(_id):
-        items = list(NFTDetailModel.find(
+        item = NFTDetailModel.find_one(
             filter={
                 '_id': ObjectId(_id)
             }
-        ))
-        return {
-            'items' :items
-        }
+        )
+        return item
+
+        
