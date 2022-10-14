@@ -46,14 +46,16 @@ class MetaDataHelper:
                 'uint256',
                 'string[]',
                 'uint8[]',
+                'uint8[]',
                 'uint256'
-            ],  # [chain_id, user_address, contract_address, discount, cids, rarities, deadline]
+            ],  # [chain_id, user_address, contract_address, discount, cids, types, rarities, deadline]
             [
                 _w3.eth.chain_id,
                 get(data, 'address'),
                 get(data, 'contract'),
                 get(data, 'discount'),
                 get(data, 'cids'),
+                get(data, 'types'),
                 get(data, 'rarities'),
                 get(data, 'deadline')
             ]

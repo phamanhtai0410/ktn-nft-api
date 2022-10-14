@@ -18,6 +18,7 @@ class NFTResponseSchema(Schema):
 
     token_id = fields.Integer()
     address = fields.String()
+    type = fields.Integer()
     rarity = fields.Integer()
     token_uri = fields.String()
     created_time = fields.DateTime()

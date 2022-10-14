@@ -27,6 +27,7 @@ class MetaDataResource(Resource):
 
         _cids = []
         _rarities = []
+        _types = []
         for _item in _items:
             _metadata = {
                 "description": get(_item, 'description'),
@@ -38,6 +39,7 @@ class MetaDataResource(Resource):
             _cid = IPFSHelper.upload_web3(metadata=_metadata)
             _cids.append(_cid)
             _rarities.append(get(_item, 'rarity'))
+            _types.append(get(_item, 'type'))
 
         _deadline = dt_utcnow().timestamp() + 60
         _data = {
@@ -45,6 +47,7 @@ class MetaDataResource(Resource):
             'contract': Config.NFT_ADDRESS,
             'discount': _discount,
             'cids': _cids,
+            'types': _types,
             'rarities': _rarities,
             'deadline': int(_deadline)
         }

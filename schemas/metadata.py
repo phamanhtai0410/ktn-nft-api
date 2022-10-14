@@ -11,6 +11,7 @@ class ItemSchema(Schema):
     image = fields.String()
     description = fields.String()
     rarity = fields.Integer()
+    type = fields.Integer()
 
 
 class MetaDataSchema(Schema):
