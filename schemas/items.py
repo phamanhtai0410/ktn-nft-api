@@ -55,7 +55,7 @@ class CollectionResponseSchema(Schema):
     collection_id = fields.Integer(default='',missing='')
     collection_name  = fields.String(default='',missing='')
     collection_description = fields.String(default='',missing='')
-    collection_rarity = fields.String(default='',missing='')   
+    collection_rarity = fields.Integer(default='',missing='')   
     items = fields.List(fields.Nested(ItemResponseSchema))
     collection_image = fields.String(default='',missing='')
 
