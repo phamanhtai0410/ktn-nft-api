@@ -28,7 +28,7 @@ class ItemResource(Resource):
         response=ItemResponseSchema()
     )
     def get(self,params):
-        _id = get(params,'_id')
+        _id = get(params,'nft_id')
         res = ItemsHelper.get_items_with_id(_id)
         return res
 

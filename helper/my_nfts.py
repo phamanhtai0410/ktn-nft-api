@@ -8,7 +8,7 @@ class MyNFTsHelpers:
         results = NFTsModel.col.aggregate([
             {
                 '$match': {
-                    'owner': address
+                    'address': address
                 }
             },
             {
