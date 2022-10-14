@@ -20,7 +20,7 @@ class ItemResponseSchema(Schema):
 
     nft_id = fields.Integer(default='',missing='')
     name = fields.String(default='', missing='')
-    rarity = fields.String(default='',missing='')
+    rarity = fields.Integer(default='',missing='')
     type = fields.Integer(default='',missing='')
     description = fields.String(default='',missing='')
     image = fields.String(default='',missing='')
