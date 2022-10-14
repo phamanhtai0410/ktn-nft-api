@@ -44,7 +44,7 @@ class MetaDataHelper:
                 'address',
                 'address',
                 'uint256',
-                'string[]',
+                'bytes32[]',
                 'uint8[]',
                 'uint8[]',
                 'uint256'
@@ -54,7 +54,7 @@ class MetaDataHelper:
                 get(data, 'address'),
                 get(data, 'contract'),
                 get(data, 'discount'),
-                get(data, 'cids'),
+                get(data, 'cids_bytes'),
                 get(data, 'types'),
                 get(data, 'rarities'),
                 get(data, 'deadline')
