@@ -13,19 +13,30 @@ from lib.schema import ObjectIdField
 class NFTsHistoryRequestParams(Schema):
     class Meta:
         unknown = EXCLUDE        
-    token_id = fields.Integer(required=True)
+    token_id = fields.Integer(required=False)
+    page = fields.Integer(required=False, default=1)
+    page_size = fields.Integer(required=False, default=10)
+    sort = fields.String(required=False, default='desc')
 class NFTsHistoryResponseSchema(Schema):
     class Meta:
         unknown = EXCLUDE
         ordered = True
 
-    _id = ObjectIdField()
     from_address = fields.String(default='',missing='')
     to_address = fields.String(default='',missing='')
     token_id = fields.Integer(default=0,missing=0)
     event = fields.String(default='',missing='')
     tx_hash = fields.String(default='',missing='')
     block_number = fields.Integer(default=0,missing=0)
-    block_time  = fields.Float(default=0,missing=0)
-    created_time = fields.Date(default='',missing='')
+    block_time  = fields.Integer(default=0,missing=0)
+    created_time = fields.Integer(default='',missing='')
     created_by = fields.String(default='',missing='')
+    
+class NFTsHistoryListResponseSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
+        ordered = True
+    items = fields.List(fields.Nested(NFTsHistoryResponseSchema))
+    num_of_page = fields.Integer(data_key='num_of_page', missing=0)
+    page_size = fields.Integer(data_key='page_size', missing=10)
+    page = fields.Integer(data_key='page', missing=1)
