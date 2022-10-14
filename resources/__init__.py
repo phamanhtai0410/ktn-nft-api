@@ -13,6 +13,7 @@ from resources.order import OrderResource
 from resources.items import ItemResource, ItemsListResource
 from resources.collection import CollectionResource
 from resources.my_nfts import MyNFTsResource
+from resources.nfts_history import NFTsHistoryResource
 
 api_resources = {
     '/hello': HelloWorld,
@@ -24,5 +25,6 @@ api_resources = {
     # '/items_list': ItemsListResource,
     '/collections': CollectionResource,
     '/my_nfts': MyNFTsResource,
-    '/metadata': MetaDataResource
+    '/metadata': MetaDataResource,
+    '/nfts_history' : NFTsHistoryResource
 }
