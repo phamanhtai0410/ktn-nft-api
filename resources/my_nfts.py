@@ -23,10 +23,10 @@ class MyNFTsResource(Resource):
         _query = request.args.to_dict()
 
         _page = get(params, 'page')
-        _limit = get(params, 'limit')
+        _page_size = get(params, 'page_size')
         _address = get(params, 'address')
         _sort = get(params, 'sort').lower() == 'asc' and 1 or -1
 
-        _my_nfts = MyNFTsHelpers.get_my_nfts(address=_address, page=_page, page_size=_limit, sort=_sort)
+        _my_nfts = MyNFTsHelpers.get_my_nfts(address=_address, page=_page, page_size=_page_size, sort=_sort)
 
         return _my_nfts

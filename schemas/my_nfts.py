@@ -9,7 +9,7 @@ class MyNFTsRequestSchema(Schema):
 
     address = fields.Str(required=True, validate=NotBlank())
     page = fields.Integer(required=False, default=1)
-    limit = fields.Integer(required=False, default=10)
+    page_size = fields.Integer(required=False, default=10)
     sort = fields.String(required=False, default='desc')
 
 
