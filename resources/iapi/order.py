@@ -9,6 +9,7 @@ from pydash import get
 
 from connect import security
 from helper.order import OrderHelper
+from lib.logger import debug
 from schemas.iapi.order import ResultOrderSchema
 
 
@@ -17,6 +18,7 @@ class IAPIOrderResource(Resource):
         form_data=ResultOrderSchema()
     )
     def put(self, form_data):
+        debug(f'{form_data}')
         OrderHelper.on_minted(
             address=get(form_data, 'address'),
             order_id=get(form_data, 'order_id'),

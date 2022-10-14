@@ -48,4 +48,4 @@ for prefix, _resource in api_resources.items():
     api.add_resource(_resource, prefix)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
