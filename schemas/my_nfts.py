@@ -10,18 +10,19 @@ class MyNFTsRequestSchema(Schema):
     address = fields.Str(required=True, validate=NotBlank())
     page = fields.Integer(required=False, default=1)
     limit = fields.Integer(required=False, default=10)
-    arrange = fields.String(required=False, default='desc')
+    sort = fields.String(required=False, default='desc')
+
 
 class NFTResponseSchema(Schema):
     class Meta:
         unknown = EXCLUDE
 
-    token_id = fields.Integer()
-    address = fields.String()
-    type = fields.Integer()
-    rarity = fields.Integer()
-    token_uri = fields.String()
-    created_time = fields.DateTime()
+    token_id = fields.Integer(required=True, default=None)
+    address = fields.String(required=True, default=None)
+    type = fields.Integer(required=False, default='')
+    rarity = fields.Integer(required=True, default=None)
+    token_uri = fields.String(required=True, default=None)
+    created_time = fields.Integer(required=True, default=None)
 
 
 class MyNFTsResponseSchema(Schema):
@@ -29,5 +30,13 @@ class MyNFTsResponseSchema(Schema):
         unknown = EXCLUDE
         ordered = True
 
-    my_nfts = fields.List(fields.Nested(NFTResponseSchema), data_key='my_nfts', missing=[])
-    skip = fields.Integer(data_key='skip', missing=0)
+    # {
+    #     "items": result,
+    #     'num_of_page': num_of_page,
+    #     'page_size': page_size,
+    #     'page': page
+    # }
+    items = fields.List(fields.Nested(NFTResponseSchema), data_key='items', missing=[])
+    num_of_page = fields.Integer(data_key='num_of_page', missing=0)
+    page_size = fields.Integer(data_key='page_size', missing=10)
+    page = fields.Integer(data_key='page', missing=1)

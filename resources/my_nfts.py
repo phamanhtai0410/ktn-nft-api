@@ -25,13 +25,8 @@ class MyNFTsResource(Resource):
         _page = get(params, 'page')
         _limit = get(params, 'limit')
         _address = get(params, 'address')
-        _arrange = get(params, 'arrange').lower() == 'asc' and 1 or -1
+        _sort = get(params, 'sort').lower() == 'asc' and 1 or -1
 
-        _offset = _page > 0 and (_page - 1) * _limit or 0
+        _my_nfts = MyNFTsHelpers.get_my_nfts(address=_address, page=_page, page_size=_limit, sort=_sort)
 
-        _my_nfts = MyNFTsHelpers.get_my_nfts(address=_address, limit=_limit, offset=_offset, arrange=_arrange)
-
-        return {
-            'my_nfts': _my_nfts,
-            'skip': _offset
-        }
+        return _my_nfts
