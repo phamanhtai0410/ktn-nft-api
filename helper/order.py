@@ -84,7 +84,8 @@ class OrderHelper:
             'status': Status.WAITING_FOR_PAYMENT,
             'deadline': _deadline,
             'chain': get(form_data,'chain'),
-            'unit': get(form_data, 'unit')
+            'unit': get(form_data, 'unit'),
+            'contract': Config.NFT_ADDRESS.lower()
         }, worker=True)
 
         return {
