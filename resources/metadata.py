@@ -6,6 +6,7 @@ from pydash import get
 from config import Config
 from connect import security
 from helper.ipfs import IPFSHelper
+from helper.items import ItemsHelper
 from helper.metadata import MetaDataHelper
 from lib import dt_utcnow
 from schemas.metadata import MetaDataSchema, ResMetaDataSchema
@@ -30,18 +31,30 @@ class MetaDataResource(Resource):
         _rarities = []
         _types = []
         for _item in _items:
+            _nft_detail = ItemsHelper.get_items_with_id(_item)
             _metadata = {
-                "description": get(_item, 'description'),
+                "description": get(_nft_detail, 'description'),
                 "external_url": "",
-                "image": get(_item, 'image'),
-                "rarity": get(_item, 'rarity'),
-                "name": get(_item, 'name')
+                "image": get(_nft_detail, 'image'),
+                "name": get(_nft_detail, 'name'),
+                'attributes': [
+                    {
+                        "display_type": "number",
+                        "trait_type": "rarity",
+                        "value": get(_nft_detail, 'rarity')
+                    },
+                    {
+                        "display_type": "number",
+                        "trait_type": "type",
+                        "value": get(_nft_detail, 'type')
+                    }
+                ]
             }
             _cid = IPFSHelper.upload_web3(metadata=_metadata)
             _cids_bytes.append(bytes(_cid, 'utf-8'))
             _cids.append(_cid)
-            _rarities.append(get(_item, 'rarity'))
-            _types.append(get(_item, 'type'))
+            _rarities.append(get(_nft_detail, 'rarity'))
+            _types.append(get(_nft_detail, 'type'))
 
         _deadline = dt_utcnow().timestamp() + 60
         _data = {
