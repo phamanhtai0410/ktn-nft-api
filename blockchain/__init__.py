@@ -49,37 +49,52 @@ class Blockchain(Web3):
 
     @property
     def eth_smc(self):
-        if not get(Config.ASSETS, f'{self.chain}.ETH'):
-            return None
+        try:
+            if not get(Config.ASSETS, f'{self.chain}.ETH'):
+                return None
 
-        _smc = self.eth.contract(
-            get(Config.ASSETS, f'{self.chain}.ETH'),
-            abi=erc20_abi
-        )
-        self.decimals[Units.ETH] = _smc.functions.decimals().call()
-        return _smc
+            _smc = self.eth.contract(
+                self.toChecksumAddress(get(Config.ASSETS, f'{self.chain}.ETH')),
+                abi=erc20_abi
+            )
+            self.decimals[Units.ETH] = _smc.functions.decimals().call()
+            return _smc
+        except:
+            sentry_sdk.capture_exception()
+            traceback.print_exc()
+        return None
 
     @property
     def usdt_smc(self):
-        if not get(Config.ASSETS, f'{self.chain}.USDT'):
-            return None
-        _smc = self.eth.contract(
-            get(Config.ASSETS, f'{self.chain}.USDT'),
-            abi=erc20_abi
-        )
-        self.decimals[Units.USDT] = _smc.functions.decimals().call()
-        return _smc
+        try:
+            if not get(Config.ASSETS, f'{self.chain}.USDT'):
+                return None
+            _smc = self.eth.contract(
+                self.toChecksumAddress(get(Config.ASSETS, f'{self.chain}.USDT')),
+                abi=erc20_abi
+            )
+            self.decimals[Units.USDT] = _smc.functions.decimals().call()
+            return _smc
+        except:
+            sentry_sdk.capture_exception()
+            traceback.print_exc()
+        return None
 
     @property
     def bnb_smc(self):
-        if not get(Config.ASSETS, f'{self.chain}.BNB'):
-            return None
-        _smc = self.eth.contract(
-            get(Config.ASSETS, f'{self.chain}.BNB'),
-            abi=erc20_abi
-        )
-        self.decimals[Units.BNB] = _smc.functions.decimals().call()
-        return _smc
+        try:
+            if not get(Config.ASSETS, f'{self.chain}.BNB'):
+                return None
+            _smc = self.eth.contract(
+                self.toChecksumAddress(get(Config.ASSETS, f'{self.chain}.BNB')),
+                abi=erc20_abi
+            )
+            self.decimals[Units.BNB] = _smc.functions.decimals().call()
+            return _smc
+        except:
+            sentry_sdk.capture_exception()
+            traceback.print_exc()
+        return None
 
     def to_wei(self, amount, decimal):
         decimals = {
