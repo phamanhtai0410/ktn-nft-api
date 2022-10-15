@@ -42,10 +42,10 @@ class Blockchain(Web3):
                     return _tx_info[0], _tx
         except TransactionNotFound as e:
             return str(e), None
-        except:
+        except Exception as e:
             sentry_sdk.capture_exception()
             traceback.print_exc()
-            return -1, None
+            return -1, str(e)
 
     @property
     def eth_smc(self):

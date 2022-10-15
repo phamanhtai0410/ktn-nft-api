@@ -109,6 +109,7 @@ def task_generate_metadata_file(order_id):
              retry_kwargs={'max_retries': 1, 'countdown': 3})
 def task_on_payment(order_id):
     try:
+
         _order = models.OrderModel.find_one({
             'order_id': order_id
         })
@@ -123,34 +124,40 @@ def task_on_payment(order_id):
             token=get(_order, 'unit'),
             tx_hash=get(_order, 'tx_hash')
         )
+        _update = {
+            'updated_by': 'worker_checking',
+            'event': _tx_info,
+            'tx_info': _tx
+        }
+
+        def completed():
+            models.OrderModel.update_one(filter={
+                'order_id': order_id
+            }, obj=_update)
+            if get(_update, 'status') == Status.FAILED:
+                return SocketEmitter.emit(
+                    room_id=get(_order, 'address'),
+                    event="ORDER_FAIL",
+                    value={
+                        'order_id': order_id,
+                        'tx_hash': get(_order, 'tx_hash'),
+                        'msg': get(_update, 'reason')
+                    }
+                )
+            return f"Executed successfully {order_id}"
+
         if _tx_info == -1 and dt_utcnow().timestamp() - get(_order, 'payment_time').timestamp() < 60 * 2:
             task_on_payment.retry()
             return f"Retry: order_id {order_id}"
+        elif _tx_info == -1:
+            _update['status'] = Status.FAILED
+            _update['reason'] = 'Tx has failed.'
+            completed()
         else:
             # set target block
             _target_block = get(_tx, 'blockNumber', 0) + 10 if get(_tx, 'blockNumber') else 0
-            _update = {
-                'updated_by': 'worker_checking',
-                'event': _tx_info,
-                'tx_info': _tx,
-                'confirm_block': _target_block
-            }
 
-            def completed():
-                models.OrderModel.update_one(filter={
-                    'order_id': order_id
-                }, obj=_update)
-                if get(_update, 'status') == Status.FAILED:
-                    return SocketEmitter.emit(
-                        room_id=get(_order, 'address'),
-                        event="ORDER_FAIL",
-                        value={
-                            'order_id': order_id,
-                            'tx_hash': get(_order, 'tx_hash'),
-                            'msg': get(_update, 'reason')
-                        }
-                    )
-                return f"Executed successfully {order_id}"
+            _update['confirm_block'] = _target_block
 
             if not _tx_info or isinstance(_tx_info, str):
                 _update['status'] = Status.FAILED
@@ -213,7 +220,7 @@ def task_on_payment(order_id):
     except:
         sentry_sdk.capture_exception()
         traceback.print_exc()
-        return f"Fail: {order_id}"
+    return f"Fail: {order_id}"
 
 
 @worker.task(name='worker.task_confirm_tx', rate_limit='1000/s', default_retry_delay=10)
