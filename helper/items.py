@@ -47,3 +47,10 @@ class ItemsHelper:
                 'nft_id': 'not found'
             }])
         return item
+
+    @staticmethod
+    def get_item(filter_data):
+        item = NFTDetailModel.find_one(
+            filter=filter_data
+        )
+        return item
