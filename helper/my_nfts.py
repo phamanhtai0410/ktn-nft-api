@@ -34,6 +34,7 @@ class MyNFTsHelpers:
                 'nft_type': get(_item, 'nft_type', default=0),  # Need update later
                 'rarity': get(_item, 'rarity'),
                 'name': get(_nft_detail, 'name'),
+                'price': get(_nft_detail, 'price'),
                 'description': get(_nft_detail, 'description'),
                 'image': get(_nft_detail, 'image'),
                 'token_uri': get(_item, 'token_uri'),
@@ -48,6 +49,7 @@ class MyNFTsHelpers:
                 'nft_type': 0,
                 'rarity': 102,
                 'name': 'Super Hero',
+                'price': 400,
                 'description': 'NFT',
                 'image': 'https://ipfs.io/ipfs/bafybeieelr4cqukve3mrmwu2nzlou6arl2wcoaaszzanvb3kiif74jzmii',
                 'token_uri': '',

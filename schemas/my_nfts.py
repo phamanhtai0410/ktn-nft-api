@@ -23,6 +23,7 @@ class NFTResponseSchema(Schema):
     description = fields.String(required=True, default=None)
     image = fields.String(required=True, default=None)
     nft_type = fields.Integer(required=False, default='')
+    price = fields.Integer(required=True, default=None)
     rarity = fields.Integer(required=True, default=None)
     token_uri = fields.String(required=True, default=None)
     created_time = fields.Integer(required=True, default=None)
