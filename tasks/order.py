@@ -312,7 +312,7 @@ def task_record_tx(tx_hash, order_id):
             event="ORDER_FAIL",
             value={
                 'order_id': order_id,
-                'tx_hash': _tx_hash,
+                'tx_hash': tx_hash,
                 'msg': 'The transaction hash has been used.'
             }
         )
@@ -324,7 +324,7 @@ def task_record_tx(tx_hash, order_id):
             event="ORDER_FAIL",
             value={
                 'order_id': order_id,
-                'tx_hash': _tx_hash,
+                'tx_hash': tx_hash,
                 'msg': 'Not found order.'
             }
         )
