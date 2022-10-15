@@ -57,8 +57,19 @@ def task_generate_metadata_file(order_id):
                 "description": get(_item, 'description'),
                 "external_url": "",
                 "image": get(_item, 'image'),
-                "rarity": get(_item, 'rarity'),
-                "name": get(_item, 'name')
+                "name": get(_item, 'name'),
+                "attributes": [
+                    {
+                        "display_type": "number",
+                        "trait_type": "rarity",
+                        "value": get(_item, 'rarity')
+                    },
+                    {
+                        "display_type": "number",
+                        "trait_type": "type",
+                        "value": get(_item, 'type')
+                    }
+                ]
             }
             _cid = IPFSHelper.upload_web3(_meta)
             _item['cid'] = _cid
@@ -66,7 +77,8 @@ def task_generate_metadata_file(order_id):
             'address': get(_order, 'address'),
             'items': [{
                 'rarity': get(_item, 'rarity'),
-                'cid': get(_item, 'cid')
+                'cid': get(_item, 'cid'),
+                'type': get(_item, 'type')
             } for _item in _items],
             'order_id': order_id,
             'contract_address': Config.NFT_ADDRESS
