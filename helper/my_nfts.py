@@ -24,14 +24,14 @@ class MyNFTsHelpers:
         for _item in get(_results, 'items'):
             _nft_detail = ItemsHelper.get_item(
                 filter_data={
-                    'type': get(_item, 'type'),
+                    'nft_type': get(_item, 'nft_type'),
                     'rarity': get(_item, 'rarity')
                 }
             )
             _item_detail = {
                 'token_id': get(_item, 'token_id'),
                 'address': get(_item, 'address'),
-                'type': get(_item, 'type', default=0),  # Need update later
+                'nft_type': get(_item, 'nft_type', default=0),  # Need update later
                 'rarity': get(_item, 'rarity'),
                 'name': get(_nft_detail, 'name'),
                 'description': get(_nft_detail, 'description'),
@@ -45,7 +45,7 @@ class MyNFTsHelpers:
             {
                 'token_id': 1,
                 'address': address,
-                'type': 0,
+                'nft_type': 0,
                 'rarity': 102,
                 'name': 'Super Hero',
                 'description': 'NFT',
