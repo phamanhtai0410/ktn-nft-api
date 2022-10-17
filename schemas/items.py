@@ -60,6 +60,7 @@ class CollectionResponseSchema(Schema):
     collection_id = fields.Integer(default=0,missing=0)
     name  = fields.String(default='',missing='')
     description = fields.String(default='',missing='')
+    nfts = fields.List(fields.Nested(ItemResponseSchema), missing=[]),
     image = fields.String(default='',missing='')
     created_time = fields.Integer(required=0, missing=0)
     

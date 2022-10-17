@@ -24,6 +24,7 @@ class CollectionResource(Resource):
         _page_size = get(params, 'page_size')  
         _sort = get(params, 'sort').lower() == 'asc' and 1 or -1
         res = ItemsHelper.get_collection(_id, _page, _page_size,_sort)
+        print(res)
         return res
 
 
