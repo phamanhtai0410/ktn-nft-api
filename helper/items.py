@@ -1,13 +1,12 @@
-from bson import ObjectId
 from models import NFTDetailModel
-from enums.items import Items
 from models import CollectionModel
-from lib.exception import BadRequest
+from pydash import get
+from datetime import timezone
 
 
 class ItemsHelper:
     @staticmethod
-    def get_items(_nft_id, _type, _page, _page_size):
+    def get_items(_nft_id, _type, _page, _page_size, _sort):
         
         _filter = {}
         if not _nft_id is None:
@@ -17,19 +16,45 @@ class ItemsHelper:
         items = NFTDetailModel.page(
             filter=_filter,
             page=_page,
-            page_size=_page_size
+            page_size=_page_size,
+            sort=_sort,
+            func_sort=lambda item: get(item, 'created_time')
         )
+        _itemsFormatted = []
+        _itemsFormatted = [{
+            'nft_id': get(_item, 'nft_id'),
+            'name': get(_item, 'name'),
+            'rarity': get(_item, 'rarity'),
+            'type': get(_item, 'type'),
+            'description': get(_item, 'description'),
+            'image': get(_item, 'image'),
+            'price': get(_item, 'price'),
+            'created_time': get(_item, 'created_time').replace(tzinfo=timezone.utc).timestamp(),
+        } for _item in get(items, 'items')]
+
+        items['items'] = _itemsFormatted
         return items
 
 
     @staticmethod
-    def get_collection(_collection_id, _page, _page_size):
+    def get_collection(_collection_id, _page, _page_size, _sort):
         _filter = {}
         if not _collection_id is None:
             _filter['collection_id'] = _collection_id
         items = CollectionModel.page(
             filter= _filter, 
             page=_page,
-            page_size=_page_size
+            page_size=_page_size,
+            sort=_sort,
+            func_sort=lambda item: get(item, 'created_time')
         )
+        _itemsFormatted = []
+        _itemsFormatted = [{
+            'collection_id': get(_item, 'collection_id'),
+            'name': get(_item, 'name'),
+            'description': get(_item, 'description'),
+            'image': get(_item, 'image'),
+            'created_time': get(_item, 'created_time').replace(tzinfo=timezone.utc).timestamp(),
+        } for _item in get(items, 'items')]
+        items['items'] = _itemsFormatted
         return items

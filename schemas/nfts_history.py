@@ -29,7 +29,7 @@ class NFTsHistoryResponseSchema(Schema):
     tx_hash = fields.String(default='',missing='')
     block_number = fields.Integer(default=0,missing=0)
     block_time  = fields.Integer(default=0,missing=0)
-    created_time = fields.Integer(default='',missing='')
+    created_time = fields.Integer(default=0,missing=0)
     created_by = fields.String(default='',missing='')
     
 class NFTsHistoryListResponseSchema(Schema):

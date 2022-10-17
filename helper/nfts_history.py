@@ -19,7 +19,7 @@ class NFTsHistoryHelper:
             page=_page,
             page_size=_page_size,
             sort=_sort,
-            func_sort=lambda item: get(item, 'created_time')
+            func_sort=lambda item: get(item, 'block_time')
         )
         _itemsFormatted = []
         _itemsFormatted = [{

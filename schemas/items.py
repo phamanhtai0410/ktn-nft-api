@@ -8,12 +8,6 @@ from marshmallow import Schema, EXCLUDE, RAISE, fields, validate
 from enums.items import Items
 from lib.schema import ObjectIdField
 
-
-class ItemRequestParams(Schema):
-    class Meta:
-        unknown = EXCLUDE        
-    nft_id   = fields.Integer(required=False)
-    type = fields.Integer(required=False)
     
 class ItemResponseSchema(Schema):
     class Meta:
@@ -27,6 +21,7 @@ class ItemResponseSchema(Schema):
     description = fields.String(default='',missing='')
     image = fields.String(default='',missing='')
     price = fields.Float(default=0,missing=0)
+    created_time = fields.Integer(required=0, missing=0)
 
 
 class ItemsListRequestSchema(Schema):
@@ -37,6 +32,7 @@ class ItemsListRequestSchema(Schema):
     type = fields.Integer(required=False)
     page = fields.Integer(required=False, default=1)
     page_size = fields.Integer(required=False, default=10)
+    sort = fields.String(required=False, default='desc')
     
 class ItemsListResponseSchema(Schema):
     class Meta:
@@ -54,6 +50,7 @@ class CollectionRequestParams(Schema):
     collection_id = fields.Integer(required=False)
     page = fields.Integer(required=False, default=1)
     page_size = fields.Integer(required=False, default=10)
+    sort = fields.String(required=False, default='desc')
 
 class CollectionResponseSchema(Schema):
     class Meta:
@@ -64,6 +61,7 @@ class CollectionResponseSchema(Schema):
     name  = fields.String(default='',missing='')
     description = fields.String(default='',missing='')
     image = fields.String(default='',missing='')
+    created_time = fields.Integer(required=0, missing=0)
     
 
 class CollectionListResponseSchema(Schema):
