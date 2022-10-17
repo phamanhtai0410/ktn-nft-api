@@ -30,7 +30,7 @@ class OrderHelper:
     @staticmethod
     def get_item(item):
         _info = NFTDetailModel.find_one({
-            "_id": get(item, '_id')
+            "nft_id": get(item, 'nft_id')
         })
 
         if not _info:

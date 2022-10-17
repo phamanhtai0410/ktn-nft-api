@@ -14,7 +14,7 @@ class ItemSchema(Schema):
     class Meta:
         unknown = EXCLUDE
 
-    _id = ObjectIdField(required=True, validate=IsObjectId())
+    nft_id = fields.Int(required=True)
     amount = fields.Int(required=True, validate=validate.Range(min=1))
 
 
