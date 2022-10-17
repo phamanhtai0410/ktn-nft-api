@@ -6,7 +6,7 @@
 """
 from marshmallow import Schema, EXCLUDE, RAISE, fields, validate
 from enums.items import Items
-from lib.schema import ObjectIdField
+from lib.schema import ObjectIdField, DatetimeField
 
     
 class ItemResponseSchema(Schema):
@@ -21,7 +21,7 @@ class ItemResponseSchema(Schema):
     description = fields.String(default='',missing='')
     image = fields.String(default='',missing='')
     price = fields.Float(default=0,missing=0)
-    created_time = fields.Integer(required=0, missing=0)
+    created_time = DatetimeField(required=0, missing=0)
 
 
 class ItemsListRequestSchema(Schema):
@@ -60,7 +60,7 @@ class CollectionResponseSchema(Schema):
     collection_id = fields.Integer(default=0,missing=0)
     name  = fields.String(default='',missing='')
     description = fields.String(default='',missing='')
-    nfts = fields.List(fields.Nested(ItemResponseSchema), missing=[]),
+    nfts = fields.List(fields.Nested(ItemResponseSchema), missing=[])
     image = fields.String(default='',missing='')
     created_time = fields.Integer(required=0, missing=0)
     

@@ -54,6 +54,7 @@ class ItemsHelper:
             'name': get(_item, 'name'),
             'description': get(_item, 'description'),
             'nfts': cls.get_nfts(_item['collection_id']),
+            # 'nfts': [],
             'image': get(_item, 'image'),
             'created_time': get(_item, 'created_time').replace(tzinfo=timezone.utc).timestamp(),
         } for _item in items]
