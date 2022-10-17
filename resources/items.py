@@ -19,20 +19,12 @@ class ItemsListResource(Resource):
         response=ItemsListResponseSchema()
     )
     def get(self,params):
+        _nft_id = get(params , 'nft_id')
+        _type = get(params, 'type')
         _page= get(params, 'page')
         _page_size = get(params, 'page_size')
-        res = ItemsHelper.get_items(_page, _page_size)
+        res = ItemsHelper.get_items(_nft_id, _type, _page, _page_size)
         return res
 
-class ItemResource(Resource):
-
-    @security.http(
-        params = ItemRequestParams(),
-        response=ItemResponseSchema()
-    )
-    def get(self,params):
-        _id = get(params,'nft_id')
-        res = ItemsHelper.get_items_with_id(_id)
-        return res
 
 

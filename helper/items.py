@@ -7,50 +7,29 @@ from lib.exception import BadRequest
 
 class ItemsHelper:
     @staticmethod
-    def get_items(_page, _page_size):
+    def get_items(_nft_id, _type, _page, _page_size):
+        
+        _filter = {}
+        if not _nft_id is None:
+            _filter['nft_id'] = _nft_id
+        if not _type is None:
+            _filter['type'] = _type    
         items = NFTDetailModel.page(
-            filter={},
+            filter=_filter,
             page=_page,
             page_size=_page_size
         )
         return items
 
-    @staticmethod
-    def get_collections_list(_page, _page_size):
-        items = CollectionModel.page(
-            filter={},
-            page=_page,
-            page_size=_page_size
-        )
-        return items
 
     @staticmethod
     def get_collection(_collection_id, _page, _page_size):
+        _filter = {}
+        if not _collection_id is None:
+            _filter['collection_id'] = _collection_id
         items = CollectionModel.page(
-            filter={
-                'collection_id': _collection_id
-            },
+            filter= _filter, 
             page=_page,
             page_size=_page_size
         )
         return items
-
-    @staticmethod
-    def get_items_with_id(_id):
-        item = NFTDetailModel.find_one(
-            filter={
-                'nft_id': _id
-            }
-        )
-        if not item:
-            raise BadRequest("nft_id does not exist.", errors=[{
-                'nft_id': 'not found'
-            }])
-        return item
-
-    @staticmethod
-    def get_item(filter_data):
-        item = NFTDetailModel.find_one(
-            filter=filter_data
-        )
-        return item

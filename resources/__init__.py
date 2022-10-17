@@ -10,7 +10,7 @@ from resources.iapi import iapi_resources
 from resources.items import ItemsListResource
 from resources.metadata import MetaDataResource
 from resources.order import OrderResource
-from resources.items import ItemResource, ItemsListResource
+from resources.items import ItemsListResource
 from resources.collection import CollectionResource
 from resources.my_nfts import MyNFTsResource
 from resources.nfts_history import NFTsHistoryResource
@@ -21,8 +21,6 @@ api_resources = {
     **{f'/iapi{k}': val for k, val in iapi_resources.items()},
     '/order': OrderResource,
     '/items': ItemsListResource,
-    '/item': ItemResource,
-    # '/items_list': ItemsListResource,
     '/collections': CollectionResource,
     '/my_nfts': MyNFTsResource,
     '/metadata': MetaDataResource,

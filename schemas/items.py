@@ -12,7 +12,8 @@ from lib.schema import ObjectIdField
 class ItemRequestParams(Schema):
     class Meta:
         unknown = EXCLUDE        
-    nft_id   = fields.Integer(required=True)
+    nft_id   = fields.Integer(required=False)
+    type = fields.Integer(required=False)
     
 class ItemResponseSchema(Schema):
     class Meta:
@@ -31,9 +32,12 @@ class ItemResponseSchema(Schema):
 class ItemsListRequestSchema(Schema):
     class Meta:
         unknown = EXCLUDE       
-    
+        
+    nft_id   = fields.Integer(required=False)
+    type = fields.Integer(required=False)
     page = fields.Integer(required=False, default=1)
     page_size = fields.Integer(required=False, default=10)
+    
 class ItemsListResponseSchema(Schema):
     class Meta:
         unknown = EXCLUDE
@@ -57,11 +61,10 @@ class CollectionResponseSchema(Schema):
         ordered = True
     
     collection_id = fields.Integer(default=0,missing=0)
-    collection_name  = fields.String(default='',missing='')
-    collection_description = fields.String(default='',missing='')
-    collection_rarity = fields.Integer(default=0,missing=0)   
-    nfts = fields.List(fields.Nested(ItemResponseSchema))
-    collection_image = fields.String(default='',missing='')
+    name  = fields.String(default='',missing='')
+    description = fields.String(default='',missing='')
+    image = fields.String(default='',missing='')
+    
 
 class CollectionListResponseSchema(Schema):
     class Meta:
