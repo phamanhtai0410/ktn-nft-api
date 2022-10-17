@@ -26,5 +26,5 @@ api_resources = {
     '/collections': CollectionResource,
     '/my_nfts': MyNFTsResource,
     '/metadata': MetaDataResource,
-    '/nfts_history' : NFTsHistoryResource
+    '/nfts_history': NFTsHistoryResource
 }
