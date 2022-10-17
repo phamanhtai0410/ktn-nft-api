@@ -20,19 +20,19 @@ class ItemsHelper:
             sort=_sort,
             func_sort=lambda item: get(item, 'created_time')
         )
-        _itemsFormatted = []
-        _itemsFormatted = [{
-            'nft_id': get(_item, 'nft_id'),
-            'name': get(_item, 'name'),
-            'rarity': get(_item, 'rarity'),
-            'type': get(_item, 'type'),
-            'description': get(_item, 'description'),
-            'image': get(_item, 'image'),
-            'price': get(_item, 'price'),
-            'created_time': get(_item, 'created_time').replace(tzinfo=timezone.utc).timestamp(),
-        } for _item in get(items, 'items')]
+        # _itemsFormatted = []
+        # _itemsFormatted = [{
+        #     'nft_id': get(_item, 'nft_id'),
+        #     'name': get(_item, 'name'),
+        #     'rarity': get(_item, 'rarity'),
+        #     'type': get(_item, 'type'),
+        #     'description': get(_item, 'description'),
+        #     'image': get(_item, 'image'),
+        #     'price': get(_item, 'price'),
+        #     'created_time': get(_item, 'created_time').replace(tzinfo=timezone.utc).timestamp(),
+        # } for _item in get(items, 'items')]
 
-        items['items'] = _itemsFormatted
+        # items['items'] = _itemsFormatted
         return items
 
 
@@ -41,27 +41,24 @@ class ItemsHelper:
         _filter = {}
         if not _collection_id is None:
             _filter['collection_id'] = _collection_id
-        items = CollectionModel.find(
-            filter= _filter
-            # page=_page,
-            # page_size=_page_size,
-            # sort=_sort,
-            # func_sort=lambda item: get(item, 'created_time')
+        items = CollectionModel.page(
+            filter= _filter,
+            page=_page,
+            page_size=_page_size,
+            sort=_sort,
+            func_sort=lambda item: get(item, 'created_time')
         )
-        # _itemsFormatted = []
+        _itemsFormatted = []
         _itemsFormatted = [{
             'collection_id': get(_item, 'collection_id'),
             'name': get(_item, 'name'),
             'description': get(_item, 'description'),
             'nfts': cls.get_nfts(_item['collection_id']),
-            # 'nfts': [],
             'image': get(_item, 'image'),
-            'created_time': get(_item, 'created_time').replace(tzinfo=timezone.utc).timestamp(),
-        } for _item in items]
-        # items['items'] = _itemsFormatted
-        return {
-            'items': _itemsFormatted
-        }
+            'created_time': get(_item, 'created_time'),
+        } for _item in get(items, 'items')]
+        items['items'] = _itemsFormatted
+        return items
 
     @staticmethod
     def get_nfts(collection_id):
@@ -70,5 +67,4 @@ class ItemsHelper:
                 'type': collection_id
             }
         )
-        # print(_nfts)
         return _nfts

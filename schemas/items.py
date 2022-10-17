@@ -62,7 +62,7 @@ class CollectionResponseSchema(Schema):
     description = fields.String(default='',missing='')
     nfts = fields.List(fields.Nested(ItemResponseSchema), missing=[])
     image = fields.String(default='',missing='')
-    created_time = fields.Integer(required=0, missing=0)
+    created_time = DatetimeField(required=0, missing=0)
     
 
 class CollectionListResponseSchema(Schema):
