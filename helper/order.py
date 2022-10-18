@@ -59,8 +59,8 @@ class OrderHelper:
 
     @classmethod
     def promotion_code(cls, form_data):
-        if Config.DEBUG:
-            return 0
+        # if Config.DEBUG:
+        #     return 0
 
         if get(form_data, 'promotion_code'):
 
