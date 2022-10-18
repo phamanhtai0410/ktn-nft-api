@@ -4,6 +4,7 @@
         -
         -
 """
+import json
 import random
 import traceback
 import uuid
@@ -12,20 +13,38 @@ import sentry_sdk
 from pydash import get
 from datetime import timedelta
 from config import Config
-from connect import dlm
-from enums.order import Status
+from connect import dlm, redis_cluster
+from enums.order import Status, Units
 from exception import TxRecorded, TxPayment, ExPromoCodeInvalid, TxTimeout
 from helper.socket import SocketEmitter
-from lib import NotFound, dt_utcnow
+from lib import NotFound, dt_utcnow, BadRequest
 from lib.logger import debug
 from models import NFTDetailModel, PaymentConfigModel, OrderModel, PromotionCodeModel
 from tasks.order import task_record_tx
 
 
 class OrderHelper:
+
     @staticmethod
-    def get_cost_of(item):
-        return float(get(item, 'price') * get(item, 'amount'))
+    def convert_price_to_usdt(value, unit):
+        _price = {}
+        if unit == Units.ETH:
+            _price = redis_cluster.get('katana-dapp.price_pairs/ETHBUSD')
+        if unit == Units.BNB:
+            _price = redis_cluster.get('katana-dapp.price_pairs/BNBBUSD')
+        if _price:
+            if isinstance(_price, str):
+                _price = json.loads(_price)
+            _check_time = dt_utcnow().timestamp() - 60 * 5  # Mint 5p
+            if get(_price, 'updated_time', 0) < _check_time:
+                sentry_sdk.capture_message("Price update failed")
+                raise BadRequest(f"Can not check price of nft. From {unit} to USDT")
+            return value / get(_price, 'price')
+        return value
+
+    @classmethod
+    def get_cost_of(cls, item, unit):
+        return float(cls.convert_price_to_usdt(get(item, 'price'), unit=unit) * get(item, 'amount'))
 
     @staticmethod
     def get_item(item):
@@ -66,7 +85,7 @@ class OrderHelper:
             'amount': get(_item, 'amount')
         } for _item in get(form_data, 'items')]
         _deadline = dt_utcnow().timestamp() + 3 * 60
-        _cost = sum([cls.get_cost_of(_item) for _item in _items]) - _discount
+        _cost = sum([cls.get_cost_of(_item, unit=get(form_data, 'unit')) for _item in _items]) - _discount
 
         _address_of_counter = get(random.choice(PaymentConfigModel.find(
             filter={
@@ -83,7 +102,7 @@ class OrderHelper:
             'created_by': get(form_data, 'address'),
             'status': Status.WAITING_FOR_PAYMENT,
             'deadline': _deadline,
-            'chain': get(form_data,'chain'),
+            'chain': get(form_data, 'chain'),
             'unit': get(form_data, 'unit'),
             'contract': Config.NFT_ADDRESS.lower()
         }, worker=True)
