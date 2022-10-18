@@ -23,7 +23,7 @@ class MyNFTsHelpers:
         for _item in get(_results, 'items'):
             _nft_detail = ItemsHelper.get_item(
                 filter_data={
-                    'nft_type': get(_item, 'nft_type'),
+                    'type': get(_item, 'nft_type'),
                     'rarity': get(_item, 'rarity')
                 }
             )
