@@ -133,7 +133,7 @@ class OrderHelper:
 
     @staticmethod
     def lock_tx(chain, tx_hash):
-        return True
+        # return True
         if Config.DEBUG:
             return True
         try:
