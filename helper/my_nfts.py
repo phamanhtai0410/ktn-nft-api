@@ -37,7 +37,8 @@ class MyNFTsHelpers:
                 'price': get(_nft_detail, 'price'),
                 'description': get(_nft_detail, 'description'),
                 'image': get(_nft_detail, 'image'),
-                'token_uri': get(_item, 'token_uri'),
+                'is_staking': get(_item, 'image'),
+                'token_uri': get(_item, 'is_staking', default=False),
                 'created_time': get(_item, 'created_time').replace(tzinfo=timezone.utc).timestamp(),
             }
             _items_formatted.append(_item_detail)
