@@ -31,7 +31,11 @@ class MetaDataResource(Resource):
         _rarities = []
         _types = []
         for _item in _items:
-            _nft_detail = ItemsHelper.get_items_with_id(_item)
+            _nft_detail = ItemsHelper.get_item(
+                filter_data={
+                    'nft_id': _item,
+                }
+            )
             _metadata = {
                 "description": get(_nft_detail, 'description'),
                 "external_url": "",
