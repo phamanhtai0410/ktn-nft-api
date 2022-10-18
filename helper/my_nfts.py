@@ -19,7 +19,6 @@ class MyNFTsHelpers:
             sort=sort,
             func_sort=lambda item: get(item, 'created_time')
         )
-
         _items_formatted = []
         for _item in get(_results, 'items'):
             _nft_detail = ItemsHelper.get_item(
@@ -33,12 +32,12 @@ class MyNFTsHelpers:
                 'address': get(_item, 'address'),
                 'nft_type': get(_item, 'nft_type', default=0),  # Need update later
                 'rarity': get(_item, 'rarity'),
-                'name': get(_nft_detail, 'name'),
-                'price': get(_nft_detail, 'price'),
-                'description': get(_nft_detail, 'description'),
-                'image': get(_nft_detail, 'image'),
-                'is_staking': get(_item, 'image'),
-                'token_uri': get(_item, 'is_staking', default=False),
+                'name': get(_nft_detail, 'name', default=''),
+                'price': get(_nft_detail, 'price', default=0),
+                'description': get(_nft_detail, 'description', default=''),
+                'image': get(_nft_detail, 'image', default=''),
+                'is_staking': get(_item, 'image', default=False),
+                'token_uri': get(_item, 'is_staking', default=''),
                 'created_time': get(_item, 'created_time').replace(tzinfo=timezone.utc).timestamp(),
             }
             _items_formatted.append(_item_detail)

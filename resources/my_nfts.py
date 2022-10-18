@@ -22,8 +22,8 @@ class MyNFTsResource(Resource):
     def get(self, params):
         _query = request.args.to_dict()
 
-        _page = get(params, 'page')
-        _page_size = get(params, 'page_size')
+        _page = get(params, 'page', default=1)
+        _page_size = get(params, 'page_size', default=10)
         _address = get(params, 'address')
         _sort = get(params, 'sort').lower() == 'asc' and 1 or -1
 
