@@ -25,13 +25,15 @@ class MetaDataHelper:
         return get(_promotion, 'discount', 0)
 
     @staticmethod
-    def update_used_promotion_code(promotion_code):
+    def update_used_promotion_code(promotion_code, address):
         PromotionCodeModel.update_one(
             filter={'code': promotion_code},
             obj={
                 'updated_by': 'metadata:update_used_promotion_code',
-                'status': False
-            }
+                'status': False,
+                'address': address
+            },
+            worker=True
         )
 
     @staticmethod

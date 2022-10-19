@@ -4,7 +4,7 @@
         -
         -
 """
-__models__ = ['OrderModel']
+__models__ = ['OrderModel', 'PromotionCodeModel']
 
 from config import Config
 from connect import connect_db, redis_cluster
@@ -12,7 +12,7 @@ from lib import DaoModel
 from models.order import OrderDao
 
 NFTDetailModel = DaoModel(col=connect_db.db.nft_details, redis=redis_cluster)
-PromotionCodeModel = DaoModel(col=connect_db.db.promotion_codes, redis=redis_cluster)
+PromotionCodeModel = DaoModel(col=connect_db.db.promotion_codes, redis=redis_cluster, project=Config.PROJECT, broker=Config.BROKER_URL)
 
 PaymentConfigModel = DaoModel(col=connect_db.db.counters, redis=redis_cluster)
 

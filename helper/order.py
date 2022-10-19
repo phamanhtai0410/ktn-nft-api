@@ -58,7 +58,7 @@ class OrderHelper:
         return _info
 
     @classmethod
-    def promotion_code(cls, form_data):
+    def promotion_code(cls, form_data, order_id):
         # if Config.DEBUG:
         #     return 0
 
@@ -72,13 +72,21 @@ class OrderHelper:
             })
             if not get(_info, 'status'):
                 raise ExPromoCodeInvalid()
+            PromotionCodeModel.update_one({
+                'code': get(form_data, 'promotion_code')
+            }, obj={
+                'updated_by': 'lock_promotion_code',
+                'status': False,
+                'address': get(form_data, 'address'),
+                'order_id': order_id
+            }, worker=True)
             return get(_info, 'discount', 0)
         return 0
 
     @classmethod
     def init(cls, form_data):
         _order_id = str(uuid.uuid4())
-        _discount = cls.promotion_code(form_data)
+        _discount = cls.promotion_code(form_data, order_id=_order_id)
 
         _items = [{
             **cls.get_item(_item),
