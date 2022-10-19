@@ -46,3 +46,4 @@ class Config:
     IPFS_TOKEN = os.getenv('IPFS_TOKEN')
     WALLET_IAPI = os.getenv('WALLET_IAPI')
     NFT_ADDRESS = os.getenv('NFT_ADDRESS')
+    CONFIRM_BLOCK = 1

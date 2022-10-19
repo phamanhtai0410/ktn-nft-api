@@ -15,7 +15,7 @@ from web3 import Web3
 from config import Config
 from connect import web3_providers
 # from enums.items import rarity_codes
-from enums.order import Status
+from enums.order import Status, Chains
 from helper.ipfs import IPFSHelper
 from helper.socket import SocketEmitter
 from lib import dt_utcnow
@@ -160,7 +160,8 @@ def task_on_payment(order_id):
             completed()
         else:
             # set target block
-            _target_block = get(_tx, 'blockNumber', 0) + 10 if get(_tx, 'blockNumber') else 0
+            _target_block = get(_tx, 'blockNumber', 0) + Config.CONFIRM_BLOCK if get(_tx, 'blockNumber') else 0
+            _countdown = Config.CONFIRM_BLOCK * 15 if get(_order, 'chain') == Chains.ETHEREUM_CHAIN else 3
 
             _update['confirm_block'] = _target_block
 
@@ -204,13 +205,22 @@ def task_on_payment(order_id):
             _update['waiting_for_confirm'] = True
             _update['status'] = Status.CONFIRMING
             completed()
-            task_confirm_tx.delay(
-                order_id=order_id,
-                tx_hash=get(_order, 'tx_hash'),
-                chain=get(_order, 'chain'),
-                target_block=_target_block,
-                address=get(_order, 'address')
+            task_confirm_tx.apply_async(
+                kwargs={'order_id': order_id,
+                        'tx_hash': get(_order, 'tx_hash'),
+                        'chain': get(_order, 'chain'),
+                        'target_block': _target_block,
+                        'address': get(_order, 'address')},
+                countdown=_countdown
             )
+            # .apply_async(
+            #                     kwargs={
+            #                         'qredo_id': _qredo_id,
+            #                         'ref_user_id': get(form_data, 'ref_user_id'),
+            #                         'fund_id': _fund_id
+            #                     },
+            #                     countdown=20  # sync again 20s
+            #                 )
             SocketEmitter.emit(
                 room_id=get(_order, 'address'),
                 event="ORDER_STEP",
@@ -228,7 +238,7 @@ def task_on_payment(order_id):
     return f"Fail: {order_id}"
 
 
-@worker.task(name='worker.task_confirm_tx', rate_limit='1000/s', default_retry_delay=10)
+@worker.task(name='worker.task_confirm_tx', rate_limit='1000/s', default_retry_delay=15)
 # @sync_task
 def task_confirm_tx(order_id, tx_hash, chain, target_block, address):
     try:
