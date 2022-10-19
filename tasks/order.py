@@ -308,13 +308,23 @@ def task_record_tx(tx_hash, order_id):
     })
     # if get(_order, 'status') != Status.INIT:
     #     return f"Fail: status of order#{order_id} is not {Status.INIT}"
+    _update = {
+        'updated_by': 'task_record_tx',
+    }
     _tx_hash = models.OrderModel.find_one({
         'tx_hash': tx_hash
     })
+    continues = True
     if _tx_hash:
         sentry_sdk.capture_message(
             f"Tx#{tx_hash} was logged but it was sent back. Please double check order #{order_id}")
-        return SocketEmitter.emit(
+        _update = {
+            **_update,
+            'reason': 'The transaction hash has been used.',
+            'status': Status.FAILED
+        }
+        continues = False
+        SocketEmitter.emit(
             room_id=get(_order, 'address'),
             event="ORDER_FAIL",
             value={
@@ -324,9 +334,15 @@ def task_record_tx(tx_hash, order_id):
             }
         )
 
-    if not _order:
+    if not _order and continues:
         sentry_sdk.capture_message(f"Not found order_id #{order_id}. Please re-check tx #{tx_hash}")
-        return SocketEmitter.emit(
+        _update = {
+            **_update,
+            'reason': 'Not found order.',
+            'status': Status.FAILED
+        }
+        continues = False
+        SocketEmitter.emit(
             room_id=get(_order, 'address'),
             event="ORDER_FAIL",
             value={
@@ -335,10 +351,11 @@ def task_record_tx(tx_hash, order_id):
                 'msg': 'Not found order.'
             }
         )
-    if get(_order, 'status') != Status.WAITING_FOR_PAYMENT:
+    if get(_order, 'status') != Status.WAITING_FOR_PAYMENT and continues:
         sentry_sdk.capture_message(
             f"The order #{order_id} has been out of payment status. Please re-check tx #{tx_hash}")
-        return SocketEmitter.emit(
+        continues = False
+        SocketEmitter.emit(
             room_id=get(_order, 'address'),
             event="ORDER_FAIL",
             value={
@@ -347,26 +364,29 @@ def task_record_tx(tx_hash, order_id):
                 'msg': 'The order was not found in the payment queue.'
             }
         )
+    if continues:
+        _update = {
+            **_update,
+            'status': Status.CHECKING,
+            'tx_hash': tx_hash,
+            'payment_time': dt_utcnow()
+        }
     # Record status of order
     models.OrderModel.update_one({
         'order_id': order_id
-    }, obj={
-        'updated_by': 'worker',
-        'status': Status.CHECKING,
-        'tx_hash': tx_hash,
-        'payment_time': dt_utcnow()
-    })
+    }, obj=_update)
+    if continues:
+        task_on_payment.delay(
+            order_id=order_id
+        )
 
-    task_on_payment.delay(
-        order_id=order_id
-    )
-
-    return SocketEmitter.emit(
-        room_id=get(_order, 'address'),
-        event="ORDER_STEP",
-        value={
-            'order_id': order_id,
-            'tx_hash': _tx_hash,
-            'status': Status.CHECKING
-        }
-    )
+        return SocketEmitter.emit(
+            room_id=get(_order, 'address'),
+            event="ORDER_STEP",
+            value={
+                'order_id': order_id,
+                'tx_hash': _tx_hash,
+                'status': Status.CHECKING
+            }
+        )
+    return f"Done record {tx_hash}"
