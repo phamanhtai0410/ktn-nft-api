@@ -1,4 +1,4 @@
-import json
+import web3
 
 from flask_restful import Resource
 from pydash import get
@@ -57,7 +57,7 @@ class MetaDataResource(Resource):
                 ]
             }
             _cid = IPFSHelper.upload_web3(metadata=_metadata)
-            _cids_bytes.append(bytes(_cid, 'utf-8'))
+            _cids_bytes.append(web3.Web3.toHex(bytes(_cid, 'utf-8')))
             _cids.append(_cid)
             _rarities.append(get(_nft_detail, 'rarity'))
             _types.append(get(_nft_detail, 'type'))
