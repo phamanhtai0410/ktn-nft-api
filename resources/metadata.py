@@ -8,7 +8,7 @@ from connect import security
 from helper.ipfs import IPFSHelper
 from helper.items import ItemsHelper
 from helper.metadata import MetaDataHelper
-from lib import dt_utcnow
+from lib import dt_utcnow, NotFound
 from schemas.metadata import MetaDataSchema, ResMetaDataSchema
 
 
@@ -36,6 +36,8 @@ class MetaDataResource(Resource):
                     'nft_id': _item,
                 }
             )
+            if _nft_detail is None:
+                raise NotFound(msg='Not found nft id.')
             _metadata = {
                 "description": get(_nft_detail, 'description'),
                 "external_url": "",
@@ -81,5 +83,5 @@ class MetaDataResource(Resource):
                 'rarities': get(_data, 'rarities'),
                 'deadline': get(_data, 'deadline'),
             },
-            'signature': str(_signature)
+            'signature': _signature
         }

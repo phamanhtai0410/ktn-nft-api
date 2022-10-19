@@ -12,9 +12,17 @@ class MetaDataSchema(Schema):
     items = fields.List(fields.Integer, required=True, validate=validate.Length(min=1))
 
 
+class SignatureSchema(Schema):
+    class Meta:
+        unknown: EXCLUDE
+
+    v = fields.String(required=True)
+    r = fields.String(required=True)
+    s = fields.String(required=True)
+
 class ResMetaDataSchema(Schema):
     class Meta:
         unknown = EXCLUDE
 
-    signature = fields.String(required=True)
+    signature = fields.Nested(SignatureSchema)
     data = fields.Dict(required=True)

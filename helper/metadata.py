@@ -38,7 +38,6 @@ class MetaDataHelper:
 
     @staticmethod
     def generate_signature(data):
-        print(data)
         _w3 = get(web3_providers, Chains.BSC_CHAIN)
         _base_message = Web3.solidityKeccak(
             [
@@ -68,4 +67,10 @@ class MetaDataHelper:
             private_key=Config.AUTH_PRIVATE_KEY
         )
 
-        return _signed_message.signature.hex()
+        print(_signed_message)
+
+        return {
+            'v': str(_signed_message.v),
+            'r': str(_signed_message.r),
+            's': str(_signed_message.s)
+        }
