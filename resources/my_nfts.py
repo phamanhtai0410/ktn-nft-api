@@ -24,7 +24,7 @@ class MyNFTsResource(Resource):
 
         _page = get(params, 'page', default=1)
         _page_size = get(params, 'page_size', default=10)
-        _address = get(params, 'address')
+        _address = get(params, 'address').lower()
         _sort = get(params, 'sort').lower() == 'asc' and 1 or -1
 
         _my_nfts = MyNFTsHelpers.get_my_nfts(address=_address, page=_page, page_size=_page_size, sort=_sort)
