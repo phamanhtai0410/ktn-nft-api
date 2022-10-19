@@ -190,7 +190,7 @@ class OrderHelper:
         }, obj={
             'updated_by': 'on_minted',
             'token_ids': token_ids,
-            'tx_hash': tx_hash,
+            'tx_mint': tx_hash,
             'status': Status.DONE
         })
         SocketEmitter.emit(
@@ -199,7 +199,7 @@ class OrderHelper:
             value={
                 'order_id': order_id,
                 'token_ids': token_ids,
-                'tx_hash': tx_hash,
+                'tx_mint': tx_hash,
                 'status': Status.DONE
             }
         )
