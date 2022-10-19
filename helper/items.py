@@ -7,7 +7,7 @@ from datetime import timezone
 class ItemsHelper:
     @staticmethod
     def get_items(_nft_id, _type, _page, _page_size, _sort):
-
+    
         _filter = {}
         if not _nft_id is None:
             _filter['nft_id'] = _nft_id

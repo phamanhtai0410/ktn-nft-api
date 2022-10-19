@@ -21,7 +21,7 @@ class NFTsHistoryResponseSchema(Schema):
     class Meta:
         unknown = EXCLUDE
         ordered = True
-
+    contract = fields.String(default='',missing='')
     from_address = fields.String(default='',missing='')
     to_address = fields.String(default='',missing='')
     token_id = fields.Integer(default=0,missing=0)
