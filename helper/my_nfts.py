@@ -42,22 +42,5 @@ class MyNFTsHelpers:
             }
             _items_formatted.append(_item_detail)
 
-        _mockup_data = [
-            {
-                'token_id': 1,
-                'address': address,
-                'nft_type': 0,
-                'rarity': 102,
-                'name': 'Super Hero',
-                'price': 400,
-                'description': 'NFT',
-                'image': 'https://ipfs.io/ipfs/bafybeieelr4cqukve3mrmwu2nzlou6arl2wcoaaszzanvb3kiif74jzmii',
-                'token_uri': '',
-                'created_time': 1665807617,
-            }
-        ]
-        if not _items_formatted:
-            _results['items'] = _mockup_data
-        else:
-            _results['items'] = _items_formatted
+        _results['items'] = _items_formatted
         return _results

@@ -20,8 +20,8 @@ w3 = w3storage.API(
 class IPFSHelper:
     @staticmethod
     def upload_web3(metadata):
-        if Config.DEBUG:
-            return "abcasdasdaoqowieqojkasfjaksjfasdasdklasdaljdaklsjdadj"
+        # if Config.DEBUG:
+        #     return "abcasdasdaoqowieqojkasfjaksjfasdasdklasdaljdaklsjdadj"
         file = io.BytesIO(json.dumps(metadata).encode())
         _cid = w3.post_upload(file)
         debug(f"https://{_cid}.ipfs.w3s.link")
