@@ -51,7 +51,12 @@ def task_generate_metadata_file(order_id):
             }
         )
 
-        _items = get(_order, 'items')
+        _items_raw = get(_order, 'items')
+        _items = []
+        for _item in _items_raw:
+            for i in range(0, get(_item, 'amount')):
+                _items.append(_item)
+
         for _item in _items:
             _meta = {
                 "description": get(_item, 'description'),
