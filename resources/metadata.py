@@ -57,7 +57,10 @@ class MetaDataResource(Resource):
                 ]
             }
             _cid = IPFSHelper.upload_web3(metadata=_metadata)
-            _cids_bytes.append(web3.Web3.toHex(bytes(_cid, 'utf-8')))
+            _cid_hex = web3.Web3.toHex(bytes(_cid, 'utf-8'))
+            _cid_hex_int = int(_cid_hex, 16)
+            _padding = 32
+            _cids_bytes.append(f'{_cid_hex_int:<#0{_padding}x}')
             _cids.append(_cid)
             _rarities.append(get(_nft_detail, 'rarity'))
             _types.append(get(_nft_detail, 'type'))
