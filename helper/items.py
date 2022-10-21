@@ -74,3 +74,16 @@ class ItemsHelper:
             filter=filter_data
         )
         return _nft_detail
+    
+    @staticmethod
+    def get_items_show(_is_show , _page, _page_size, _sort):
+        items = NFTDetailModel.page(
+            filter={
+                'is_show':_is_show
+                },
+            page=_page,
+            page_size=_page_size,
+            sort=_sort,
+            func_sort=lambda item: get(item, 'created_time')
+        )
+        return items

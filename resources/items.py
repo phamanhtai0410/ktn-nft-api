@@ -9,7 +9,7 @@ from pydash import get
 from helper.items import ItemsHelper
 
 from connect import security
-from schemas.items import ItemsListResponseSchema, ItemResponseSchema, ItemsListRequestSchema
+from schemas.items import ItemsListResponseSchema, ItemResponseSchema, ItemsListRequestSchema, ItemsShowRequestSchema
 
 
 class ItemsListResource(Resource):
@@ -27,5 +27,17 @@ class ItemsListResource(Resource):
         res = ItemsHelper.get_items(_nft_id, _type, _page, _page_size, _sort)
         return res
 
+class NFTShowResource(Resource):
+    @security.http(
+        params=ItemsShowRequestSchema(),
+        response=ItemsListResponseSchema()
+    )
+    def get(self,params):
+        _is_show = get(params , 'is_show')
+        _page= get(params, 'page')
+        _page_size = get(params, 'page_size')
+        _sort = get(params, 'sort').lower() == 'asc' and 1 or -1
+        res = ItemsHelper.get_items_show(_is_show , _page, _page_size, _sort)
+        return res
 
 

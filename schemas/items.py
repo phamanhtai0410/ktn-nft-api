@@ -78,6 +78,18 @@ class CollectionListResponseSchema(Schema):
     num_of_page = fields.Integer(data_key='num_of_page', missing=0)
     page_size = fields.Integer(data_key='page_size', missing=10)
     page = fields.Integer(data_key='page', missing=1)
+    
+    
+class ItemsShowRequestSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
+
+    is_show = fields.Boolean(required=True)
+    page = fields.Integer(required=False, default=1)
+    page_size = fields.Integer(required=False, default=10)
+    sort = fields.String(required=False, default='desc')
+
+
 
 
 
