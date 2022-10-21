@@ -5,6 +5,7 @@
         -
 """
 # from helper.sync import sync_task
+import json
 import traceback
 
 import requests
@@ -131,7 +132,7 @@ def task_on_payment(order_id):
         )
         _update = {
             'updated_by': 'worker_checking',
-            'event': _tx_info,
+            'event': json.dumps(_tx_info) if isinstance(_tx_info, dict) else _tx_info,
             'tx_info': _tx
         }
 
