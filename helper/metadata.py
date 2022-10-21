@@ -6,7 +6,6 @@ from config import Config
 from connect import web3_providers
 from enums.order import Chains
 from exception import ExPromoCodeInvalid
-from lib import dt_utcnow
 from models import PromotionCodeModel
 
 
@@ -39,7 +38,7 @@ class MetaDataHelper:
     @staticmethod
     def generate_signature(data):
         _w3 = get(web3_providers, Chains.BSC_CHAIN)
-        _base_message = Web3.solidityKeccak(
+        _base_message = Web3.soliditySha3(
             [
                 'uint256',
                 'address',
@@ -61,16 +60,11 @@ class MetaDataHelper:
                 get(data, 'deadline')
             ]
         )
-        message = encode_defunct(_base_message)
-        _signed_message = _w3.eth.account.sign_message(
-            message,
+        message = encode_defunct(text=_base_message.hex())
+        digest = message.body.decode()
+        _signed_message = _w3.eth.account.signHash(
+            digest,
             private_key=Config.AUTH_PRIVATE_KEY
         )
 
-        print(_signed_message)
-
-        return {
-            'v': str(_signed_message.v),
-            'r': str(_signed_message.r),
-            's': str(_signed_message.s)
-        }
+        return _signed_message.signature.hex()
