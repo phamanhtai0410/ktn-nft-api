@@ -61,7 +61,7 @@ class MetaDataResource(Resource):
             _rarities.append(get(_nft_detail, 'rarity'))
             _types.append(get(_nft_detail, 'type'))
 
-        _deadline = dt_utcnow().timestamp() + 60
+        _deadline = dt_utcnow().timestamp() + 60 * 60
         _data = {
             'address': _address,
             'contract': Config.NFT_ADDRESS,
