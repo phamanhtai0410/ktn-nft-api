@@ -42,6 +42,7 @@ class Config:
     REDLOCK_REDIS = json.loads(os.getenv('REDLOCK_REDIS', '[]'))
     BSC_RPC_URI = os.getenv('BSC_RPC_URI')
     ETH_RPC_URI = os.getenv('ETH_RPC_URI')
+    CHAIN_ID = int(os.getenv('CHAIN_ID'))
     ASSETS = json.loads(os.getenv('ASSETS', '{}'))
     IPFS_TOKEN = os.getenv('IPFS_TOKEN')
     WALLET_IAPI = os.getenv('WALLET_IAPI')

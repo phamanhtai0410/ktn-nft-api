@@ -1,11 +1,7 @@
-import web3
-from eth_account.messages import encode_defunct
 from pydash import get
 from web3 import Web3
 
 from config import Config
-from connect import web3_providers
-from enums.order import Chains
 from exception import ExPromoCodeInvalid
 from models import PromotionCodeModel
 
@@ -40,7 +36,8 @@ class MetaDataHelper:
 
     @staticmethod
     def generate_signature(data):
-        _w3 = get(web3_providers, Chains.BSC_CHAIN)
+        _w3 = Web3()
+        print(Config.CHAIN_ID)
         _encode = _w3.codec.encode_abi(
             [
                 'uint256',
@@ -53,7 +50,7 @@ class MetaDataHelper:
                 'uint256'
             ],  # [chain_id, user_address, contract_address, discount, cids, types, rarities, deadline]
             [
-                _w3.eth.chain_id,
+                Config.CHAIN_ID,
                 get(data, 'address'),
                 get(data, 'contract'),
                 get(data, 'discount'),
