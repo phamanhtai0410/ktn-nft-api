@@ -47,3 +47,5 @@ class Config:
     WALLET_IAPI = os.getenv('WALLET_IAPI')
     NFT_ADDRESS = os.getenv('NFT_ADDRESS')
     CONFIRM_BLOCK = 1
+    RECAPTCHA3_PRIVATE_KEY = os.getenv('RECAPTCHA3_PRIVATE_KEY')
+    RECAPTCHA_VERIFY_SERVER = 'https://www.google.com/recaptcha/api/siteverify'

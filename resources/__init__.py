@@ -15,6 +15,7 @@ from resources.items import ItemsListResource
 from resources.collection import CollectionResource
 from resources.my_nfts import MyNFTsResource
 from resources.nfts_history import NFTsHistoryResource
+from resources.promotion import PromoResource
 
 api_resources = {
     '/hello': HelloWorld,
@@ -26,5 +27,6 @@ api_resources = {
     '/my_nfts': MyNFTsResource,
     '/metadata': MetaDataResource,
     '/nfts_history': NFTsHistoryResource,
-    '/nfts_show': NFTShowResource
+    '/nfts_show': NFTShowResource,
+    '/promo_code': PromoResource
 }

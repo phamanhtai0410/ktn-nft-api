@@ -48,3 +48,5 @@ socket_io = Emitter(Config.REDIS_CLUSTER[0])
 from lib import HTTPSecurity
 
 security = HTTPSecurity(redis=redis_cluster, auth_address=Config.AUTH_ADDRESS)
+
+firebase_credentials = firebase_admin.credentials.Certificate(os.getcwd() + "/conf/keys/firebase.json")
