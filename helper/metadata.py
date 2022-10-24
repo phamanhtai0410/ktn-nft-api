@@ -9,6 +9,8 @@ from enums.order import Chains
 from exception import ExPromoCodeInvalid
 from models import PromotionCodeModel
 
+DISCOUNT_DECIMALS = 10 ** 6
+
 
 class MetaDataHelper:
     @staticmethod
@@ -22,7 +24,7 @@ class MetaDataHelper:
 
         if not get(_promotion, 'status'):
             raise ExPromoCodeInvalid()
-        return get(_promotion, 'discount', 0)
+        return int(get(_promotion, 'discount', 0) * DISCOUNT_DECIMALS)
 
     @staticmethod
     def update_used_promotion_code(promotion_code, address):
