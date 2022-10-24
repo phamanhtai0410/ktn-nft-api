@@ -38,10 +38,11 @@ class CaptchaHelper:
                 'remoteip': remote_addr,
                 'response': response
             }
-
+            debug(f"Check captcha {data}")
             http_response = requests.post(Config.RECAPTCHA_VERIFY_SERVER, data, timeout=10)
             if http_response.status_code != 200:
                 return False
+            debug(f"Res check captcha {http_response.text}")
 
             json_resp = http_response.json()
             if get(json_resp, 'success') and get(json_resp, 'action') == action:
