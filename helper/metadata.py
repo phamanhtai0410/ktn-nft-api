@@ -9,7 +9,7 @@ from enums.order import Chains
 from exception import ExPromoCodeInvalid
 from models import PromotionCodeModel
 
-DISCOUNT_DECIMALS = 10 ** 6
+DISCOUNT_DECIMALS = 10 ** 18
 
 
 class MetaDataHelper:
