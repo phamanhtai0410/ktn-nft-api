@@ -37,7 +37,6 @@ class MetaDataHelper:
     @staticmethod
     def generate_signature(data):
         _w3 = Web3()
-        print(Config.CHAIN_ID)
         _encode = _w3.codec.encode_abi(
             [
                 'uint256',
