@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import timezone, datetime
 
 from pydash import get
 
@@ -17,7 +17,7 @@ class MyNFTsHelpers:
             page=page,
             page_size=page_size,
             sort=sort,
-            func_sort=lambda item: get(item, 'created_time')
+            func_sort=lambda item: get(item, 'created_time', default=datetime(2022, 10, 24))    # need update
         )
         _items_formatted = []
         for _item in get(_results, 'items'):
