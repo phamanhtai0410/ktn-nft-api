@@ -3,6 +3,7 @@ from datetime import timezone, datetime
 from pydash import get
 
 from helper.items import ItemsHelper
+from lib import dt_utcnow
 from models import NFTsModel
 
 
@@ -17,7 +18,7 @@ class MyNFTsHelpers:
             page=page,
             page_size=page_size,
             sort=sort,
-            func_sort=lambda item: get(item, 'created_time', default=datetime(2022, 10, 24))    # need update
+            func_sort=lambda item: get(item, 'created_time', default=dt_utcnow())    # need update
         )
         _items_formatted = []
         for _item in get(_results, 'items'):
