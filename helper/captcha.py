@@ -31,14 +31,17 @@ class CaptchaHelper:
         #     private_key = Config.RECAPTCHA3_PRIVATE_KEY
         # except KeyError:
         #     raise RuntimeError("RECAPTCHA3_PRIVATE_KEY is not set in app config.")
-
-        data = {
-            'secret': Config.RECAPTCHA3_PRIVATE_KEY,
-            'remoteip': remote_addr,
-            'response': response
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
         }
-        debug(f"Check captcha {data}")
-        http_response = requests.post(Config.RECAPTCHA_VERIFY_SERVER, data, timeout=10)
+        # data = {
+        #     'secret': Config.RECAPTCHA3_PRIVATE_KEY,
+        #     'remoteip': remote_addr,
+        #     'response': response
+        # }
+        payload = f'response={response}&remoteip={remote_addr}&secret={Config.RECAPTCHA3_PRIVATE_KEY}'
+        debug(f"Check captcha {payload}")
+        http_response = requests.post(Config.RECAPTCHA_VERIFY_SERVER, data=payload, headers=headers, timeout=10)
         if http_response.status_code != 200:
             return False
         debug(f"Res check captcha {http_response.text}")
