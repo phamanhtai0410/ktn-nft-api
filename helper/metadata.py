@@ -1,3 +1,4 @@
+import web3
 from eth_account.messages import encode_defunct
 from pydash import get
 from web3 import Web3
@@ -7,6 +8,8 @@ from connect import web3_providers
 from enums.order import Chains
 from exception import ExPromoCodeInvalid
 from models import PromotionCodeModel
+
+DISCOUNT_DECIMALS = 10 ** 18
 
 
 class MetaDataHelper:
@@ -21,7 +24,7 @@ class MetaDataHelper:
 
         if not get(_promotion, 'status'):
             raise ExPromoCodeInvalid()
-        return get(_promotion, 'discount', 0)
+        return int(get(_promotion, 'discount', 0) * DISCOUNT_DECIMALS)
 
     @staticmethod
     def update_used_promotion_code(promotion_code, address):
@@ -38,13 +41,13 @@ class MetaDataHelper:
     @staticmethod
     def generate_signature(data):
         _w3 = get(web3_providers, Chains.BSC_CHAIN)
-        _base_message = Web3.soliditySha3(
+        _encode = _w3.codec.encode_abi(
             [
                 'uint256',
                 'address',
                 'address',
                 'uint256',
-                'bytes32[]',
+                'string[]',
                 'uint8[]',
                 'uint8[]',
                 'uint256'
@@ -54,14 +57,13 @@ class MetaDataHelper:
                 get(data, 'address'),
                 get(data, 'contract'),
                 get(data, 'discount'),
-                get(data, 'cids_bytes'),
+                get(data, 'cids'),
                 get(data, 'types'),
                 get(data, 'rarities'),
                 get(data, 'deadline')
             ]
         )
-        message = encode_defunct(text=_base_message.hex())
-        digest = message.body.decode()
+        digest = Web3.solidityKeccak(['bytes'], [f'0x{_encode.hex()}'])
         _signed_message = _w3.eth.account.signHash(
             digest,
             private_key=Config.AUTH_PRIVATE_KEY
