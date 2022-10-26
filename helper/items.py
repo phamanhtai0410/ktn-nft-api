@@ -77,8 +77,7 @@ class ItemsHelper:
                 'type': collection_id,
                 'is_show': True
             },
-            cache=True,
-            hset_field='type'
+            cache=True
         )
         return _nfts
 
