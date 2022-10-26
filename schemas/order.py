@@ -33,7 +33,7 @@ class OrderSchema(Schema):
         Chains.BSC_CHAIN,
         Chains.ETHEREUM_CHAIN
     ]))
-    promotion_code = fields.Str(default='')
+    promotion_code = fields.Str(default='', allow_none=True)
 
 
 class ResOrderSchema(Schema):
