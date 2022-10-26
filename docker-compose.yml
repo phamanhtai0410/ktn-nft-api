@@ -1,31 +1,60 @@
 version: "3"
-
 services:
-  serivce:
-    image: micro-api
+
+  ktn-nft-api:
+    image: ktn-nft-api
     build: .
     restart: always
     volumes:
       - ./:/webapps
-
     ports:
       - 6006:5005
     networks:
       - base-network
+    command: gunicorn --bind 0.0.0.0:5005 --workers=1 main:app --log-level=debug -c conf/gunicorn.py --timeout 0
 
-    command: supervisord -n -c /etc/supervisor.d/service.conf
-
-  worker:
-    image: worker-micro-api
+  ktn-nft-confirm-tx-queue:
+    image: ktn-nft-confirm-tx-queue
     build: .
     restart: always
     volumes:
       - ./:/webapps
     networks:
       - base-network
+    command: celery --app worker worker -Q nft-confirm-tx-queue -l INFO -c 4
 
-    command: supervisord -n -c /etc/supervisor.d/worker.conf
+  ktn-nft-dapp-api-queue:
+    image: ktn-nft-dapp-api-queue
+    build: .
+    restart: always
+    volumes:
+      - ./:/webapps
+    networks:
+      - base-network
+    command: celery --app worker worker -Q katana-dapp-nft-api-queue -l INFO -c 4
+  
+  ktn-nft-payment-queue:
+    image:  ktn-nft-payment-queue  
+    build: .
+    restart: always
+    volumes:
+      - ./:/webapps
+    networks:
+      - base-network
+    command: celery --app worker worker -Q nft-payment-queue -l INFO -c 4
+
+  ktn-nft-tx-queue:
+    image:  ktn-nft-tx-queue
+    build: .
+    restart: always
+    volumes:
+      - ./:/webapps
+    networks:
+      - base-network
+    command: celery --app worker worker -Q nft-tx-queue -l INFO -c 4   
+
 
 networks:
   base-network:
     external: true
+
