@@ -7,8 +7,10 @@ from datetime import timezone
 class ItemsHelper:
     @staticmethod
     def get_items(_nft_id, _type, _page, _page_size, _sort):
-    
-        _filter = {}
+
+        _filter = {
+            'is_show': True
+        }
         if not _nft_id is None:
             _filter['nft_id'] = _nft_id
         if not _type is None:
@@ -63,7 +65,8 @@ class ItemsHelper:
     def get_nfts(collection_id):
         _nfts = NFTDetailModel.find(
             filter={
-                'type': collection_id
+                'type': collection_id,
+                'is_show': True
             }
         )
         return _nfts
@@ -73,14 +76,16 @@ class ItemsHelper:
         _nft_detail = NFTDetailModel.find_one(
             filter=filter_data
         )
+        # if get(_nft_detail, 'is_show'):
+        #     return None
         return _nft_detail
-    
+
     @staticmethod
-    def get_items_show(_is_show , _page, _page_size, _sort):
+    def get_items_show(_page, _page_size, _sort):
         items = NFTDetailModel.page(
             filter={
-                'is_show':_is_show
-                },
+                'is_show': True
+            },
             page=_page,
             page_size=_page_size,
             sort=_sort,
