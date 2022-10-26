@@ -11,16 +11,23 @@ class ItemsHelper:
         _filter = {
             'is_show': True
         }
-        if not _nft_id is None:
-            _filter['nft_id'] = _nft_id
-        if not _type is None:
-            _filter['type'] = _type
+
+        def func_filter(item):
+            if not _nft_id is None and get(item, 'nft_id') != _nft_id:
+                return False
+            if not _type is None and get(item, 'type') != _type:
+                return False
+            return True
+
         items = NFTDetailModel.page(
             filter=_filter,
             page=_page,
             page_size=_page_size,
             sort=_sort,
-            func_sort=lambda item: get(item, 'created_time')
+            func_sort=lambda item: get(item, 'created_time'),
+            func_filter=func_filter,
+            cache=True,
+            hset_field='nft_id'
         )
         # _itemsFormatted = []
         # _itemsFormatted = [{
@@ -47,7 +54,9 @@ class ItemsHelper:
             page=_page,
             page_size=_page_size,
             sort=_sort,
-            func_sort=lambda item: get(item, 'created_time')
+            func_sort=lambda item: get(item, 'created_time'),
+            hset_field='collection_id',
+            cache=True
         )
         _itemsFormatted = []
         _itemsFormatted = [{
@@ -67,17 +76,32 @@ class ItemsHelper:
             filter={
                 'type': collection_id,
                 'is_show': True
-            }
+            },
+            cache=True,
+            hset_field='type'
         )
         return _nfts
 
     @staticmethod
-    def get_item(filter_data):
+    def get_item_by_rt(nft_type, rarity):
         _nft_detail = NFTDetailModel.find_one(
-            filter=filter_data
+            filter={
+                'type': nft_type,
+                'rarity': rarity
+            },
+            cache=True
         )
-        # if get(_nft_detail, 'is_show'):
-        #     return None
+        return _nft_detail
+
+    @staticmethod
+    def get_item_by_id(nft_id):
+        _nft_detail = NFTDetailModel.find_one(
+            filter={
+                'nft_id': nft_id,
+                'is_show': True
+            },
+            cache=True
+        )
         return _nft_detail
 
     @staticmethod
@@ -89,6 +113,7 @@ class ItemsHelper:
             page=_page,
             page_size=_page_size,
             sort=_sort,
-            func_sort=lambda item: get(item, 'created_time')
+            func_sort=lambda item: get(item, 'created_time'),
+            cache=True
         )
         return items

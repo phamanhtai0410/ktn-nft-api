@@ -18,15 +18,14 @@ class MyNFTsHelpers:
             page=page,
             page_size=page_size,
             sort=sort,
-            func_sort=lambda item: get(item, 'created_time', default=dt_utcnow())    # need update
+            func_sort=lambda item: get(item, 'created_time', default=dt_utcnow()),    # need update
+            cache=True
         )
         _items_formatted = []
         for _item in get(_results, 'items'):
-            _nft_detail = ItemsHelper.get_item(
-                filter_data={
-                    'type': get(_item, 'nft_type'),
-                    'rarity': get(_item, 'rarity')
-                }
+            _nft_detail = ItemsHelper.get_item_by_rt(
+                nft_type=get(_item, 'nft_type'),
+                rarity=get(_item, 'rarity')
             )
             _item_detail = {
                 'token_id': get(_item, 'token_id'),

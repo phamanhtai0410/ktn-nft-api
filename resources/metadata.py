@@ -31,11 +31,7 @@ class MetaDataResource(Resource):
         _rarities = []
         _types = []
         for _item in _items:
-            _nft_detail = ItemsHelper.get_item(
-                filter_data={
-                    'nft_id': _item,
-                }
-            )
+            _nft_detail = ItemsHelper.get_item_by_id(_item)
             if _nft_detail is None:
                 raise NotFound(msg='Not found nft id.')
             _metadata = {
