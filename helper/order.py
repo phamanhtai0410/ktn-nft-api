@@ -85,14 +85,16 @@ class OrderHelper:
 
     @staticmethod
     def mockup_item(item, discount, ref_code_discount):
-        _price = item['price']
+        _price = item['price'] * get(item, 'amount')
         _ref_discount = 0
 
         item['raw_price'] = _price
 
         if ref_code_discount:
             _ref_discount = get(item, 'discount', 0)
+
         _promotion_discount = _price * (discount / 100)
+
         _price = _price - _promotion_discount
         _referral_discount = _price * (_ref_discount / 100)
         _price = _price - _referral_discount
@@ -102,7 +104,7 @@ class OrderHelper:
 
         return {
             **item,
-            'price': _price * get(item, 'amount'),
+            'price': _price,
             'promotion_percent': _ref_discount,
             'promotion_discount': _promotion_discount,
             'referral_percent': _ref_discount,
