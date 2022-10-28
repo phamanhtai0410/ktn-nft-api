@@ -187,7 +187,7 @@ class OrderHelper:
         if Config.DEBUG:
             return True
         try:
-            _lock = dlm.lock(f'ktn:logs:tx_hash:{chain}:{tx_hash}', 60 * 10 * 1000)
+            _lock = dlm.lock(f'ktn:logs:tx_hash:{chain}:{tx_hash}', 60 * 1 * 1000)
             if _lock:
                 debug(f'[EVENT] \033[92m ✔✔✔ Process .................. {tx_hash} \033[0m')
                 return True
