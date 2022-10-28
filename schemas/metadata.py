@@ -18,4 +18,5 @@ class ResMetaDataSchema(Schema):
         unknown = EXCLUDE
 
     signature = fields.String(required=True)
+    callback = fields.String(required=True)
     data = fields.Dict(required=True)
