@@ -34,6 +34,7 @@ class OrderSchema(Schema):
         Chains.ETHEREUM_CHAIN
     ]))
     promotion_code = fields.Str(default='', allow_none=True)
+    ref_code = fields.Str(allow_none=True)
 
 
 class ResOrderSchema(Schema):

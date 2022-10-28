@@ -112,7 +112,8 @@ class OrderHelper:
             'deadline': _deadline,
             'chain': get(form_data, 'chain'),
             'unit': get(form_data, 'unit'),
-            'contract': Config.NFT_ADDRESS.lower()
+            'contract': Config.NFT_ADDRESS.lower(),
+            'ref_code': get(form_data, 'ref_code')
         }, worker=True)
 
         return {
