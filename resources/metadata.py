@@ -59,6 +59,9 @@ class MetaDataResource(Resource):
 
             _discount_data = {
                 'nft_id': _item,
+                'rarity': get(_nft_detail, 'rarity'),
+                'type': get(_nft_detail, 'type'),
+                'commission_percent': get(_nft_detail, 'commission'),
                 'promotion_percent': _promotion_discount_percent,
                 'promotion_discount': _promotion_discount_item,
                 'referral_percent': _referral_discount_percent,
@@ -95,6 +98,7 @@ class MetaDataResource(Resource):
         _log_id = str(uuid.uuid4())
         SignatureLogModel.insert_one({
             'log_id': _log_id,
+            'address': _address.lower(),
             'ref_code': _ref_code,
             'promotion_code': _promotion_code,
             'items': _items_discount,
@@ -106,7 +110,7 @@ class MetaDataResource(Resource):
         _discount = int((_promotion_discount + _referral_discount) * DISCOUNT_DECIMALS)
         _data = {
             'address': _address,
-            'contract': Config.NFT_ADDRESS,
+            'contract': Config.CREATOR_ADDRESS,
             'discount': _discount,
             'cids': _cids,
             'types': _types,
