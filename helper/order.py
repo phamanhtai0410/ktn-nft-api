@@ -102,7 +102,7 @@ class OrderHelper:
         if get(form_data,'ref_code'):
             ref_code = ReferralModel.find_one({
                 'code': get(form_data,'ref_code')
-            })
+            }, cache=True)
             if not ref_code:
                 raise BadRequest(msg=f"Not found ref code#{get(form_data,'ref_code')}")
 
