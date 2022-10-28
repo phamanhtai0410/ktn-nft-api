@@ -8,6 +8,7 @@ class MetaDataSchema(Schema):
         unknown = EXCLUDE
 
     promotion_code = fields.String(required=False, default=None, allow_none=True)
+    ref_code = fields.String(required=False, default=None, allow_none=True)
     address = fields.String(required=True, validate=NotBlank())
     items = fields.List(fields.Integer, required=True, validate=validate.Length(min=1))
 

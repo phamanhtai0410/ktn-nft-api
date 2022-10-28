@@ -48,3 +48,25 @@ class ExPromoCodeInvalid(Exception):
         self.error_code = 'E_PROMO_CODE'
 
     pass
+
+
+class ExRefCodeInvalid(Exception):
+    def __init__(self, msg="Referral code does not exist.", *args: object, **kwargs) -> None:
+        super().__init__(*args)
+        self.status_code = 400
+        self.msg = msg
+        self.errors = kwargs.get('errors', [])
+        self.error_code = 'E_REFERRAL_CODE'
+
+    pass
+
+
+class ExRefCodeOwner(Exception):
+    def __init__(self, msg="Can not use owner referral code.", *args: object, **kwargs) -> None:
+        super().__init__(*args)
+        self.status_code = 400
+        self.msg = msg
+        self.errors = kwargs.get('errors', [])
+        self.error_code = 'E_REFERRAL_CODE'
+
+    pass

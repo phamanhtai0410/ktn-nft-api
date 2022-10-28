@@ -12,8 +12,10 @@ from lib import DaoModel
 from models.order import OrderDao
 
 NFTDetailModel = DaoModel(col=connect_db.db.nft_details, redis=redis_cluster)
+
 PromotionCodeModel = DaoModel(col=connect_db.db.promotion_codes, redis=redis_cluster, project=Config.PROJECT,
                               broker=Config.BROKER_URL)
+ReferralModel = DaoModel(col=connect_db.db.referral, redis=redis_cluster, project=Config.PROJECT, broker=Config.BROKER_URL)
 
 PaymentConfigModel = DaoModel(col=connect_db.db.counters, redis=redis_cluster)
 
