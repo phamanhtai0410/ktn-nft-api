@@ -5,8 +5,6 @@ from config import Config
 from exception import ExPromoCodeInvalid
 from models import PromotionCodeModel
 
-DISCOUNT_DECIMALS = 10 ** 18
-
 
 class MetaDataHelper:
     @staticmethod
@@ -20,7 +18,7 @@ class MetaDataHelper:
 
         if not get(_promotion, 'status'):
             raise ExPromoCodeInvalid()
-        return int(get(_promotion, 'discount', 0) * DISCOUNT_DECIMALS)
+        return int(get(_promotion, 'discount', 0))
 
     @staticmethod
     def update_used_promotion_code(promotion_code, address):
