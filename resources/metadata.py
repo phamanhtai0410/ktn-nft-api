@@ -98,6 +98,7 @@ class MetaDataResource(Resource):
         _log_id = str(uuid.uuid4())
         SignatureLogModel.insert_one({
             'log_id': _log_id,
+            'address': _address,
             'ref_code': _ref_code,
             'promotion_code': _promotion_code,
             'items': _items_discount,
