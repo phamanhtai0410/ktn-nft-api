@@ -2,13 +2,13 @@ from pydash import get
 from web3 import Web3
 
 from config import Config
-from exception import ExPromoCodeInvalid
-from models import PromotionCodeModel
+from exception import ExPromoCodeInvalid, ExRefCodeInvalid, ExRefCodeOwner
+from models import PromotionCodeModel, ReferralModel
 
 
 class MetaDataHelper:
     @staticmethod
-    def discount(promotion_code):
+    def promotion_discount_percent(promotion_code):
         if promotion_code is None:
             return 0
 
@@ -18,7 +18,30 @@ class MetaDataHelper:
 
         if not get(_promotion, 'status'):
             raise ExPromoCodeInvalid()
-        return int(get(_promotion, 'discount', 0))
+        return get(_promotion, 'discount', 0)\
+
+
+    @staticmethod
+    def referral_discount_percent(ref_code, address):
+        if ref_code is not None:
+            _referral = ReferralModel.find_one({
+                'code': ref_code
+            })
+
+            if _referral is None:
+                raise ExRefCodeInvalid()
+            if get(_referral, 'address') == address:
+                raise ExRefCodeOwner()
+
+            return ref_code
+
+        _referral = ReferralModel.find_one({
+            'address': address
+        })
+
+        return get(_referral, 'code_linked', '')
+
+
 
     @staticmethod
     def update_used_promotion_code(promotion_code, address):

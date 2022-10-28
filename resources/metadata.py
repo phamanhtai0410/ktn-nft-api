@@ -1,14 +1,15 @@
+import uuid
+
 from flask_restful import Resource
 from pydash import get
 
 from config import Config
 from connect import security
-from exception import ExRefCodeInvalid, ExRefCodeOwner
 from helper.ipfs import IPFSHelper
 from helper.items import ItemsHelper
 from helper.metadata import MetaDataHelper
 from lib import dt_utcnow, NotFound
-from models import ReferralModel
+from models import SignatureLogModel
 from schemas.metadata import MetaDataSchema, ResMetaDataSchema
 
 DISCOUNT_DECIMALS = 10 ** 18
@@ -27,34 +28,46 @@ class MetaDataResource(Resource):
         _ref_code = get(form_data, 'ref_code')
         _items = get(form_data, 'items')
 
-        _is_have_ref_code = False
-        if _ref_code is not None:
-            _referral = ReferralModel.find_one({
-                'code': _ref_code
-            })
-
-            if _referral is None:
-                raise ExRefCodeInvalid()
-            if get(_referral, 'address') == _address:
-                raise ExRefCodeOwner()
-            _is_have_ref_code = True
-
-        _promotion_discount = MetaDataHelper.discount(promotion_code=_promotion_code)
+        _promotion_discount_percent = MetaDataHelper.promotion_discount_percent(promotion_code=_promotion_code)
+        _promotion_discount = 0
+        _referral_code_checked = MetaDataHelper.referral_discount_percent(ref_code=_ref_code, address=_address)
         _referral_discount = 0
 
         _cids = []
         _cids_bytes = []
         _rarities = []
         _types = []
+        _items_discount = []
         for _item in _items:
             _nft_detail = ItemsHelper.get_item_by_id(_item)
             if _nft_detail is None:
                 raise NotFound(msg='Not found nft id.')
 
-            if _is_have_ref_code:
-                _price = get(_nft_detail, 'price')
-                _discount_percent = get(_nft_detail, 'discount')
-                _referral_discount += round(_price * (_discount_percent / 100), 2)
+            _price = get(_nft_detail, 'price', 0)
+            _promotion_discount_item = round(_price * (_promotion_discount_percent / 100), 2)
+            _promotion_discount += _promotion_discount_item
+            _referral_discount_percent = 0
+            _referral_discount_item = 0
+
+            if _referral_code_checked:
+                _referral_discount_percent = get(_nft_detail, 'discount')
+                _referral_discount_item = round(
+                    (_price - _promotion_discount_item) * (_referral_discount_percent / 100),
+                    2
+                )
+                _referral_discount += _referral_discount_item
+
+            _discount_data = {
+                'nft_id': _item,
+                'promotion_percent': _promotion_discount_percent,
+                'promotion_discount': _promotion_discount_item,
+                'referral_percent': _referral_discount_percent,
+                'referral_discount': _referral_discount_item,
+                'raw_price': _price,
+                'price_after_discount': _price - _promotion_discount - _referral_discount
+            }
+
+            _items_discount.append(_discount_data)
 
             _metadata = {
                 "description": get(_nft_detail, 'description'),
@@ -79,6 +92,16 @@ class MetaDataResource(Resource):
             _rarities.append(get(_nft_detail, 'rarity'))
             _types.append(get(_nft_detail, 'type'))
 
+        _log_id = str(uuid.uuid4())
+        SignatureLogModel.insert_one({
+            'log_id': _log_id,
+            'ref_code': _ref_code,
+            'promotion_code': _promotion_code,
+            'items': _items_discount,
+            'created_by': 'metadata_api',
+            'created_time': dt_utcnow()
+        })
+
         _deadline = dt_utcnow().timestamp() + 60 * 60
         _discount = int((_promotion_discount + _referral_discount) * DISCOUNT_DECIMALS)
         _data = {
@@ -100,5 +123,6 @@ class MetaDataResource(Resource):
                 'rarities': get(_data, 'rarities'),
                 'deadline': get(_data, 'deadline'),
             },
-            'signature': _signature
+            'signature': _signature,
+            'callback': _log_id
         }
