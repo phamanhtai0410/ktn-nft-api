@@ -88,19 +88,26 @@ class OrderHelper:
         _price = item['price']
         _ref_discount = 0
 
-        item['root_price'] = _price
+        item['raw_price'] = _price
 
         if ref_code_discount:
             _ref_discount = get(item, 'discount', 0)
-
-        _price = _price - _price * (discount / 100)
-
-        _price = _price - _price * (_ref_discount / 100)
+        _promotion_discount = _price * (discount / 100)
+        _price = _price - _promotion_discount
+        _referral_discount = _price * (_ref_discount / 100)
+        _price = _price - _referral_discount
 
         item['price'] = _price
-        item['discount'] = item['root_price'] - _price
+        item['discount'] = item['raw_price'] - _price
 
-        return item
+        return {
+            **item,
+            'promotion_percent': _ref_discount,
+            'promotion_discount': _promotion_discount,
+            'referral_percent': _ref_discount,
+            'referral_discount': _referral_discount,
+            'price_after_discount': _price
+        }
 
     @staticmethod
     def check_ref_code(ref_code):
