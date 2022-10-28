@@ -19,7 +19,7 @@ from exception import TxRecorded, TxPayment, ExPromoCodeInvalid, TxTimeout
 from helper.socket import SocketEmitter
 from lib import NotFound, dt_utcnow, BadRequest
 from lib.logger import debug
-from models import NFTDetailModel, PaymentConfigModel, OrderModel, PromotionCodeModel
+from models import NFTDetailModel, PaymentConfigModel, OrderModel, PromotionCodeModel, ReferralModel
 from tasks.order import task_record_tx
 
 
@@ -99,6 +99,12 @@ class OrderHelper:
             filter={
                 'chain': get(form_data, "chain")
             })), 'address')
+        if get(form_data,'ref_code'):
+            ref_code = ReferralModel.find_one({
+                'code': get(form_data,'ref_code')
+            })
+            if not ref_code:
+                raise BadRequest(msg=f"Not found ref code#{get(form_data,'ref_code')}")
 
         OrderModel.insert_one({
             'address': get(form_data, 'address').lower(),
