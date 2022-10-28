@@ -44,7 +44,7 @@ class OrderHelper:
 
     @classmethod
     def get_cost_of(cls, item, unit):
-        return float(cls.convert_price_to_usdt(get(item, 'price'), unit=unit) * get(item, 'amount'))
+        return float(cls.convert_price_to_usdt(get(item, 'price'), unit=unit))
 
     @staticmethod
     def get_item(item):
@@ -97,11 +97,12 @@ class OrderHelper:
         _referral_discount = _price * (_ref_discount / 100)
         _price = _price - _referral_discount
 
-        item['price'] = _price
+        # item['price'] = _price
         item['discount'] = item['raw_price'] - _price
 
         return {
             **item,
+            'price': _price * get(item, 'amount'),
             'promotion_percent': _ref_discount,
             'promotion_discount': _promotion_discount,
             'referral_percent': _ref_discount,
