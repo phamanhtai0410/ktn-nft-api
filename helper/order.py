@@ -83,28 +83,53 @@ class OrderHelper:
             return get(_info, 'discount', 0)
         return 0
 
+    @staticmethod
+    def mockup_item(item, discount, ref_code_discount):
+        _price = item['price']
+        _ref_discount = 0
+
+        item['root_price'] = _price
+
+        if ref_code_discount:
+            _ref_discount = get(item, 'discount', 0)
+
+        _price = _price - _price * (discount / 100)
+
+        _price = _price - _price * (_ref_discount / 100)
+
+        item['price'] = _price
+        item['discount'] = item['root_price'] - _price
+
+        return item
+
+    @staticmethod
+    def check_ref_code(ref_code):
+        if ref_code:
+            ref_code = ReferralModel.find_one({
+                'code': ref_code
+            }, cache=True)
+            if not ref_code:
+                raise BadRequest(msg=f"Not found ref code#{ref_code}")
+            return True
+        return False
+
     @classmethod
     def init(cls, form_data):
         _order_id = str(uuid.uuid4())
         _discount = cls.promotion_code(form_data, order_id=_order_id)
-
-        _items = [{
+        _ref_code_discount = cls.check_ref_code(get(form_data, 'ref_code'))
+        _items = [cls.mockup_item({
             **cls.get_item(_item),
             'amount': get(_item, 'amount')
-        } for _item in get(form_data, 'items')]
+        }, discount=_discount, ref_code_discount=_ref_code_discount) for _item in get(form_data, 'items')]
+
         _deadline = dt_utcnow().timestamp() + 3 * 60
-        _cost = sum([cls.get_cost_of(_item, unit=get(form_data, 'unit')) for _item in _items]) - _discount
+        _cost = sum([cls.get_cost_of(_item, unit=get(form_data, 'unit')) for _item in _items])
 
         _address_of_counter = get(random.choice(PaymentConfigModel.find(
             filter={
                 'chain': get(form_data, "chain")
             })), 'address')
-        if get(form_data,'ref_code'):
-            ref_code = ReferralModel.find_one({
-                'code': get(form_data,'ref_code')
-            }, cache=True)
-            if not ref_code:
-                raise BadRequest(msg=f"Not found ref code#{get(form_data,'ref_code')}")
 
         OrderModel.insert_one({
             'address': get(form_data, 'address').lower(),
