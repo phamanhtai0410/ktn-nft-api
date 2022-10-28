@@ -109,7 +109,7 @@ class MetaDataResource(Resource):
         _discount = int((_promotion_discount + _referral_discount) * DISCOUNT_DECIMALS)
         _data = {
             'address': _address,
-            'contract': Config.NFT_ADDRESS,
+            'contract': Config.CREATOR_ADDRESS,
             'discount': _discount,
             'cids': _cids,
             'types': _types,
