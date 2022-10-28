@@ -145,7 +145,7 @@ class OrderHelper:
             'unit': get(form_data, 'unit'),
             'contract': Config.NFT_ADDRESS.lower(),
             'ref_code': get(form_data, 'ref_code')
-        }, worker=True)
+        }, worker=False)
 
         return {
             'order_id': _order_id,

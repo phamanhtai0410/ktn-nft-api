@@ -21,6 +21,7 @@ class ItemResponseSchema(Schema):
     description = fields.String(default='', missing='')
     image = fields.String(default='', missing='')
     price = fields.Float(default=0, missing=0)
+    discount = fields.Float(missing=0)
     created_time = DatetimeField(required=0, missing=0)
 
 
