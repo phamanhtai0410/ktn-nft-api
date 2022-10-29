@@ -44,17 +44,18 @@ class MetaDataResource(Resource):
                 raise NotFound(msg='Not found nft id.')
 
             _price = get(_nft_detail, 'price', 0)
-            _promotion_discount_item = round(_price * (_promotion_discount_percent / 100), 2)
+
+            _promotion_discount_item = _price * (_promotion_discount_percent / 100)
             _promotion_discount += _promotion_discount_item
+
             _referral_discount_percent = 0
             _referral_discount_item = 0
 
             if _referral_code_checked:
                 _referral_discount_percent = get(_nft_detail, 'discount')
-                _referral_discount_item = round(
-                    (_price - _promotion_discount_item) * (_referral_discount_percent / 100),
-                    2
-                )
+
+                _referral_discount_item = (_price - _promotion_discount_item) * (_referral_discount_percent / 100)
+
                 _referral_discount += _referral_discount_item
 
             _discount_data = {
