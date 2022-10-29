@@ -23,7 +23,7 @@ class MetaDataResource(Resource):
     )
     def post(self, form_data):
 
-        _address = get(form_data, 'address')
+        _address = get(form_data, 'address').lower()
         _promotion_code = get(form_data, 'promotion_code')
         _ref_code = get(form_data, 'ref_code')
         _items = get(form_data, 'items')
