@@ -1,5 +1,6 @@
 import uuid
 
+import web3
 from flask_restful import Resource
 from pydash import get
 
@@ -110,8 +111,8 @@ class MetaDataResource(Resource):
         _deadline = dt_utcnow().timestamp() + 60 * 60
         _discount = int((_promotion_discount + _referral_discount) * DISCOUNT_DECIMALS)
         _data = {
-            'address': _address,
-            'contract': Config.CREATOR_ADDRESS,
+            'address': web3.Web3.toChecksumAddress(_address),
+            'contract': web3.Web3.toChecksumAddress(Config.CREATOR_ADDRESS),
             'discount': _discount,
             'cids': _cids,
             'types': _types,
