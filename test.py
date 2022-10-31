@@ -16,8 +16,8 @@ _i = [{
 
 
 def ge(item):
-    p = item.get('p') * (_pd / 100)
-    d = (item.get('p') - p) * (item.get('d') / 100)
+    p = round(item.get('p') * (_pd / 100), 2)
+    d = round((item.get('p') - p) * (item.get('d') / 100), 2)
 
     return p + d
 

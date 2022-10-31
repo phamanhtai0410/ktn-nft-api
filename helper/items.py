@@ -45,25 +45,49 @@ class ItemsHelper:
         return items
 
     @classmethod
+    def get_nft_of(cls, _collection_id):
+        _collection = CollectionModel.find_one_with_hset(filter={
+            'collection_id': _collection_id
+        }, hset_field="collection_id")
+        print('_collection', _collection)
+
+        return {
+            "items": cls.get_nfts(get(_collection, 'nfts', [])),
+            'num_of_page': 1,
+            'page_size': 20,
+            'page': 1
+        }
+
+    @classmethod
     def get_collection(cls, _collection_id, _page, _page_size, _sort):
         _filter = {}
         if not _collection_id is None:
-            _filter['collection_id'] = _collection_id
-        items = CollectionModel.page(
-            filter=_filter,
-            page=_page,
-            page_size=_page_size,
-            sort=_sort,
-            func_sort=lambda item: get(item, 'created_time'),
-            hset_field='collection_id',
-            cache=True
-        )
+            _collection = CollectionModel.find_one_with_hset(filter={
+                'collection_id': _collection_id
+            }, hset_field="collection_id")
+            print('_collection', _collection)
+            items = {
+                "items": [_collection],
+                'num_of_page': 1,
+                'page_size': 20,
+                'page': 1
+            }
+        else:
+            items = CollectionModel.page(
+                filter=_filter,
+                page=_page,
+                page_size=_page_size,
+                sort=_sort,
+                func_sort=lambda item: get(item, 'created_time'),
+                hset_field='collection_id',
+                cache=True
+            )
         _itemsFormatted = []
         _itemsFormatted = [{
             'collection_id': get(_item, 'collection_id'),
             'name': get(_item, 'name'),
             'description': get(_item, 'description'),
-            'nfts': cls.get_nfts(_item['collection_id']),
+            'nfts': cls.get_nfts(_item['nfts']),
             'image': get(_item, 'image'),
             'created_time': get(_item, 'created_time'),
         } for _item in get(items, 'items')]
@@ -71,15 +95,14 @@ class ItemsHelper:
         return items
 
     @staticmethod
-    def get_nfts(collection_id):
-        _nfts = NFTDetailModel.find(
+    def get_nfts(nfts):
+        # _nfts =
+        return [NFTDetailModel.find_one(
             filter={
-                'type': collection_id,
-                'is_show': True
+                'nft_id': _nft_id
             },
             cache=True
-        )
-        return _nfts
+        ) for _nft_id in nfts]
 
     @staticmethod
     def get_item_by_rt(nft_type, rarity):
