@@ -12,6 +12,7 @@ from helper.metadata import MetaDataHelper
 from lib import dt_utcnow, NotFound
 from models import SignatureLogModel
 from schemas.metadata import MetaDataSchema, ResMetaDataSchema
+from lib.logger import debug
 
 DISCOUNT_DECIMALS = 10 ** 18
 
@@ -119,6 +120,7 @@ class MetaDataResource(Resource):
             'rarities': _rarities,
             'deadline': int(_deadline)
         }
+        debug(f'Sign data: {_data}')
         _signature = MetaDataHelper.generate_signature(data=_data)
         MetaDataHelper.update_used_promotion_code(
             promotion_code=_promotion_code,
