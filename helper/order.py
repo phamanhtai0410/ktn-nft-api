@@ -77,7 +77,7 @@ class OrderHelper:
             }, obj={
                 'updated_by': 'lock_promotion_code',
                 'status': False,
-                'address': get(form_data, 'address'),
+                'address': get(form_data, 'address').lower(),
                 'order_id': order_id
             }, worker=True)
             return get(_info, 'discount', 0)
