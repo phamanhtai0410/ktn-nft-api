@@ -120,6 +120,10 @@ class MetaDataResource(Resource):
             'deadline': int(_deadline)
         }
         _signature = MetaDataHelper.generate_signature(data=_data)
+        MetaDataHelper.update_used_promotion_code(
+            promotion_code=_promotion_code,
+            address=_address.lower()
+        )
 
         return {
             'data': {

@@ -41,8 +41,6 @@ class MetaDataHelper:
 
         return get(_referral, 'code_linked', '')
 
-
-
     @staticmethod
     def update_used_promotion_code(promotion_code, address):
         PromotionCodeModel.update_one(
