@@ -110,7 +110,7 @@ class MetaDataResource(Resource):
         })
 
         _deadline = dt_utcnow().timestamp() + 60 * 60
-        _discount = int((_promotion_discount + _referral_discount) * DISCOUNT_DECIMALS)
+        _discount = web3.Web3.toWei((_promotion_discount + _referral_discount), 'ether')
         _data = {
             'address': web3.Web3.toChecksumAddress(_address),
             'contract': web3.Web3.toChecksumAddress(Config.CREATOR_ADDRESS),
