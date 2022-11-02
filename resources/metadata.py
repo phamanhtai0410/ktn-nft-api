@@ -129,7 +129,7 @@ class MetaDataResource(Resource):
 
         return {
             'data': {
-                'discount': get(_data, 'discount'),
+                'discount': str(get(_data, 'discount')),
                 'cids': get(_data, 'cids'),
                 'types': get(_data, 'types'),
                 'rarities': get(_data, 'rarities'),
