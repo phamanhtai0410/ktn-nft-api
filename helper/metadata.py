@@ -49,6 +49,18 @@ class MetaDataHelper:
         return get(_referral, 'code_linked', '')
 
     @staticmethod
+    def check_ref_code(ref_code):
+
+        _referral = ReferralModel.find_one({
+            'code': ref_code
+        })
+
+        if _referral is None:
+            raise ExRefCodeInvalid()
+
+        return True
+
+    @staticmethod
     def update_used_promotion_code(promotion_code, address, order_id=None, updated_by=''):
         _obj = {
             'address': address,
