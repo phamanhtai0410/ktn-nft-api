@@ -1,0 +1,4 @@
+redlock-py==1.0.8
+web3==5.24.0
+w3storage==0.0.1
+socket.io-emitter==0.1.5.1
