@@ -40,7 +40,7 @@ class TxTimeout(Exception):
 
 
 class ExPromoCodeInvalid(Exception):
-    def __init__(self, msg="Promo code has been used or does not exist.", *args: object, **kwargs) -> None:
+    def __init__(self, msg="Promo code out of used or does not exist.", *args: object, **kwargs) -> None:
         super().__init__(*args)
         self.status_code = 400
         self.msg = msg

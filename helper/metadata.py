@@ -1,6 +1,6 @@
 from pydash import get
 from web3 import Web3
-
+from connect import redis_cluster
 from config import Config
 from exception import ExPromoCodeInvalid, ExRefCodeInvalid, ExRefCodeOwner
 from models import PromotionCodeModel, ReferralModel
@@ -13,12 +13,20 @@ class MetaDataHelper:
             return 0
 
         _promotion = PromotionCodeModel.find_one({
-                'code': promotion_code
-            })
+            'code': promotion_code
+        })
 
+        if get(_promotion, 'used') >= get(_promotion, 'total'):
+            raise ExPromoCodeInvalid()
         if not get(_promotion, 'status'):
             raise ExPromoCodeInvalid()
-        return get(_promotion, 'discount', 0)\
+
+        _promotion_code_used = redis_cluster.get(f'katana-dapp.promotion_code_used/{promotion_code}')
+
+        if int(_promotion_code_used) >= get(_promotion, 'total'):
+            raise ExPromoCodeInvalid()
+
+        return get(_promotion, 'discount', 0)
 
 
     @staticmethod
@@ -43,8 +51,16 @@ class MetaDataHelper:
 
     @staticmethod
     def update_used_promotion_code(promotion_code, address):
+        _key = f'katana-dapp.promotion_code_used/{promotion_code}'
+        redis_cluster.incr(name=_key, amount=1)
+
         PromotionCodeModel.update_one(
             filter={'code': promotion_code},
+            extract={
+                '$inc': {
+                    'used': 1
+                }
+            },
             obj={
                 'updated_by': 'metadata:update_used_promotion_code',
                 'status': False,
