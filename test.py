@@ -1,24 +1,8 @@
-_pd = 1
-_i = [{
-    "p": 45,
-    "d": 1
-},
-    {
-        "p": 65,
-        "d": 4.5
-    }
-    ,
-    {
-        "p": 165,
-        "d": 3.5
-    }
-]
+from pydash import get
 
-
-def ge(item):
-    p = round(item.get('p') * (_pd / 100), 2)
-    d = round((item.get('p') - p) * (item.get('d') / 100), 2)
-
-    return p + d
-
-print(sum(ge(x) for x in _i))
+DISCOUNT_DECIMALS = 10 ** 18
+d = int(922.64 * DISCOUNT_DECIMALS)
+data = {
+    'discount': d
+}
+print(d, get(data, 'discount'), d == get(data, 'discount'))
