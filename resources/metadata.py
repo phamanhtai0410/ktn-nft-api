@@ -124,7 +124,8 @@ class MetaDataResource(Resource):
         _signature = MetaDataHelper.generate_signature(data=_data)
         MetaDataHelper.update_used_promotion_code(
             promotion_code=_promotion_code,
-            address=_address.lower()
+            address=_address.lower(),
+            updated_by='metadata:update_used_promotion_code'
         )
 
         return {

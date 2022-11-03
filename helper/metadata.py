@@ -3,7 +3,8 @@ from web3 import Web3
 from connect import redis_cluster
 from config import Config
 from exception import ExPromoCodeInvalid, ExRefCodeInvalid, ExRefCodeOwner
-from models import PromotionCodeModel, ReferralModel
+from lib import dt_utcnow
+from models import PromotionCodeModel, ReferralModel, PromotionCodeUsedLogModel
 
 
 class MetaDataHelper:
@@ -18,8 +19,6 @@ class MetaDataHelper:
 
         if get(_promotion, 'used') >= get(_promotion, 'total'):
             raise ExPromoCodeInvalid()
-        if not get(_promotion, 'status'):
-            raise ExPromoCodeInvalid()
 
         _promotion_code_used = redis_cluster.get(f'katana-dapp.promotion_code_used/{promotion_code}')
 
@@ -27,7 +26,6 @@ class MetaDataHelper:
             raise ExPromoCodeInvalid()
 
         return get(_promotion, 'discount', 0)
-
 
     @staticmethod
     def referral_discount_percent(ref_code, address):
@@ -50,9 +48,19 @@ class MetaDataHelper:
         return get(_referral, 'code_linked', '')
 
     @staticmethod
-    def update_used_promotion_code(promotion_code, address):
+    def update_used_promotion_code(promotion_code, address, order_id=None, updated_by=''):
         _key = f'katana-dapp.promotion_code_used/{promotion_code}'
         redis_cluster.incr(name=_key, amount=1)
+
+        _obj = {
+            'address': address,
+            'code': promotion_code,
+            'created_by': updated_by,
+            'created_time': dt_utcnow()
+        }
+
+        if order_id is not None:
+            _obj['order_id'] = order_id
 
         PromotionCodeModel.update_one(
             filter={'code': promotion_code},
@@ -62,10 +70,13 @@ class MetaDataHelper:
                 }
             },
             obj={
-                'updated_by': 'metadata:update_used_promotion_code',
-                'status': False,
-                'address': address
+                'updated_by': updated_by
             },
+            worker=True
+        )
+
+        PromotionCodeUsedLogModel.insert_one(
+            row=_obj,
             worker=True
         )
 

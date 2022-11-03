@@ -16,6 +16,7 @@ from config import Config
 from connect import dlm, redis_cluster
 from enums.order import Status, Units
 from exception import TxRecorded, TxPayment, ExPromoCodeInvalid, TxTimeout
+from helper.metadata import MetaDataHelper
 from helper.socket import SocketEmitter
 from lib import NotFound, dt_utcnow, BadRequest
 from lib.logger import debug
@@ -63,23 +64,26 @@ class OrderHelper:
         #     return 0
 
         if get(form_data, 'promotion_code'):
-
-            if not cls.lock_promo_code(get(form_data, 'promotion_code')):
-                raise ExPromoCodeInvalid(msg="The promo code has been used.")
+            _promotion_code = get(form_data, 'promotion_code')
 
             _info = PromotionCodeModel.find_one({
-                'code': get(form_data, 'promotion_code')
+                'code': _promotion_code
             })
-            if not get(_info, 'status'):
+
+            if get(_info, 'used') >= get(_info, 'total'):
                 raise ExPromoCodeInvalid()
-            PromotionCodeModel.update_one({
-                'code': get(form_data, 'promotion_code')
-            }, obj={
-                'updated_by': 'lock_promotion_code',
-                'status': False,
-                'address': get(form_data, 'address').lower(),
-                'order_id': order_id
-            }, worker=True)
+
+            _promotion_code_used = redis_cluster.get(f'katana-dapp.promotion_code_used/{_promotion_code}')
+
+            if int(_promotion_code_used) >= get(_info, 'total'):
+                raise ExPromoCodeInvalid()
+
+            MetaDataHelper.update_used_promotion_code(
+                promotion_code=_promotion_code,
+                address=get(form_data, 'address').lower(),
+                order_id=order_id,
+                updated_by='order:promotion_code'
+            )
             return get(_info, 'discount', 0)
         return 0
 
@@ -166,20 +170,6 @@ class OrderHelper:
             'chain': get(form_data, 'chain'),
             'deadline': _deadline
         }
-
-    @staticmethod
-    def lock_promo_code(code):
-        try:
-            _lock = dlm.lock(f'ktn:hot_lock:promo_codes:{code}', 3 * 60 * 1000)
-            if _lock:
-                debug(f'[EVENT] \033[92m ✔✔✔ Process .................. {code} \033[0m')
-                return True
-            else:
-                debug(f'[EVENT] \033[93m ⚠⚠⚠ ______ Lock fail ______ {code} \033[0m')
-        except:
-            traceback.print_exc()
-            sentry_sdk.capture_exception()
-        return False
 
     @staticmethod
     def lock_tx(chain, tx_hash):

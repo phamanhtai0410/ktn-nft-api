@@ -21,6 +21,13 @@ PromotionCodeModel = PromotionCodeDao(
     broker=Config.BROKER_URL
 )
 
+PromotionCodeUsedLogModel = DaoModel(
+    col=connect_db.db.promotion_code_used_logs,
+    redis=redis_cluster,
+    project=Config.PROJECT,
+    broker=Config.BROKER_URL
+)
+
 PaymentConfigModel = DaoModel(col=connect_db.db.counters, redis=redis_cluster)
 
 OrderModel = OrderDao(col=connect_db.db.orders, redis=redis_cluster, project=Config.PROJECT, broker=Config.BROKER_URL)
