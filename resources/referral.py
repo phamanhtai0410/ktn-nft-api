@@ -21,17 +21,17 @@ class ReferralResource(Resource):
         params=ReferralCodeQuery()
     )
     def get(self, params):
-        if not CaptchaHelper.validate_recaptcha(
-                response=get(params, 'token'),
-                remote_addr=request.headers.get('X-Real-Ip'),
-                action="check_ref_code"
-        ):
-            raise BadRequest(
-                msg="Invalid captcha",
-                errors=[{
-                    'captcha': "Invalid captcha."
-                }]
-            )
+        # if not CaptchaHelper.validate_recaptcha(
+        #         response=get(params, 'token'),
+        #         remote_addr=request.headers.get('X-Real-Ip'),
+        #         action="check_ref_code"
+        # ):
+        #     raise BadRequest(
+        #         msg="Invalid captcha",
+        #         errors=[{
+        #             'captcha': "Invalid captcha."
+        #         }]
+        #     )
 
         _ref_code = get(params, 'code')
 
