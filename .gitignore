@@ -8,3 +8,5 @@ supervisord.pid
 *.model
 conf/keys
 /lib
+skaffold.yaml
+.gitlab-ci.yml
