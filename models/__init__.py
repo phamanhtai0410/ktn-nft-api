@@ -11,6 +11,7 @@ from connect import connect_db, redis_cluster
 from lib import DaoModel
 from models.order import OrderDao
 from models.promotion_code import PromotionCodeDao
+from models.promotion_code_log import PromotionCodeLogDao
 
 NFTDetailModel = DaoModel(col=connect_db.db.nft_details, redis=redis_cluster)
 
@@ -21,7 +22,7 @@ PromotionCodeModel = PromotionCodeDao(
     broker=Config.BROKER_URL
 )
 
-PromotionCodeUsedLogModel = DaoModel(
+PromotionCodeUsedLogModel = PromotionCodeLogDao(
     col=connect_db.db.promotion_code_used_logs,
     redis=redis_cluster,
     project=Config.PROJECT,
