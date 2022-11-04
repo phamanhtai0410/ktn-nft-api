@@ -102,9 +102,13 @@ class MetaDataResource(Resource):
             _cids = await asyncio.gather(
                 *[IPFSHelper.upload_web3_async(metadata) for metadata in _metadata_list]
             )
+            for cid in _cids:
+                if cid is None:
+                    raise BadRequest(msg="W3 storage being rate limited.")
+
         except Exception as e:
             debug(f'W3 storage exception: {e}')
-            raise BadRequest(msg="W3 storage rate limit.")
+            raise BadRequest(msg="W3 storage being rate limited.")
 
         _log_id = str(uuid.uuid4())
         SignatureLogModel.insert_one({

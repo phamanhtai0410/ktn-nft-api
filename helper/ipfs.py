@@ -41,5 +41,6 @@ class IPFSHelper:
                                           'files': files
                                       })
         _json = await _res.json()
+        debug(f'upload web3 result: {_json}')
 
         return get(_json, 'cid')
