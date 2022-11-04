@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 
 import web3
@@ -9,7 +10,7 @@ from connect import security
 from helper.ipfs import IPFSHelper
 from helper.items import ItemsHelper
 from helper.metadata import MetaDataHelper
-from lib import dt_utcnow, NotFound
+from lib import dt_utcnow, NotFound, BadRequest
 from models import SignatureLogModel
 from schemas.metadata import MetaDataSchema, ResMetaDataSchema
 from lib.logger import debug
@@ -23,7 +24,7 @@ class MetaDataResource(Resource):
         form_data=MetaDataSchema(),
         response=ResMetaDataSchema()
     )
-    def post(self, form_data):
+    async def post(self, form_data):
 
         _address = get(form_data, 'address').lower()
         _promotion_code = get(form_data, 'promotion_code')
@@ -36,7 +37,7 @@ class MetaDataResource(Resource):
         _referral_discount = 0
 
         _cids = []
-        _cids_bytes = []
+        _metadata_list = []
         _rarities = []
         _types = []
         _items_discount = []
@@ -93,10 +94,16 @@ class MetaDataResource(Resource):
                     }
                 ]
             }
-            _cid = IPFSHelper.upload_web3(metadata=_metadata)
-            _cids.append(_cid)
+            _metadata_list.append(_metadata)
             _rarities.append(get(_nft_detail, 'rarity'))
             _types.append(get(_nft_detail, 'type'))
+
+        try:
+            _cids = await asyncio.gather(
+                *[IPFSHelper.upload_web3_async(metadata) for metadata in _metadata_list]
+            )
+        except:
+            raise BadRequest()
 
         _log_id = str(uuid.uuid4())
         SignatureLogModel.insert_one({
