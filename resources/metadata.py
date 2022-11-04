@@ -32,9 +32,9 @@ class MetaDataResource(Resource):
         _items = get(form_data, 'items')
 
         _promotion_discount_percent = MetaDataHelper.promotion_discount_percent(promotion_code=_promotion_code)
-        _promotion_discount = 0
+        _promotion_discount_total = 0
         _referral_code_checked = MetaDataHelper.referral_discount_percent(ref_code=_ref_code, address=_address)
-        _referral_discount = 0
+        _referral_discount_total = 0
 
         _cids = []
         _metadata_list = []
@@ -49,7 +49,7 @@ class MetaDataResource(Resource):
             _price = get(_nft_detail, 'price', 0)
 
             _promotion_discount_item = _price * (_promotion_discount_percent / 100)
-            _promotion_discount += _promotion_discount_item
+            _promotion_discount_total += _promotion_discount_item
 
             _referral_discount_percent = 0
             _referral_discount_item = 0
@@ -59,7 +59,7 @@ class MetaDataResource(Resource):
 
                 _referral_discount_item = (_price - _promotion_discount_item) * (_referral_discount_percent / 100)
 
-                _referral_discount += _referral_discount_item
+                _referral_discount_total += _referral_discount_item
 
             _discount_data = {
                 'nft_id': _item,
@@ -71,7 +71,7 @@ class MetaDataResource(Resource):
                 'referral_percent': _referral_discount_percent,
                 'referral_discount': _referral_discount_item,
                 'raw_price': _price,
-                'price_after_discount': _price - _promotion_discount - _referral_discount
+                'price_after_discount': _price - _promotion_discount_item - _referral_discount_item
             }
 
             _items_discount.append(_discount_data)
@@ -118,7 +118,7 @@ class MetaDataResource(Resource):
         })
 
         _deadline = dt_utcnow().timestamp() + 60 * 60
-        _discount = web3.Web3.toWei((_promotion_discount + _referral_discount), 'ether')
+        _discount = web3.Web3.toWei((_promotion_discount_total + _referral_discount_total), 'ether')
         _data = {
             'address': web3.Web3.toChecksumAddress(_address),
             'contract': web3.Web3.toChecksumAddress(Config.CREATOR_ADDRESS),
