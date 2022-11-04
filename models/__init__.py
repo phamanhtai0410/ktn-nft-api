@@ -4,7 +4,7 @@
         -
         -
 """
-__models__ = ['OrderModel', 'PromotionCodeModel']
+__models__ = ['OrderModel', 'PromotionCodeModel', 'PromotionCodeUsedLogModel']
 
 from config import Config
 from connect import connect_db, redis_cluster

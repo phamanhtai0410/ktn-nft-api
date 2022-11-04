@@ -33,13 +33,15 @@ class IPFSHelper:
         file = io.BytesIO(json.dumps(metadata).encode())
         files = [('file', file)]
 
-        _res = await AsyncHelper.post('https://api.web3.storage/upload',
-                                      headers={
-                                          "Authorization": f'Bearer {Config.IPFS_TOKEN}'
-                                      },
-                                      data={
-                                          'files': files
-                                      })
+        _res = await AsyncHelper.post(
+            'https://api.web3.storage/upload',
+            headers={
+                "Authorization": f'Bearer {Config.IPFS_TOKEN}'
+            },
+            data={
+                  'files': files
+            },
+        )
         _json = await _res.json()
         debug(f'upload web3 result: {_json}')
 
