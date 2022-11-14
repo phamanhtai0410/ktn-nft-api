@@ -23,6 +23,7 @@ class ItemResponseSchema(Schema):
     price = fields.Float(default=0, missing=0)
     discount = fields.Float(missing=0)
     created_time = DatetimeField(required=0, missing=0)
+    address = fields.String(default='', allow_none=True)
 
 
 class ItemsListRequestSchema(Schema):
@@ -68,6 +69,7 @@ class CollectionResponseSchema(Schema):
     nfts = fields.List(fields.Nested(ItemResponseSchema), missing=[])
     image = fields.String(default='', missing='')
     created_time = DatetimeField(required=0, missing=0)
+    address = fields.String(default='', allow_none=True)
 
 
 class CollectionListResponseSchema(Schema):
@@ -79,8 +81,8 @@ class CollectionListResponseSchema(Schema):
     num_of_page = fields.Integer(data_key='num_of_page', missing=0)
     page_size = fields.Integer(data_key='page_size', missing=10)
     page = fields.Integer(data_key='page', missing=1)
-    
-    
+
+
 class ItemsShowRequestSchema(Schema):
     class Meta:
         unknown = EXCLUDE
@@ -89,9 +91,3 @@ class ItemsShowRequestSchema(Schema):
     page = fields.Integer(required=False, default=1)
     page_size = fields.Integer(required=False, default=10)
     sort = fields.String(required=False, default='desc')
-
-
-
-
-
-
