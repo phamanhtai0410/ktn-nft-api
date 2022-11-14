@@ -36,6 +36,7 @@ OrderModel = OrderDao(col=connect_db.db.orders, redis=redis_cluster, project=Con
 NFTsModel = DaoModel(col=connect_db.db.nfts, redis=redis_cluster)
 
 CollectionModel = DaoModel(col=connect_db.db.collection, redis=redis_cluster)
+BoxModel = DaoModel(col=connect_db.db.boxes, redis=redis_cluster)
 
 NFTsHistoryModel = DaoModel(col=connect_db.db.nfts_history, redis=redis_cluster)
 

@@ -4,6 +4,7 @@
         -
         -
 """
+from resources.box import BoxResource
 from resources.health_check import HealthCheck
 from resources.hello import HelloWorld
 from resources.iapi import iapi_resources
@@ -31,4 +32,5 @@ api_resources = {
     '/nfts_show': NFTShowResource,
     '/promo_code': PromoResource,
     '/referral_code': ReferralResource,
+    '/box': BoxResource
 }
