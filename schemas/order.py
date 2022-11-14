@@ -27,7 +27,8 @@ class OrderSchema(Schema):
     unit = fields.Str(required=True, validate=validate.OneOf([
         Units.BNB,
         Units.USDT,
-        Units.ETH
+        Units.ETH,
+        Units.FIAT
     ]))
     chain = fields.Str(required=True, validate=validate.OneOf([
         Chains.BSC_CHAIN,
@@ -47,17 +48,21 @@ class ResOrderSchema(Schema):
     unit = fields.Str(required=True, validate=validate.OneOf([
         Units.BNB,
         Units.USDT,
-        Units.ETH
+        Units.ETH,
+        Units.FIAT
     ]))
 
     chain = fields.Str(required=True, validate=validate.OneOf([
         Chains.BSC_CHAIN,
-        Chains.ETHEREUM_CHAIN
+        Chains.ETHEREUM_CHAIN,
+        #  Fiat
+        Chains.SIMPLEX
     ]))
 
     address_of_counter = fields.Str(required=True)
     discount = fields.Float(missing=0)
     deadline = fields.Float()
+    fiat = fields.Float(missing=0)
 
 
 class PaymentSchema(Schema):

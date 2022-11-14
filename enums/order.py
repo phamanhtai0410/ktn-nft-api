@@ -10,12 +10,12 @@ class Units:
     USDT = 'USDT'
     ETH = 'ETH'
     BNB = 'BNB'
-
+    FIAT = 'FIAT'
 
 class Chains:
     BSC_CHAIN = 'BSC_CHAIN'
     ETHEREUM_CHAIN = 'ETHEREUM_CHAIN'
-
+    SIMPLEX = 'SIMPLEX'
 
 class Status:
     DONE = 'DONE'

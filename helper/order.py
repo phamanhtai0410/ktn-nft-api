@@ -15,8 +15,9 @@ from datetime import timedelta
 from config import Config
 from connect import dlm, redis_cluster
 from enums.order import Status, Units
-from exception import TxRecorded, TxPayment, ExPromoCodeInvalid, TxTimeout
+from exception import TxRecorded, TxPayment, ExPromoCodeInvalid, TxTimeout, ExCheckFiat
 from helper.metadata import MetaDataHelper
+from helper.simplex import SimplexHelper
 from helper.socket import SocketEmitter
 from lib import NotFound, dt_utcnow, BadRequest
 from lib.logger import debug
@@ -130,20 +131,36 @@ class OrderHelper:
     @classmethod
     def init(cls, form_data):
         _order_id = str(uuid.uuid4())
+        _address_of_counter = ''
+        _payment_id = ''
+        _fiat = 0
         _discount = cls.promotion_code(form_data, order_id=_order_id)
+        _simplex = {}
         _ref_code_discount = cls.check_ref_code(get(form_data, 'ref_code'))
+
         _items = [cls.mockup_item({
             **cls.get_item(_item),
             'amount': get(_item, 'amount')
         }, discount=_discount, ref_code_discount=_ref_code_discount) for _item in get(form_data, 'items')]
 
         _deadline = dt_utcnow().timestamp() + 3 * 60
+        # Price to USDT
         _cost = sum([cls.get_cost_of(_item, unit=get(form_data, 'unit')) for _item in _items])
-
-        _address_of_counter = get(random.choice(PaymentConfigModel.find(
-            filter={
-                'chain': get(form_data, "chain")
-            })), 'address')
+        if Units.FIAT:
+            _payment_id = _order_id
+            _res = SimplexHelper.quote(
+                end_user_id=_payment_id,
+                amount=_cost
+            )
+            if not _res:
+                raise ExCheckFiat
+            _simplex = _res
+            _fiat = get(_simplex, 'fiat_money.total_amount')
+        else:
+            _address_of_counter = get(random.choice(PaymentConfigModel.find(
+                filter={
+                    'chain': get(form_data, "chain")
+                })), 'address')
 
         OrderModel.insert_one({
             'address': get(form_data, 'address').lower(),
@@ -155,10 +172,13 @@ class OrderHelper:
             'created_by': get(form_data, 'address'),
             'status': Status.WAITING_FOR_PAYMENT,
             'deadline': _deadline,
-            'chain': get(form_data, 'chain'),
+            'chain': get(form_data, 'chain', ''),
             'unit': get(form_data, 'unit'),
             'contract': Config.NFT_ADDRESS.lower(),
-            'ref_code': get(form_data, 'ref_code')
+            'ref_code': get(form_data, 'ref_code'),
+            'payment_id': _payment_id,
+            'simplex': _simplex,
+            'fiat': _fiat
         }, worker=False)
 
         return {
@@ -168,7 +188,8 @@ class OrderHelper:
             'address_of_counter': _address_of_counter or '',
             'unit': get(form_data, 'unit'),
             'chain': get(form_data, 'chain'),
-            'deadline': _deadline
+            'deadline': _deadline,
+            'fiat': _fiat
         }
 
     @staticmethod
