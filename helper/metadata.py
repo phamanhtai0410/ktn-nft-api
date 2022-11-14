@@ -20,9 +20,10 @@ class MetaDataHelper:
         if get(_promotion, 'used') >= get(_promotion, 'total'):
             raise ExPromoCodeInvalid()
 
-        _promotion_code_used = redis_cluster.get(f'katana-dapp.promotion_code_used/{promotion_code}')
+        _key = f'katana-dapp.promotion_code_used/{promotion_code}'
+        _promotion_code_used = redis_cluster.incr(name=_key, amount=1)
 
-        if int(_promotion_code_used) >= get(_promotion, 'total'):
+        if int(_promotion_code_used) > get(_promotion, 'total'):
             raise ExPromoCodeInvalid()
 
         return get(_promotion, 'discount', 0)
@@ -48,10 +49,19 @@ class MetaDataHelper:
         return get(_referral, 'code_linked', '')
 
     @staticmethod
-    def update_used_promotion_code(promotion_code, address, order_id=None, updated_by=''):
-        _key = f'katana-dapp.promotion_code_used/{promotion_code}'
-        redis_cluster.incr(name=_key, amount=1)
+    def check_ref_code(ref_code):
 
+        _referral = ReferralModel.find_one({
+            'code': ref_code
+        })
+
+        if _referral is None:
+            raise ExRefCodeInvalid()
+
+        return True
+
+    @staticmethod
+    def update_used_promotion_code(promotion_code, address, order_id=None, updated_by=''):
         _obj = {
             'address': address,
             'code': promotion_code,

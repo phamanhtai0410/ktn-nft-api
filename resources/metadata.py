@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 
 import web3
@@ -9,7 +10,7 @@ from connect import security
 from helper.ipfs import IPFSHelper
 from helper.items import ItemsHelper
 from helper.metadata import MetaDataHelper
-from lib import dt_utcnow, NotFound
+from lib import dt_utcnow, NotFound, BadRequest
 from models import SignatureLogModel
 from schemas.metadata import MetaDataSchema, ResMetaDataSchema
 from lib.logger import debug
@@ -23,7 +24,7 @@ class MetaDataResource(Resource):
         form_data=MetaDataSchema(),
         response=ResMetaDataSchema()
     )
-    def post(self, form_data):
+    async def post(self, form_data):
 
         _address = get(form_data, 'address').lower()
         _promotion_code = get(form_data, 'promotion_code')
@@ -31,12 +32,12 @@ class MetaDataResource(Resource):
         _items = get(form_data, 'items')
 
         _promotion_discount_percent = MetaDataHelper.promotion_discount_percent(promotion_code=_promotion_code)
-        _promotion_discount = 0
+        _promotion_discount_total = 0
         _referral_code_checked = MetaDataHelper.referral_discount_percent(ref_code=_ref_code, address=_address)
-        _referral_discount = 0
+        _referral_discount_total = 0
 
         _cids = []
-        _cids_bytes = []
+        _metadata_list = []
         _rarities = []
         _types = []
         _items_discount = []
@@ -48,7 +49,7 @@ class MetaDataResource(Resource):
             _price = get(_nft_detail, 'price', 0)
 
             _promotion_discount_item = _price * (_promotion_discount_percent / 100)
-            _promotion_discount += _promotion_discount_item
+            _promotion_discount_total += _promotion_discount_item
 
             _referral_discount_percent = 0
             _referral_discount_item = 0
@@ -58,19 +59,20 @@ class MetaDataResource(Resource):
 
                 _referral_discount_item = (_price - _promotion_discount_item) * (_referral_discount_percent / 100)
 
-                _referral_discount += _referral_discount_item
+                _referral_discount_total += _referral_discount_item
 
             _discount_data = {
                 'nft_id': _item,
                 'rarity': get(_nft_detail, 'rarity'),
                 'type': get(_nft_detail, 'type'),
-                'commission_percent': get(_nft_detail, 'commission'),
+                'commission': get(_nft_detail, 'commission'),
+                'commission_level_2': get(_nft_detail, 'commission_level_2'),
                 'promotion_percent': _promotion_discount_percent,
                 'promotion_discount': _promotion_discount_item,
                 'referral_percent': _referral_discount_percent,
                 'referral_discount': _referral_discount_item,
                 'raw_price': _price,
-                'price_after_discount': _price - _promotion_discount - _referral_discount
+                'price_after_discount': _price - _promotion_discount_item - _referral_discount_item
             }
 
             _items_discount.append(_discount_data)
@@ -93,10 +95,21 @@ class MetaDataResource(Resource):
                     }
                 ]
             }
-            _cid = IPFSHelper.upload_web3(metadata=_metadata)
-            _cids.append(_cid)
+            _metadata_list.append(_metadata)
             _rarities.append(get(_nft_detail, 'rarity'))
             _types.append(get(_nft_detail, 'type'))
+
+        try:
+            _cids = await asyncio.gather(
+                *[IPFSHelper.upload_web3_async(metadata) for metadata in _metadata_list]
+            )
+            for cid in _cids:
+                if cid is None:
+                    raise BadRequest(msg="W3 storage being rate limited.")
+
+        except Exception as e:
+            debug(f'W3 storage exception: {e}')
+            raise BadRequest(msg="W3 storage being rate limited.")
 
         _log_id = str(uuid.uuid4())
         SignatureLogModel.insert_one({
@@ -110,7 +123,7 @@ class MetaDataResource(Resource):
         })
 
         _deadline = dt_utcnow().timestamp() + 60 * 60
-        _discount = web3.Web3.toWei((_promotion_discount + _referral_discount), 'ether')
+        _discount = web3.Web3.toWei((_promotion_discount_total + _referral_discount_total), 'ether')
         _data = {
             'address': web3.Web3.toChecksumAddress(_address),
             'contract': web3.Web3.toChecksumAddress(Config.CREATOR_ADDRESS),
