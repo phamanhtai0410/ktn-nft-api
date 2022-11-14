@@ -66,6 +66,7 @@ class MetaDataResource(Resource):
                 'rarity': get(_nft_detail, 'rarity'),
                 'type': get(_nft_detail, 'type'),
                 'commission_percent': get(_nft_detail, 'commission'),
+                'commission_level_2_percent': get(_nft_detail, 'commission_level_2'),
                 'promotion_percent': _promotion_discount_percent,
                 'promotion_discount': _promotion_discount_item,
                 'referral_percent': _referral_discount_percent,
