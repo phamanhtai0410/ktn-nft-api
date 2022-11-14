@@ -105,13 +105,13 @@ class ItemsHelper:
         ) for _nft_id in nfts]
 
     @staticmethod
-    def get_item_by_rt(nft_type, rarity):
+    def get_item_by_rt(address, rarity):
         _nft_detail = NFTDetailModel.find_one(
             filter={
-                'type': nft_type,
+                'address': address,
                 'rarity': rarity
             },
-            cache=True
+            # cache=True
         )
         return _nft_detail
 

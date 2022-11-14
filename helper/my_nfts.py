@@ -24,7 +24,7 @@ class MyNFTsHelpers:
         _items_formatted = []
         for _item in get(_results, 'items'):
             _nft_detail = ItemsHelper.get_item_by_rt(
-                nft_type=get(_item, 'nft_type'),
+                address=get(_item, 'address'),
                 rarity=get(_item, 'rarity')
             )
             _item_detail = {
@@ -42,7 +42,7 @@ class MyNFTsHelpers:
                 ),
                 'is_staking': get(_item, 'is_staking', default=False),
                 'token_uri': get(_item, 'token_uri', default=''),
-                'created_time': get(_item, 'created_time').replace(tzinfo=timezone.utc).timestamp(),
+                'created_time': get(_item, 'created_time').replace(tzinfo=timezone.utc).timestamp()
             }
             _items_formatted.append(_item_detail)
 

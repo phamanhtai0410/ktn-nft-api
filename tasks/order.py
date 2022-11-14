@@ -69,11 +69,6 @@ def task_generate_metadata_file(order_id):
                         "display_type": "number",
                         "trait_type": "rarity",
                         "value": get(_item, 'rarity')
-                    },
-                    {
-                        "display_type": "number",
-                        "trait_type": "type",
-                        "value": get(_item, 'type')
                     }
                 ]
             }
@@ -83,8 +78,7 @@ def task_generate_metadata_file(order_id):
             'address': get(_order, 'address'),
             'items': [{
                 'rarity': get(_item, 'rarity'),
-                'cid': get(_item, 'cid'),
-                'type': get(_item, 'type')
+                'cid': get(_item, 'cid')
             } for _item in _items],
             'order_id': order_id,
             'contract_address': Config.NFT_ADDRESS
