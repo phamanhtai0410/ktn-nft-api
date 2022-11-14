@@ -81,7 +81,7 @@ def task_generate_metadata_file(order_id):
                 'cid': get(_item, 'cid')
             } for _item in _items],
             'order_id': order_id,
-            'contract_address': Config.NFT_ADDRESS
+            'contract_address': get(_order, 'contract')
         })
         debug(f"Response from wallet: {res.text}")
         _task_id = ""

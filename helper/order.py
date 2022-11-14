@@ -49,13 +49,14 @@ class OrderHelper:
         return float(cls.convert_price_to_usdt(get(item, 'price'), unit=unit))
 
     @staticmethod
-    def get_item(item):
+    def get_item(item, contract):
         _info = NFTDetailModel.find_one({
-            "nft_id": get(item, 'nft_id')
+            "nft_id": get(item, 'nft_id'),
         })
-
         if not _info:
             raise NotFound(msg='Not found item.')
+        if get(_info, 'contract') != contract:
+            raise NotFound(msg='Not found item in the contract.')
 
         return _info
 
@@ -139,7 +140,7 @@ class OrderHelper:
         _ref_code_discount = cls.check_ref_code(get(form_data, 'ref_code'))
 
         _items = [cls.mockup_item({
-            **cls.get_item(_item),
+            **cls.get_item(_item, get(form_data, 'contract').lower()),
             'amount': get(_item, 'amount')
         }, discount=_discount, ref_code_discount=_ref_code_discount) for _item in get(form_data, 'items')]
 
@@ -174,7 +175,7 @@ class OrderHelper:
             'deadline': _deadline,
             'chain': get(form_data, 'chain', ''),
             'unit': get(form_data, 'unit'),
-            'contract': Config.NFT_ADDRESS.lower(),
+            'contract': get(form_data, 'contract').lower(),
             'ref_code': get(form_data, 'ref_code'),
             'payment_id': _payment_id,
             'simplex': _simplex,
