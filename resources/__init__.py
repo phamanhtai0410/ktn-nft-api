@@ -18,6 +18,8 @@ from resources.my_nfts import MyNFTsResource
 from resources.nfts_history import NFTsHistoryResource
 from resources.promotion import PromoResource
 from resources.referral import ReferralResource
+from resources.box import BoxResource
+from resources.signature_box import SignatureBoxResource
 
 api_resources = {
     '/hello': HelloWorld,
@@ -28,6 +30,7 @@ api_resources = {
     '/collections': CollectionResource,
     '/my_nfts': MyNFTsResource,
     '/metadata': MetaDataResource,
+    '/signature_box': SignatureBoxResource,
     '/nfts_history': NFTsHistoryResource,
     '/nfts_show': NFTShowResource,
     '/promo_code': PromoResource,
