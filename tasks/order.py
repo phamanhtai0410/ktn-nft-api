@@ -58,27 +58,27 @@ def task_generate_metadata_file(order_id):
             for i in range(0, get(_item, 'amount')):
                 _items.append(_item)
 
-        for _item in _items:
-            _meta = {
-                "description": get(_item, 'description'),
-                "external_url": "",
-                "image": get(_item, 'image'),
-                "name": get(_item, 'name'),
-                "attributes": [
-                    {
-                        "display_type": "number",
-                        "trait_type": "rarity",
-                        "value": get(_item, 'rarity')
-                    }
-                ]
-            }
-            _cid = IPFSHelper.upload_web3(_meta)
-            _item['cid'] = _cid
+        # for _item in _items:
+        #     _meta = {
+        #         "description": get(_item, 'description'),
+        #         "external_url": "",
+        #         "image": get(_item, 'image'),
+        #         "name": get(_item, 'name'),
+        #         "attributes": [
+        #             {
+        #                 "display_type": "number",
+        #                 "trait_type": "rarity",
+        #                 "value": get(_item, 'rarity')
+        #             }
+        #         ]
+        #     }
+        #     _cid = IPFSHelper.upload_web3(_meta)
+        #     _item['cid'] = _cid
         res = requests.post(f'{Config.WALLET_IAPI}/mint', json={
             'address': get(_order, 'address'),
             'items': [{
                 'rarity': get(_item, 'rarity'),
-                'cid': get(_item, 'cid')
+                # 'cid': get(_item, 'cid')
             } for _item in _items],
             'order_id': order_id,
             'contract_address': get(_order, 'contract')
@@ -95,7 +95,7 @@ def task_generate_metadata_file(order_id):
         }, obj={
             'updated_by': 'task_generate_metadata_file',
             'task_id': _task_id,
-            'cid_items': _items
+            # 'cid_items': _items
         })
 
         return f"Done: Generate metadata file for order#{order_id}"
