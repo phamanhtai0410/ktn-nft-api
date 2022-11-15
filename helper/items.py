@@ -52,7 +52,7 @@ class ItemsHelper:
         print('_collection', _collection)
 
         return {
-            "items": cls.get_nfts(get(_collection, 'nfts', [])),
+            "items": cls.get_nfts(get(_collection, 'collection_id', [])),
             'num_of_page': 1,
             'page_size': 20,
             'page': 1
@@ -95,14 +95,13 @@ class ItemsHelper:
         return items
 
     @staticmethod
-    def get_nfts(nfts):
+    def get_nfts(collection_id):
         # _nfts =
-        return [NFTDetailModel.find_one(
+        return NFTDetailModel.find(
             filter={
-                'nft_id': _nft_id
-            },
-            cache=True
-        ) for _nft_id in nfts]
+                'collection_id': collection_id
+            }
+        )
 
     @staticmethod
     def get_item_by_rt(address, rarity):
