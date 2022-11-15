@@ -87,7 +87,7 @@ class ItemsHelper:
             'collection_id': get(_item, 'collection_id'),
             'name': get(_item, 'name'),
             'description': get(_item, 'description'),
-            'nfts': cls.get_nfts(_item['nfts']),
+            'nfts': cls.get_nfts(_item['collection_id']),
             'image': get(_item, 'image'),
             'created_time': get(_item, 'created_time'),
         } for _item in get(items, 'items')]
