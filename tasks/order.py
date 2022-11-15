@@ -77,11 +77,12 @@ def task_generate_metadata_file(order_id):
         res = requests.post(f'{Config.WALLET_IAPI}/mint', json={
             'address': get(_order, 'address'),
             'items': [{
-                'rarity': get(_item, 'rarity'),
+                'rarity': get(_item, 'rarity', 0),
                 # 'cid': get(_item, 'cid')
             } for _item in _items],
             'order_id': order_id,
-            'contract_address': get(_order, 'contract')
+            'contract_address': get(_order, 'contract'),
+            'nft_type': get(_order, 'nft_type')
         })
         debug(f"Response from wallet: {res.text}")
         _task_id = ""

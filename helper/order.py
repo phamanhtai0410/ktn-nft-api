@@ -21,7 +21,7 @@ from helper.simplex import SimplexHelper
 from helper.socket import SocketEmitter
 from lib import NotFound, dt_utcnow, BadRequest
 from lib.logger import debug
-from models import NFTDetailModel, PaymentConfigModel, OrderModel, PromotionCodeModel, ReferralModel
+from models import NFTDetailModel, PaymentConfigModel, OrderModel, PromotionCodeModel, ReferralModel, BoxModel
 from tasks.order import task_record_tx
 
 
@@ -59,6 +59,18 @@ class OrderHelper:
             raise NotFound(msg='Not found item in the contract.')
 
         return _info
+
+    @staticmethod
+    def get_box_item(item):
+
+        item = BoxModel.find_one({
+            'box_id': get(item, 'nft_id'),
+        })
+
+        if not item:
+            raise NotFound(msg='Not found item.')
+
+        return item
 
     @classmethod
     def promotion_code(cls, form_data, order_id):
@@ -130,34 +142,60 @@ class OrderHelper:
         return False
 
     @classmethod
+    def get_items(cls, form_data):
+        if get(form_data, 'nft_type') == 'box':
+            return [cls.get_box_item(_item) for _item in get(form_data, 'items')]
+        else:
+            return [cls.get_item(_item, get(form_data, 'contract').lower()) for _item in get(form_data, 'items')]
+
+    @classmethod
     def init(cls, form_data):
+
         _order_id = str(uuid.uuid4())
+
         _address_of_counter = ''
+
         _payment_id = ''
+
         _fiat = 0
+
         _discount = cls.promotion_code(form_data, order_id=_order_id)
-        _simplex = {}
+
+        _simplex = {
+
+        }
+
         _ref_code_discount = cls.check_ref_code(get(form_data, 'ref_code'))
 
         _items = [cls.mockup_item({
-            **cls.get_item(_item, get(form_data, 'contract').lower()),
+            # **cls.get_item(_item, get(form_data, 'contract').lower()),
+            **_item,
             'amount': get(_item, 'amount')
-        }, discount=_discount, ref_code_discount=_ref_code_discount) for _item in get(form_data, 'items')]
+        }, discount=_discount, ref_code_discount=_ref_code_discount) for _item in cls.get_items(form_data)]
 
         _deadline = dt_utcnow().timestamp() + 3 * 60
         # Price to USDT
+
         _cost = sum([cls.get_cost_of(_item, unit=get(form_data, 'unit')) for _item in _items])
+
         if Units.FIAT:
+
             _payment_id = _order_id
+
             _res = SimplexHelper.quote(
                 end_user_id=_payment_id,
                 amount=_cost
             )
+
             if not _res:
                 raise ExCheckFiat
+
             _simplex = _res
+
             _fiat = get(_simplex, 'fiat_money.total_amount')
+
         else:
+
             _address_of_counter = get(random.choice(PaymentConfigModel.find(
                 filter={
                     'chain': get(form_data, "chain")
@@ -179,7 +217,8 @@ class OrderHelper:
             'ref_code': get(form_data, 'ref_code'),
             'payment_id': _payment_id,
             'simplex': _simplex,
-            'fiat': _fiat
+            'fiat': _fiat,
+            'nft_type': get(form_data, 'nft_type', 'raw_nft')
         }, worker=False)
 
         return {
