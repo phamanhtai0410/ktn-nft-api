@@ -83,7 +83,7 @@ class SignatureBoxResource(Resource):
         _data = {
             'address': web3.Web3.toChecksumAddress(_address),
             'contract': web3.Web3.toChecksumAddress(Config.CREATOR_ADDRESS),
-            'collection': Config.NFT_BOX_CONTRACT,
+            'collection': web3.Web3.toChecksumAddress(Config.NFT_BOX_CONTRACT),
             'discount': _discount,
             'amount': _amount,
             'deadline': int(_deadline)
