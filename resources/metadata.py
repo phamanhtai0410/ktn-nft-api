@@ -39,14 +39,16 @@ class MetaDataResource(Resource):
         _cids = []
         _metadata_list = []
         _rarities = []
-        _types = []
+        _collection = None
         _items_discount = []
+
         for _item in _items:
             _nft_detail = ItemsHelper.get_item_by_id(_item)
             if _nft_detail is None:
                 raise NotFound(msg='Not found nft id.')
 
             _price = get(_nft_detail, 'price', 0)
+            _collection = get(_nft_detail, 'address')
 
             _promotion_discount_item = _price * (_promotion_discount_percent / 100)
             _promotion_discount_total += _promotion_discount_item
@@ -64,7 +66,6 @@ class MetaDataResource(Resource):
             _discount_data = {
                 'nft_id': _item,
                 'rarity': get(_nft_detail, 'rarity'),
-                'type': get(_nft_detail, 'type'),
                 'commission': get(_nft_detail, 'commission'),
                 'commission_level_2': get(_nft_detail, 'commission_level_2'),
                 'promotion_percent': _promotion_discount_percent,
@@ -97,12 +98,12 @@ class MetaDataResource(Resource):
             }
             _metadata_list.append(_metadata)
             _rarities.append(get(_nft_detail, 'rarity'))
-            _types.append(get(_nft_detail, 'type'))
 
         try:
             _cids = await asyncio.gather(
                 *[IPFSHelper.upload_web3_async(metadata) for metadata in _metadata_list]
             )
+            debug(f'Cids upload: {_cids}')
             for cid in _cids:
                 if cid is None:
                     raise BadRequest(msg="W3 storage being rate limited.")
@@ -115,6 +116,7 @@ class MetaDataResource(Resource):
         SignatureLogModel.insert_one({
             'log_id': _log_id,
             'address': _address.lower(),
+            'collection': _collection,
             'ref_code': _ref_code,
             'promotion_code': _promotion_code,
             'items': _items_discount,
@@ -127,9 +129,9 @@ class MetaDataResource(Resource):
         _data = {
             'address': web3.Web3.toChecksumAddress(_address),
             'contract': web3.Web3.toChecksumAddress(Config.CREATOR_ADDRESS),
+            'collection': web3.Web3.toChecksumAddress(_collection),
             'discount': _discount,
             'cids': _cids,
-            'types': _types,
             'rarities': _rarities,
             'deadline': int(_deadline)
         }
@@ -145,7 +147,6 @@ class MetaDataResource(Resource):
             'data': {
                 'discount': str(get(_data, 'discount')),
                 'cids': get(_data, 'cids'),
-                'types': get(_data, 'types'),
                 'rarities': get(_data, 'rarities'),
                 'deadline': get(_data, 'deadline'),
             },

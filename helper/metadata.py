@@ -98,19 +98,19 @@ class MetaDataHelper:
                 'uint256',
                 'address',
                 'address',
+                'address',
                 'uint256',
                 'string[]',
                 'uint8[]',
-                'uint8[]',
                 'uint256'
-            ],  # [chain_id, user_address, contract_address, discount, cids, types, rarities, deadline]
+            ],  # [chain_id, user_address, contract_address, collection, discount, cids, rarities, deadline]
             [
                 Config.CHAIN_ID,
                 get(data, 'address'),
                 get(data, 'contract'),
+                get(data, 'collection'),
                 get(data, 'discount'),
                 get(data, 'cids'),
-                get(data, 'types'),
                 get(data, 'rarities'),
                 get(data, 'deadline')
             ]
