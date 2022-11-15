@@ -36,8 +36,6 @@ class MetaDataResource(Resource):
         _referral_code_checked = MetaDataHelper.referral_discount_percent(ref_code=_ref_code, address=_address)
         _referral_discount_total = 0
 
-        _cids = []
-        _metadata_list = []
         _rarities = []
         _collection = None
         _items_discount = []
@@ -77,40 +75,7 @@ class MetaDataResource(Resource):
             }
 
             _items_discount.append(_discount_data)
-
-            _metadata = {
-                "description": get(_nft_detail, 'description'),
-                "external_url": "",
-                "image": get(_nft_detail, 'image'),
-                "name": get(_nft_detail, 'name'),
-                'attributes': [
-                    {
-                        "display_type": "number",
-                        "trait_type": "rarity",
-                        "value": get(_nft_detail, 'rarity')
-                    },
-                    {
-                        "display_type": "number",
-                        "trait_type": "type",
-                        "value": get(_nft_detail, 'type')
-                    }
-                ]
-            }
-            _metadata_list.append(_metadata)
             _rarities.append(get(_nft_detail, 'rarity'))
-
-        try:
-            _cids = await asyncio.gather(
-                *[IPFSHelper.upload_web3_async(metadata) for metadata in _metadata_list]
-            )
-            debug(f'Cids upload: {_cids}')
-            for cid in _cids:
-                if cid is None:
-                    raise BadRequest(msg="W3 storage being rate limited.")
-
-        except Exception as e:
-            debug(f'W3 storage exception: {e}')
-            raise BadRequest(msg="W3 storage being rate limited.")
 
         _log_id = str(uuid.uuid4())
         SignatureLogModel.insert_one({
@@ -131,7 +96,6 @@ class MetaDataResource(Resource):
             'contract': web3.Web3.toChecksumAddress(Config.CREATOR_ADDRESS),
             'collection': web3.Web3.toChecksumAddress(_collection),
             'discount': _discount,
-            'cids': _cids,
             'rarities': _rarities,
             'deadline': int(_deadline)
         }
@@ -146,7 +110,6 @@ class MetaDataResource(Resource):
         return {
             'data': {
                 'discount': str(get(_data, 'discount')),
-                'cids': get(_data, 'cids'),
                 'rarities': get(_data, 'rarities'),
                 'deadline': get(_data, 'deadline'),
             },

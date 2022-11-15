@@ -7,7 +7,6 @@ from pydash import get
 from config import Config
 from connect import security
 from helper.box import BoxHelper
-from helper.items import ItemsHelper
 from helper.metadata import MetaDataHelper
 from lib import dt_utcnow, NotFound
 from models import SignatureLogModel
@@ -82,8 +81,8 @@ class SignatureBoxResource(Resource):
         _discount = web3.Web3.toWei((_promotion_discount_total + _referral_discount_total), 'ether')
         _data = {
             'address': web3.Web3.toChecksumAddress(_address),
-            'contract': web3.Web3.toChecksumAddress(Config.CREATOR_ADDRESS),
-            'collection': Config.NFT_BOX_CONTRACT,
+            'contract': web3.Web3.toChecksumAddress(Config.BOX_CREATOR_CONTRACT),
+            'collection': web3.Web3.toChecksumAddress(Config.NFT_BOX_CONTRACT),
             'discount': _discount,
             'amount': _amount,
             'deadline': int(_deadline)
