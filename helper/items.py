@@ -26,7 +26,7 @@ class ItemsHelper:
             sort=_sort,
             func_sort=lambda item: get(item, 'created_time'),
             func_filter=func_filter,
-            cache=True,
+            # cache=True,
             hset_field='nft_id'
         )
         # _itemsFormatted = []
@@ -80,7 +80,7 @@ class ItemsHelper:
                 sort=_sort,
                 func_sort=lambda item: get(item, 'created_time'),
                 hset_field='collection_id',
-                cache=True
+                # cache=True
             )
         _itemsFormatted = []
         _itemsFormatted = [{
@@ -121,7 +121,7 @@ class ItemsHelper:
                 'nft_id': nft_id,
                 'is_show': True
             },
-            cache=True
+            # cache=True
         )
         return _nft_detail
 
@@ -135,6 +135,6 @@ class ItemsHelper:
             page_size=_page_size,
             sort=_sort,
             func_sort=lambda item: get(item, 'created_time'),
-            cache=True
+            # cache=True
         )
         return items
