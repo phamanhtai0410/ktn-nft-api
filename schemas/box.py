@@ -15,3 +15,7 @@ class BoxSchema(Schema):
     end_date = fields.Float(missing=0)
     price = fields.Float(missing=0)
     name = fields.String(missing='')
+    discount = fields.Float(missing=0)
+    description = fields.String(default='', missing='')
+    box_id = fields.Int()
+    image = fields.String()
