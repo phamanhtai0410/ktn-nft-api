@@ -69,7 +69,7 @@ class SignatureBoxResource(Resource):
         SignatureLogModel.insert_one({
             'log_id': _log_id,
             'address': _address.lower(),
-            'collection': Config.NFT_BOX_CONTRACT,
+            'collection': get(_box_detail, 'address'),
             'ref_code': _ref_code,
             'promotion_code': _promotion_code,
             'items': [_discount_data],
@@ -82,7 +82,7 @@ class SignatureBoxResource(Resource):
         _data = {
             'address': web3.Web3.toChecksumAddress(_address),
             'contract': web3.Web3.toChecksumAddress(Config.BOX_CREATOR_CONTRACT),
-            'collection': web3.Web3.toChecksumAddress(Config.NFT_BOX_CONTRACT),
+            'collection': web3.Web3.toChecksumAddress(get(_box_detail, 'address')),
             'discount': _discount,
             'amount': _amount,
             'deadline': int(_deadline)

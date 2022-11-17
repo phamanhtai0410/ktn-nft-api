@@ -48,7 +48,6 @@ class Config:
     WALLET_IAPI = os.getenv('WALLET_IAPI')
     NFT_ADDRESS = os.getenv('NFT_ADDRESS')
     CREATOR_ADDRESS = os.getenv('CREATOR_ADDRESS')
-    NFT_BOX_CONTRACT = os.getenv('NFT_BOX_CONTRACT', '').lower()
     BOX_CREATOR_CONTRACT = os.getenv('BOX_CREATOR_CONTRACT')
     CONFIRM_BLOCK = 1
     RECAPTCHA3_PRIVATE_KEY = os.getenv('RECAPTCHA3_PRIVATE_KEY')
