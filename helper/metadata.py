@@ -93,6 +93,19 @@ class MetaDataHelper:
     @staticmethod
     def generate_signature(data):
         _w3 = Web3()
+        """
+        [
+            chain_id, 
+            user_address, 
+            contract_address,
+            collection, 
+            discount, 
+            rarities, 
+            mesh_indexes,
+            mesh_materials, 
+            deadline
+        ]
+        """
         _encode = _w3.codec.encode_abi(
             [
                 'uint256',
@@ -100,9 +113,11 @@ class MetaDataHelper:
                 'address',
                 'address',
                 'uint256',
-                'uint8[]',
+                'uint256[]',
+                'uint256[]',
+                'uint256[]',
                 'uint256'
-            ],  # [chain_id, user_address, contract_address, collection, discount, rarities, deadline]
+            ],
             [
                 Config.CHAIN_ID,
                 get(data, 'address'),
@@ -110,6 +125,8 @@ class MetaDataHelper:
                 get(data, 'collection'),
                 get(data, 'discount'),
                 get(data, 'rarities'),
+                get(data, 'mesh_indexes'),
+                get(data, 'mesh_materials'),
                 get(data, 'deadline')
             ]
         )

@@ -42,3 +42,5 @@ NFTsHistoryModel = DaoModel(col=connect_db.db.nfts_history, redis=redis_cluster)
 
 ReferralModel = DaoModel(connect_db.db.referral, redis=redis_cluster)
 SignatureLogModel = DaoModel(connect_db.db.signature_logs, redis=redis_cluster)
+MeshModel = DaoModel(connect_db.db.meshes, redis=redis_cluster)
+MeshMaterialModel = DaoModel(connect_db.db.mesh_materials, redis=redis_cluster)
