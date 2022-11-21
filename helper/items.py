@@ -80,7 +80,6 @@ class ItemsHelper:
             _collection = CollectionModel.find_one_with_hset(filter={
                 'collection_id': _collection_id
             }, hset_field="collection_id")
-            print('_collection', _collection)
             items = {
                 "items": [_collection],
                 'num_of_page': 1,
@@ -98,25 +97,41 @@ class ItemsHelper:
                 # cache=True
             )
         _itemsFormatted = []
-        _itemsFormatted = [{
-            'collection_id': get(_item, 'collection_id'),
-            'name': get(_item, 'name'),
-            'description': get(_item, 'description'),
-            'nfts': cls.get_nfts(_item['collection_id']),
-            'image': get(_item, 'image'),
-            'created_time': get(_item, 'created_time'),
-        } for _item in get(items, 'items')]
+
+        _itemsFormatted = [ ]
+        for _item in get(items, 'items'):
+            _nfts = cls.get_nfts(_item['collection_id'])
+            if not _nfts:
+                continue
+            _itemsFormatted.append({
+                'collection_id': get(_item, 'collection_id'),
+                'name': get(_item, 'name'),
+                'description': get(_item, 'description'),
+                'nfts': _nfts,
+                'image': get(_item, 'image'),
+                'created_time': get(_item, 'created_time'),
+            })
+
         items['items'] = _itemsFormatted
         return items
 
     @staticmethod
     def get_nfts(collection_id):
         # _nfts =
-        return MeshMaterialModel.find(
-            filter={
-                'collection_id': collection_id
-            }
-        )
+        _meshes = MeshModel.find({
+            'collection_id': collection_id
+        })
+        _items = []
+        for _mesh in _meshes:
+            _materials = MeshMaterialModel.find({
+                'mesh_id': get(_mesh, 'mesh_id')
+            })
+            for _material in _materials:
+                _items.append({
+                    **_mesh,
+                    **_material
+                })
+        return _items
 
     @staticmethod
     def get_item_by_rt(address, mesh_index):
