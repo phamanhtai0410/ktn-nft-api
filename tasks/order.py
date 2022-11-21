@@ -79,7 +79,7 @@ def task_generate_metadata_file(order_id):
             'items': [{
                 'rarity': get(_item, 'rarity', 0),
                 'mesh_index': get(_item,'mesh_index'),
-                'mesh_material': get(_item, 'mesh_material')
+                'mesh_material': get(_item, 'material')
 
                 # 'cid': get(_item, 'cid')
             } for _item in _items],
