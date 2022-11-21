@@ -151,7 +151,8 @@ class OrderHelper:
         if get(form_data, 'nft_type') == 'box':
             return [cls.get_box_item(_item) for _item in get(form_data, 'items')]
         else:
-            return [cls.get_item(_item, get(form_data, 'contract').lower()) for _item in get(form_data, 'items')]
+            return [cls.get_item(_item, get(form_data, 'contract').lower())
+                    for _item in get(form_data, 'items')]
 
     @classmethod
     def init(cls, form_data):

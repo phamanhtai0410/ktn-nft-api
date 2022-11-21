@@ -28,26 +28,26 @@ class ItemsListResource(Resource):
             return ItemsHelper.get_nft_of(
                 _collection_id=_type
             )
-        res = ItemsHelper.get_items(_nft_id, _type, _page, _page_size, _sort)
+        res = ItemsHelper.get_items(_nft_id, _page, _page_size, _sort)
 
         return res
-
-
-class NFTShowResource(Resource):
-    @security.http(
-        params=ItemsShowRequestSchema(),
-        response=ItemsListResponseSchema()
-    )
-    def get(self, params):
-        _nft_id = get(params, 'nft_id')
-        _type = get(params, 'type')
-        _page = get(params, 'page')
-        _page_size = get(params, 'page_size')
-        _sort = get(params, 'sort').lower() == 'asc' and 1 or -1
-        if _type:
-            return ItemsHelper.get_nft_of(
-                _collection_id=_type
-            )
-        res = ItemsHelper.get_items(_nft_id, _type, _page, _page_size, _sort)
-
-        return res
+#
+#
+# class NFTShowResource(Resource):
+#     @security.http(
+#         params=ItemsShowRequestSchema(),
+#         response=ItemsListResponseSchema()
+#     )
+#     def get(self, params):
+#         _nft_id = get(params, 'nft_id')
+#         _collection_id = get(params, 'collection_id')
+#         _page = get(params, 'page')
+#         _page_size = get(params, 'page_size')
+#         _sort = get(params, 'sort').lower() == 'asc' and 1 or -1
+#         if _collection_id:
+#             return ItemsHelper.get_nft_of(
+#                 _collection_id=_collection_id
+#             )
+#         res = ItemsHelper.get_items(_nft_id, _page, _page_size, _sort)
+#
+#         return res

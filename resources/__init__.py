@@ -9,7 +9,7 @@ from resources.health_check import HealthCheck
 from resources.hello import HelloWorld
 from resources.iapi import iapi_resources
 from resources.items import ItemsListResource
-from resources.items import NFTShowResource
+# from resources.items import NFTShowResource
 from resources.metadata import MetaDataResource
 from resources.order import OrderResource
 from resources.items import ItemsListResource
@@ -32,7 +32,7 @@ api_resources = {
     '/metadata': MetaDataResource,
     '/signature_box': SignatureBoxResource,
     '/nfts_history': NFTsHistoryResource,
-    '/nfts_show': NFTShowResource,
+    # '/nfts_show': NFTShowResource,
     '/promo_code': PromoResource,
     '/referral_code': ReferralResource,
     '/box': BoxResource

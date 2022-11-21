@@ -6,7 +6,7 @@ from datetime import timezone
 
 class ItemsHelper:
     @classmethod
-    def get_items(cls, _nft_id, _type, _page, _page_size, _sort):
+    def get_items(cls, _nft_id, _page, _page_size, _sort):
 
         _filter = {
             'is_show': True
@@ -15,8 +15,7 @@ class ItemsHelper:
         def func_filter(item):
             if not _nft_id is None and get(item, 'nft_id') != _nft_id:
                 return False
-            if not _type is None and get(item, 'type') != _type:
-                return False
+
             return True
 
         items = MeshMaterialModel.page(

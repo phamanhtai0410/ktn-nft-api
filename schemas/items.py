@@ -17,15 +17,16 @@ class ItemResponseSchema(Schema):
     nft_id = fields.Integer(default=0, missing=0)
     name = fields.String(default='', missing='')
     rarity = fields.Integer(default=0, missing=0)
-    type = fields.Integer(default=0, missing=0)
+    mesh_index = fields.Integer()
+    material = fields.Integer()
+
+    # type = fields.Integer(default=0, missing=0)
     description = fields.String(default='', missing='')
     image = fields.String(default='', missing='')
     price = fields.Float(default=0, missing=0)
     discount = fields.Float(missing=0)
     created_time = DatetimeField(required=0, missing=0)
     address = fields.String(default='', allow_none=True)
-    mesh_index = fields.Integer()
-    material = fields.Integer()
 
 class ItemsListRequestSchema(Schema):
     class Meta:
