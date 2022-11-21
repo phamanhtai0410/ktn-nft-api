@@ -87,7 +87,7 @@ class ItemsShowRequestSchema(Schema):
     class Meta:
         unknown = EXCLUDE
 
-    is_show = fields.Boolean(required=True)
+    # is_show = fields.Boolean(required=True)
     page = fields.Integer(required=False, default=1)
     page_size = fields.Integer(required=False, default=10)
     sort = fields.String(required=False, default='desc')

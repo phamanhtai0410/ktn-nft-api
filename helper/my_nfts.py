@@ -18,15 +18,23 @@ class MyNFTsHelpers:
             page=page,
             page_size=page_size,
             sort=sort,
-            func_sort=lambda item: get(item, 'created_time', default=dt_utcnow()),    # need update
+            func_sort=lambda item: get(item, 'created_time', default=dt_utcnow()),  # need update
             cache=True
         )
         _items_formatted = []
         for _item in get(_results, 'items'):
             _nft_detail = ItemsHelper.get_item_by_rt(
                 address=get(_item, 'address'),
-                rarity=get(_item, 'rarity')
+                mesh_index=get(_item, 'mesh_index')
             )
+            if not _nft_detail:
+                continue
+
+            _nft_detail = {
+                **_nft_detail,
+                **ItemsHelper.get_info_of_mesh_material(get(_nft_detail, 'mesh_id'))
+            }
+
             _item_detail = {
                 'token_id': get(_item, 'token_id'),
                 'address': get(_item, 'address'),

@@ -16,12 +16,14 @@ from config import Config
 from connect import dlm, redis_cluster
 from enums.order import Status, Units
 from exception import TxRecorded, TxPayment, ExPromoCodeInvalid, TxTimeout, ExCheckFiat
+from helper.items import ItemsHelper
 from helper.metadata import MetaDataHelper
 from helper.simplex import SimplexHelper
 from helper.socket import SocketEmitter
 from lib import NotFound, dt_utcnow, BadRequest
 from lib.logger import debug
-from models import NFTDetailModel, PaymentConfigModel, OrderModel, PromotionCodeModel, ReferralModel, BoxModel
+from models import  PaymentConfigModel, OrderModel, PromotionCodeModel, ReferralModel, BoxModel, \
+    MeshMaterialModel
 from tasks.order import task_record_tx
 
 
@@ -50,7 +52,7 @@ class OrderHelper:
 
     @staticmethod
     def get_item(item, contract):
-        _info = NFTDetailModel.find_one({
+        _info = MeshMaterialModel.find_one({
             "nft_id": get(item, 'nft_id'),
         })
         if not _info:
@@ -58,7 +60,10 @@ class OrderHelper:
         if get(_info, 'contract') != contract:
             raise NotFound(msg='Not found item in the contract.')
 
-        return _info
+        return {
+            **_info,
+            **ItemsHelper.get_info_of_mesh_material(get(_info, 'mesh_id'))
+        }
 
     @staticmethod
     def get_box_item(item):
