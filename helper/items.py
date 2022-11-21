@@ -44,7 +44,7 @@ class ItemsHelper:
 
         return {
             'price': get(_mesh, 'price'),
-            'mesh_index': get(_mesh, 'price'),
+            'mesh_index': get(_mesh, 'mesh_index'),
             'address': get(_mesh, 'address'),
             'discount': get(_mesh, 'discount'),
             'rarity': get(_mesh, 'rarity'),

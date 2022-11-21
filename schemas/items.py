@@ -24,7 +24,8 @@ class ItemResponseSchema(Schema):
     discount = fields.Float(missing=0)
     created_time = DatetimeField(required=0, missing=0)
     address = fields.String(default='', allow_none=True)
-
+    mesh_index = fields.Integer()
+    material = fields.Integer()
 
 class ItemsListRequestSchema(Schema):
     class Meta:
