@@ -77,9 +77,9 @@ class ItemsHelper:
     def get_collection(cls, _collection_id, _page, _page_size, _sort):
         _filter = {}
         if not _collection_id is None:
-            _collection = CollectionModel.find_one_with_hset(filter={
+            _collection = CollectionModel.find_one(filter={
                 'collection_id': _collection_id
-            }, hset_field="collection_id")
+            })
             items = {
                 "items": [_collection],
                 'num_of_page': 1,
