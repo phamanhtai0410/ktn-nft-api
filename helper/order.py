@@ -51,14 +51,14 @@ class OrderHelper:
         return float(cls.convert_price_to_usdt(get(item, 'price'), unit=unit))
 
     @staticmethod
-    def get_item(item, contract):
+    def get_item(item):
         _info = MeshMaterialModel.find_one({
             "nft_id": get(item, 'nft_id'),
         })
         if not _info:
             raise NotFound(msg='Not found item.')
-        if get(_info, 'contract') != contract:
-            raise NotFound(msg='Not found item in the contract.')
+        # if get(_info, 'contract') != contract:
+        #     raise NotFound(msg='Not found item in the contract.')
 
         return {
             **_info,
@@ -151,7 +151,7 @@ class OrderHelper:
         if get(form_data, 'nft_type') == 'box':
             return [cls.get_box_item(_item) for _item in get(form_data, 'items')]
         else:
-            return [cls.get_item(_item, get(form_data, 'contract').lower())
+            return [cls.get_item(_item)
                     for _item in get(form_data, 'items')]
 
     @classmethod
