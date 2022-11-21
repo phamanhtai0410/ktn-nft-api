@@ -36,7 +36,7 @@ class OrderSchema(Schema):
     ]))
     promotion_code = fields.Str(default='', allow_none=True)
     ref_code = fields.Str(allow_none=True)
-    contract = fields.Str(required=True)
+    # contract = fields.Str(required=True)
     nft_type = fields.Str(default='raw_nft')
 
 

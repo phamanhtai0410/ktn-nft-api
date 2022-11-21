@@ -219,7 +219,7 @@ class OrderHelper:
             'deadline': _deadline,
             'chain': get(form_data, 'chain', ''),
             'unit': get(form_data, 'unit'),
-            'contract': get(form_data, 'contract').lower(),
+            'contract': get(_items[0], 'address').lower(),
             'ref_code': get(form_data, 'ref_code'),
             'payment_id': _payment_id,
             'simplex': _simplex,
