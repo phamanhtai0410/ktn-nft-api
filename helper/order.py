@@ -22,7 +22,7 @@ from helper.simplex import SimplexHelper
 from helper.socket import SocketEmitter
 from lib import NotFound, dt_utcnow, BadRequest
 from lib.logger import debug
-from models import  PaymentConfigModel, OrderModel, PromotionCodeModel, ReferralModel, BoxModel, \
+from models import PaymentConfigModel, OrderModel, PromotionCodeModel, ReferralModel, BoxModel, \
     MeshMaterialModel
 from tasks.order import task_record_tx
 
@@ -149,10 +149,14 @@ class OrderHelper:
     @classmethod
     def get_items(cls, form_data):
         if get(form_data, 'nft_type') == 'box':
-            return [cls.get_box_item(_item) for _item in get(form_data, 'items')]
-        else:
-            return [cls.get_item(_item)
+            return [{**cls.get_box_item(_item), 'amount': get(_item, 'amount')}
                     for _item in get(form_data, 'items')]
+        else:
+            return [{
+                **cls.get_item(_item),
+                'amount': get(_item, 'amount')
+            }
+                for _item in get(form_data, 'items')]
 
     @classmethod
     def init(cls, form_data):
@@ -184,7 +188,7 @@ class OrderHelper:
 
         _cost = sum([cls.get_cost_of(_item, unit=get(form_data, 'unit')) for _item in _items])
 
-        if Units.FIAT:
+        if Units.FIAT == get(form_data, 'unit'):
 
             _payment_id = _order_id
 
