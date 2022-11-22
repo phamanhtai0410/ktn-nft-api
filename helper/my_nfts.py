@@ -28,10 +28,10 @@ class MyNFTsHelpers:
             _nft_detail = None
             if get(_item, 'nft_type') == NFTType.NFT:
                 _nft_detail = ItemsHelper.get_item_by_rt(
-                    address=get(_item, 'address'),
+                    address=get(_item, 'contract'),
                     mesh_index=get(_item, 'mesh_index')
                 )
-
+                print('_nft_detail', _nft_detail)
                 if not _nft_detail:
                     continue
 
