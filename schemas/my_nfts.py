@@ -1,4 +1,5 @@
-from marshmallow import Schema, EXCLUDE, fields, RAISE
+from marshmallow import Schema, EXCLUDE, fields, RAISE, validate
+from enums.nft import NFTType
 
 from lib import NotBlank
 
@@ -8,6 +9,10 @@ class MyNFTsRequestSchema(Schema):
         unknown = RAISE
 
     address = fields.Str(required=True, validate=NotBlank())
+    nft_type = fields.String(required=False, validate=validate.OneOf([
+        NFTType.BOX,
+        NFTType.NFT
+    ]))
     page = fields.Integer(required=False, default=1)
     page_size = fields.Integer(required=False, default=10)
     sort = fields.String(required=False, default='desc')
@@ -22,10 +27,14 @@ class NFTResponseSchema(Schema):
     name = fields.String(required=True, default=None)
     description = fields.String(required=True, default=None)
     image = fields.String(required=True, default=None)
-    nft_type = fields.Integer(required=True, default='')
-    price = fields.Integer(required=True, default=None)
-    rarity = fields.Integer(required=True, default=None)
-    token_uri = fields.String(required=True, default=None)
+    nft_type = fields.String(required=True, default='')
+    contract = fields.String(required=True, default='')
+    mesh_material = fields.Integer(required=False, default=0)
+    mesh_index = fields.Integer(required=False, default=0)
+    is_opened = fields.Boolean(required=False, default=False)
+    price = fields.Float(required=True, default=0)
+    rarity = fields.Integer(required=False, default=0, missing=0)
+    token_uri = fields.String(required=True)
     is_staking = fields.Boolean(required=False, default=False, missing=False)
     created_time = fields.Integer(required=True, default=None)
 
