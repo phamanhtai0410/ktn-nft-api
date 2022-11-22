@@ -22,7 +22,7 @@ from helper.simplex import SimplexHelper
 from helper.socket import SocketEmitter
 from lib import NotFound, dt_utcnow, BadRequest
 from lib.logger import debug
-from models import  PaymentConfigModel, OrderModel, PromotionCodeModel, ReferralModel, BoxModel, \
+from models import PaymentConfigModel, OrderModel, PromotionCodeModel, ReferralModel, BoxModel, \
     MeshMaterialModel
 from tasks.order import task_record_tx
 
@@ -51,14 +51,14 @@ class OrderHelper:
         return float(cls.convert_price_to_usdt(get(item, 'price'), unit=unit))
 
     @staticmethod
-    def get_item(item, contract):
+    def get_item(item):
         _info = MeshMaterialModel.find_one({
             "nft_id": get(item, 'nft_id'),
         })
         if not _info:
             raise NotFound(msg='Not found item.')
-        if get(_info, 'contract') != contract:
-            raise NotFound(msg='Not found item in the contract.')
+        # if get(_info, 'contract') != contract:
+        #     raise NotFound(msg='Not found item in the contract.')
 
         return {
             **_info,
@@ -149,9 +149,14 @@ class OrderHelper:
     @classmethod
     def get_items(cls, form_data):
         if get(form_data, 'nft_type') == 'box':
-            return [cls.get_box_item(_item) for _item in get(form_data, 'items')]
+            return [{**cls.get_box_item(_item), 'amount': get(_item, 'amount')}
+                    for _item in get(form_data, 'items')]
         else:
-            return [cls.get_item(_item, get(form_data, 'contract').lower()) for _item in get(form_data, 'items')]
+            return [{
+                **cls.get_item(_item),
+                'amount': get(_item, 'amount')
+            }
+                for _item in get(form_data, 'items')]
 
     @classmethod
     def init(cls, form_data):
@@ -183,7 +188,7 @@ class OrderHelper:
 
         _cost = sum([cls.get_cost_of(_item, unit=get(form_data, 'unit')) for _item in _items])
 
-        if Units.FIAT:
+        if Units.FIAT == get(form_data, 'unit'):
 
             _payment_id = _order_id
 
@@ -218,7 +223,7 @@ class OrderHelper:
             'deadline': _deadline,
             'chain': get(form_data, 'chain', ''),
             'unit': get(form_data, 'unit'),
-            'contract': get(form_data, 'contract').lower(),
+            'contract': get(_items[0], 'address').lower(),
             'ref_code': get(form_data, 'ref_code'),
             'payment_id': _payment_id,
             'simplex': _simplex,
