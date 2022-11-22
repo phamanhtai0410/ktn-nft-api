@@ -20,7 +20,7 @@ class MyNFTsHelpers:
             page_size=page_size,
             sort=sort,
             func_sort=lambda item: get(item, 'created_time', default=dt_utcnow()),  # need update
-            cache=False,
+            # cache=False,
             func_filter=lambda x: get(x, 'nft_type') == nft_type if nft_type else True
         )
         _items_formatted = []
@@ -31,7 +31,7 @@ class MyNFTsHelpers:
                     address=get(_item, 'address'),
                     mesh_index=get(_item, 'mesh_index')
                 )
-                
+
                 if not _nft_detail:
                     continue
 
