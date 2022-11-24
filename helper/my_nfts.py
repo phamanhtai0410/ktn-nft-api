@@ -11,11 +11,26 @@ from models import NFTsModel
 class MyNFTsHelpers:
 
     @staticmethod
-    def get_my_nfts(address: str, page: int, page_size: int, sort: int, nft_type: str = ''):
+    def get_my_nfts(address: str, page: int, page_size: int, sort: int, nft_type: str = '', contract: str = '', token_ids: list = []):
+        _filter = {
+            'address': address
+        }
+        if contract:
+            _filter = {
+                **_filter,
+                'contract': contract.lower()
+            }
+
+        if token_ids:
+            _filter = {
+                **_filter,
+                'token_id': {
+                    '$in': token_ids
+                }
+            }
+
         _results = NFTsModel.page(
-            filter={
-                'address': address
-            },
+            filter=_filter,
             page=page,
             page_size=page_size,
             sort=sort,
@@ -31,7 +46,7 @@ class MyNFTsHelpers:
                     address=get(_item, 'contract'),
                     mesh_index=get(_item, 'mesh_index')
                 )
-                print('_nft_detail', _nft_detail)
+                # print('_nft_detail', _nft_detail)
                 if not _nft_detail:
                     continue
 

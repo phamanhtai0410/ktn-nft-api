@@ -13,6 +13,8 @@ class MyNFTsRequestSchema(Schema):
         NFTType.BOX,
         NFTType.NFT
     ]))
+    token_ids = fields.String(default='')
+    contract = fields.String(default='')
     page = fields.Integer(required=False, default=1)
     page_size = fields.Integer(required=False, default=10)
     sort = fields.String(required=False, default='desc')
