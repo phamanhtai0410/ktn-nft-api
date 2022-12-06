@@ -48,6 +48,10 @@ class Config:
     WALLET_IAPI = os.getenv('WALLET_IAPI')
     NFT_ADDRESS = os.getenv('NFT_ADDRESS')
     CREATOR_ADDRESS = os.getenv('CREATOR_ADDRESS')
+    BOX_CREATOR_CONTRACT = os.getenv('BOX_CREATOR_CONTRACT')
     CONFIRM_BLOCK = 1
     RECAPTCHA3_PRIVATE_KEY = os.getenv('RECAPTCHA3_PRIVATE_KEY')
     RECAPTCHA_VERIFY_SERVER = 'https://www.google.com/recaptcha/api/siteverify'
+
+    #  Simplex config
+    SIMPLEX_URI = os.getenv('SIMPLEX_URI')

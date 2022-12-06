@@ -27,7 +27,8 @@ class OrderSchema(Schema):
     unit = fields.Str(required=True, validate=validate.OneOf([
         Units.BNB,
         Units.USDT,
-        Units.ETH
+        Units.ETH,
+        Units.FIAT
     ]))
     chain = fields.Str(required=True, validate=validate.OneOf([
         Chains.BSC_CHAIN,
@@ -35,6 +36,8 @@ class OrderSchema(Schema):
     ]))
     promotion_code = fields.Str(default='', allow_none=True)
     ref_code = fields.Str(allow_none=True)
+    # contract = fields.Str(required=True)
+    nft_type = fields.Str(default='raw_nft')
 
 
 class ResOrderSchema(Schema):
@@ -47,17 +50,21 @@ class ResOrderSchema(Schema):
     unit = fields.Str(required=True, validate=validate.OneOf([
         Units.BNB,
         Units.USDT,
-        Units.ETH
+        Units.ETH,
+        Units.FIAT
     ]))
 
     chain = fields.Str(required=True, validate=validate.OneOf([
         Chains.BSC_CHAIN,
-        Chains.ETHEREUM_CHAIN
+        Chains.ETHEREUM_CHAIN,
+        #  Fiat
+        Chains.SIMPLEX
     ]))
 
     address_of_counter = fields.Str(required=True)
     discount = fields.Float(missing=0)
     deadline = fields.Float()
+    fiat = fields.Float(missing=0)
 
 
 class PaymentSchema(Schema):

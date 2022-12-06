@@ -4,6 +4,7 @@
         -
         -
 """
+from resources.box import BoxResource
 from resources.health_check import HealthCheck
 from resources.hello import HelloWorld
 from resources.iapi import iapi_resources
@@ -16,6 +17,9 @@ from resources.collection import CollectionResource
 from resources.my_nfts import MyNFTsResource
 from resources.nfts_history import NFTsHistoryResource
 from resources.promotion import PromoResource
+from resources.referral import ReferralResource
+from resources.box import BoxResource
+from resources.signature_box import SignatureBoxResource
 
 api_resources = {
     '/hello': HelloWorld,
@@ -26,7 +30,10 @@ api_resources = {
     '/collections': CollectionResource,
     '/my_nfts': MyNFTsResource,
     '/metadata': MetaDataResource,
+    '/signature_box': SignatureBoxResource,
     '/nfts_history': NFTsHistoryResource,
     '/nfts_show': NFTShowResource,
-    '/promo_code': PromoResource
+    '/promo_code': PromoResource,
+    '/referral_code': ReferralResource,
+    '/box': BoxResource
 }

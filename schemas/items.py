@@ -17,13 +17,16 @@ class ItemResponseSchema(Schema):
     nft_id = fields.Integer(default=0, missing=0)
     name = fields.String(default='', missing='')
     rarity = fields.Integer(default=0, missing=0)
-    type = fields.Integer(default=0, missing=0)
+    mesh_index = fields.Integer()
+    material = fields.Integer()
+
+    # type = fields.Integer(default=0, missing=0)
     description = fields.String(default='', missing='')
     image = fields.String(default='', missing='')
     price = fields.Float(default=0, missing=0)
     discount = fields.Float(missing=0)
     created_time = DatetimeField(required=0, missing=0)
-
+    address = fields.String(default='', allow_none=True)
 
 class ItemsListRequestSchema(Schema):
     class Meta:
@@ -68,6 +71,7 @@ class CollectionResponseSchema(Schema):
     nfts = fields.List(fields.Nested(ItemResponseSchema), missing=[])
     image = fields.String(default='', missing='')
     created_time = DatetimeField(required=0, missing=0)
+    address = fields.String(default='', allow_none=True)
 
 
 class CollectionListResponseSchema(Schema):
@@ -79,19 +83,13 @@ class CollectionListResponseSchema(Schema):
     num_of_page = fields.Integer(data_key='num_of_page', missing=0)
     page_size = fields.Integer(data_key='page_size', missing=10)
     page = fields.Integer(data_key='page', missing=1)
-    
-    
+
+
 class ItemsShowRequestSchema(Schema):
     class Meta:
         unknown = EXCLUDE
 
-    is_show = fields.Boolean(required=True)
+    # is_show = fields.Boolean(required=True)
     page = fields.Integer(required=False, default=1)
     page_size = fields.Integer(required=False, default=10)
     sort = fields.String(required=False, default='desc')
-
-
-
-
-
-

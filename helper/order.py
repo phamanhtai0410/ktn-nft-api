@@ -15,11 +15,15 @@ from datetime import timedelta
 from config import Config
 from connect import dlm, redis_cluster
 from enums.order import Status, Units
-from exception import TxRecorded, TxPayment, ExPromoCodeInvalid, TxTimeout
+from exception import TxRecorded, TxPayment, ExPromoCodeInvalid, TxTimeout, ExCheckFiat
+from helper.items import ItemsHelper
+from helper.metadata import MetaDataHelper
+from helper.simplex import SimplexHelper
 from helper.socket import SocketEmitter
 from lib import NotFound, dt_utcnow, BadRequest
 from lib.logger import debug
-from models import NFTDetailModel, PaymentConfigModel, OrderModel, PromotionCodeModel, ReferralModel
+from models import PaymentConfigModel, OrderModel, PromotionCodeModel, ReferralModel, BoxModel, \
+    MeshMaterialModel
 from tasks.order import task_record_tx
 
 
@@ -48,14 +52,30 @@ class OrderHelper:
 
     @staticmethod
     def get_item(item):
-        _info = NFTDetailModel.find_one({
-            "nft_id": get(item, 'nft_id')
+        _info = MeshMaterialModel.find_one({
+            "nft_id": get(item, 'nft_id'),
         })
-
         if not _info:
             raise NotFound(msg='Not found item.')
+        # if get(_info, 'contract') != contract:
+        #     raise NotFound(msg='Not found item in the contract.')
 
-        return _info
+        return {
+            **_info,
+            **ItemsHelper.get_info_of_mesh_material(get(_info, 'mesh_id'))
+        }
+
+    @staticmethod
+    def get_box_item(item):
+
+        item = BoxModel.find_one({
+            'box_id': get(item, 'nft_id'),
+        })
+
+        if not item:
+            raise NotFound(msg='Not found item.')
+
+        return item
 
     @classmethod
     def promotion_code(cls, form_data, order_id):
@@ -63,23 +83,26 @@ class OrderHelper:
         #     return 0
 
         if get(form_data, 'promotion_code'):
-
-            if not cls.lock_promo_code(get(form_data, 'promotion_code')):
-                raise ExPromoCodeInvalid(msg="The promo code has been used.")
+            _promotion_code = get(form_data, 'promotion_code')
 
             _info = PromotionCodeModel.find_one({
-                'code': get(form_data, 'promotion_code')
+                'code': _promotion_code
             })
-            if not get(_info, 'status'):
+
+            if get(_info, 'used') >= get(_info, 'total'):
                 raise ExPromoCodeInvalid()
-            PromotionCodeModel.update_one({
-                'code': get(form_data, 'promotion_code')
-            }, obj={
-                'updated_by': 'lock_promotion_code',
-                'status': False,
-                'address': get(form_data, 'address').lower(),
-                'order_id': order_id
-            }, worker=True)
+
+            _promotion_code_used = redis_cluster.get(f'katana-dapp.promotion_code_used/{_promotion_code}')
+
+            if int(_promotion_code_used) >= get(_info, 'total'):
+                raise ExPromoCodeInvalid()
+
+            MetaDataHelper.update_used_promotion_code(
+                promotion_code=_promotion_code,
+                address=get(form_data, 'address').lower(),
+                order_id=order_id,
+                updated_by='order:promotion_code'
+            )
             return get(_info, 'discount', 0)
         return 0
 
@@ -124,22 +147,69 @@ class OrderHelper:
         return False
 
     @classmethod
+    def get_items(cls, form_data):
+        if get(form_data, 'nft_type') == 'box':
+            return [{**cls.get_box_item(_item), 'amount': get(_item, 'amount')}
+                    for _item in get(form_data, 'items')]
+        else:
+            return [{
+                **cls.get_item(_item),
+                'amount': get(_item, 'amount')
+            }
+                for _item in get(form_data, 'items')]
+
+    @classmethod
     def init(cls, form_data):
+
         _order_id = str(uuid.uuid4())
+
+        _address_of_counter = ''
+
+        _payment_id = ''
+
+        _fiat = 0
+
         _discount = cls.promotion_code(form_data, order_id=_order_id)
+
+        _simplex = {
+
+        }
+
         _ref_code_discount = cls.check_ref_code(get(form_data, 'ref_code'))
+
         _items = [cls.mockup_item({
-            **cls.get_item(_item),
+            # **cls.get_item(_item, get(form_data, 'contract').lower()),
+            **_item,
             'amount': get(_item, 'amount')
-        }, discount=_discount, ref_code_discount=_ref_code_discount) for _item in get(form_data, 'items')]
+        }, discount=_discount, ref_code_discount=_ref_code_discount) for _item in cls.get_items(form_data)]
 
         _deadline = dt_utcnow().timestamp() + 3 * 60
+        # Price to USDT
+
         _cost = sum([cls.get_cost_of(_item, unit=get(form_data, 'unit')) for _item in _items])
 
-        _address_of_counter = get(random.choice(PaymentConfigModel.find(
-            filter={
-                'chain': get(form_data, "chain")
-            })), 'address')
+        if Units.FIAT == get(form_data, 'unit'):
+
+            _payment_id = _order_id
+
+            _res = SimplexHelper.quote(
+                end_user_id=_payment_id,
+                amount=_cost
+            )
+
+            if not _res:
+                raise ExCheckFiat
+
+            _simplex = _res
+
+            _fiat = get(_simplex, 'fiat_money.total_amount')
+
+        else:
+
+            _address_of_counter = get(random.choice(PaymentConfigModel.find(
+                filter={
+                    'chain': get(form_data, "chain")
+                })), 'address')
 
         OrderModel.insert_one({
             'address': get(form_data, 'address').lower(),
@@ -151,10 +221,14 @@ class OrderHelper:
             'created_by': get(form_data, 'address'),
             'status': Status.WAITING_FOR_PAYMENT,
             'deadline': _deadline,
-            'chain': get(form_data, 'chain'),
+            'chain': get(form_data, 'chain', ''),
             'unit': get(form_data, 'unit'),
-            'contract': Config.NFT_ADDRESS.lower(),
-            'ref_code': get(form_data, 'ref_code')
+            'contract': get(_items[0], 'address').lower(),
+            'ref_code': get(form_data, 'ref_code'),
+            'payment_id': _payment_id,
+            'simplex': _simplex,
+            'fiat': _fiat,
+            'nft_type': get(form_data, 'nft_type', 'raw_nft')
         }, worker=False)
 
         return {
@@ -164,22 +238,9 @@ class OrderHelper:
             'address_of_counter': _address_of_counter or '',
             'unit': get(form_data, 'unit'),
             'chain': get(form_data, 'chain'),
-            'deadline': _deadline
+            'deadline': _deadline,
+            'fiat': _fiat
         }
-
-    @staticmethod
-    def lock_promo_code(code):
-        try:
-            _lock = dlm.lock(f'ktn:hot_lock:promo_codes:{code}', 3 * 60 * 1000)
-            if _lock:
-                debug(f'[EVENT] \033[92m ✔✔✔ Process .................. {code} \033[0m')
-                return True
-            else:
-                debug(f'[EVENT] \033[93m ⚠⚠⚠ ______ Lock fail ______ {code} \033[0m')
-        except:
-            traceback.print_exc()
-            sentry_sdk.capture_exception()
-        return False
 
     @staticmethod
     def lock_tx(chain, tx_hash):

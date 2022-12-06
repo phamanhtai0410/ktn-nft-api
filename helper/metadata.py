@@ -3,7 +3,8 @@ from web3 import Web3
 from connect import redis_cluster
 from config import Config
 from exception import ExPromoCodeInvalid, ExRefCodeInvalid, ExRefCodeOwner
-from models import PromotionCodeModel, ReferralModel
+from lib import dt_utcnow
+from models import PromotionCodeModel, ReferralModel, PromotionCodeUsedLogModel
 
 
 class MetaDataHelper:
@@ -18,16 +19,14 @@ class MetaDataHelper:
 
         if get(_promotion, 'used') >= get(_promotion, 'total'):
             raise ExPromoCodeInvalid()
-        if not get(_promotion, 'status'):
-            raise ExPromoCodeInvalid()
 
-        _promotion_code_used = redis_cluster.get(f'katana-dapp.promotion_code_used/{promotion_code}')
+        _key = f'katana-dapp.promotion_code_used/{promotion_code}'
+        _promotion_code_used = redis_cluster.incr(name=_key, amount=1)
 
-        if int(_promotion_code_used) >= get(_promotion, 'total'):
+        if int(_promotion_code_used) > get(_promotion, 'total'):
             raise ExPromoCodeInvalid()
 
         return get(_promotion, 'discount', 0)
-
 
     @staticmethod
     def referral_discount_percent(ref_code, address):
@@ -50,9 +49,28 @@ class MetaDataHelper:
         return get(_referral, 'code_linked', '')
 
     @staticmethod
-    def update_used_promotion_code(promotion_code, address):
-        _key = f'katana-dapp.promotion_code_used/{promotion_code}'
-        redis_cluster.incr(name=_key, amount=1)
+    def check_ref_code(ref_code):
+
+        _referral = ReferralModel.find_one({
+            'code': ref_code
+        })
+
+        if _referral is None:
+            raise ExRefCodeInvalid()
+
+        return True
+
+    @staticmethod
+    def update_used_promotion_code(promotion_code, address, order_id=None, updated_by=''):
+        _obj = {
+            'address': address,
+            'code': promotion_code,
+            'created_by': updated_by,
+            'created_time': dt_utcnow()
+        }
+
+        if order_id is not None:
+            _obj['order_id'] = order_id
 
         PromotionCodeModel.update_one(
             filter={'code': promotion_code},
@@ -62,35 +80,53 @@ class MetaDataHelper:
                 }
             },
             obj={
-                'updated_by': 'metadata:update_used_promotion_code',
-                'status': False,
-                'address': address
+                'updated_by': updated_by
             },
+            worker=True
+        )
+
+        PromotionCodeUsedLogModel.insert_one(
+            row=_obj,
             worker=True
         )
 
     @staticmethod
     def generate_signature(data):
         _w3 = Web3()
+        """
+        [
+            chain_id, 
+            user_address, 
+            contract_address,
+            collection, 
+            discount, 
+            rarities, 
+            mesh_indexes,
+            mesh_materials, 
+            deadline
+        ]
+        """
         _encode = _w3.codec.encode_abi(
             [
                 'uint256',
                 'address',
                 'address',
+                'address',
                 'uint256',
-                'string[]',
-                'uint8[]',
-                'uint8[]',
+                'uint256[]',
+                'uint256[]',
+                'uint256[]',
                 'uint256'
-            ],  # [chain_id, user_address, contract_address, discount, cids, types, rarities, deadline]
+            ],
             [
                 Config.CHAIN_ID,
                 get(data, 'address'),
                 get(data, 'contract'),
+                get(data, 'collection'),
                 get(data, 'discount'),
-                get(data, 'cids'),
-                get(data, 'types'),
                 get(data, 'rarities'),
+                get(data, 'mesh_indexes'),
+                get(data, 'mesh_materials'),
                 get(data, 'deadline')
             ]
         )
