@@ -11,6 +11,7 @@ class SignatureBoxSchema(Schema):
     ref_code = fields.String(required=False, default=None, allow_none=True)
     address = fields.String(required=True, validate=NotBlank())
     amount = fields.Int(required=True, validate=validate.Range(min=1))
+    is_whitelist_mint = fields.Bool(required=True)
 
 
 class ResSignatureBoxSchema(Schema):

@@ -8,3 +8,4 @@ supervisord.pid
 *.model
 conf/keys
 /lib
+.DS_Store
