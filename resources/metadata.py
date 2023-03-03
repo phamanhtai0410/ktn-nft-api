@@ -1,4 +1,3 @@
-import asyncio
 import uuid
 
 import web3
@@ -7,11 +6,9 @@ from pydash import get
 
 from config import Config
 from connect import security
-from helper.ipfs import IPFSHelper
-from helper.items import ItemsHelper
 from helper.mesh import MeshHelper
 from helper.metadata import MetaDataHelper
-from lib import dt_utcnow, NotFound, BadRequest
+from lib import dt_utcnow, NotFound
 from models import SignatureLogModel
 from schemas.metadata import MetaDataSchema, ResMetaDataSchema
 from lib.logger import debug
@@ -31,6 +28,7 @@ class MetaDataResource(Resource):
         _promotion_code = get(form_data, 'promotion_code')
         _ref_code = get(form_data, 'ref_code')
         _items = get(form_data, 'items')
+        _is_whitelist_mint = get(form_data, 'is_whitelist_mint')
 
         _promotion_discount_percent = MetaDataHelper.promotion_discount_percent(promotion_code=_promotion_code)
         _promotion_discount_total = 0
@@ -97,6 +95,7 @@ class MetaDataResource(Resource):
             'ref_code': _ref_code,
             'promotion_code': _promotion_code,
             'items': _items_discount,
+            'is_whitelist_mint': _is_whitelist_mint,
             'created_by': 'metadata_api',
             'created_time': dt_utcnow()
         })
@@ -108,6 +107,7 @@ class MetaDataResource(Resource):
             'contract': web3.Web3.toChecksumAddress(Config.CREATOR_ADDRESS),
             'collection': web3.Web3.toChecksumAddress(_collection),
             'discount': _discount,
+            'is_whitelist_mint': _is_whitelist_mint,
             'rarities': _rarities,
             'mesh_indexes': _mesh_indexes,
             'mesh_materials': _mesh_materials,
