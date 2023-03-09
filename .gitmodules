@@ -1,6 +1,0 @@
-[submodule "ktn-lib"]
-	path = ktn-lib
-	url = https://gitlab.rinznetwork.com/katana/ktn-lib.git
-[submodule "lib"]
-	path = lib
-	url = https://gitlab.rinznetwork.com/katana/ktn-lib.git
