@@ -64,6 +64,17 @@ services:
       - base-network
     command: celery --app worker worker -Q nft-tx-queue -l INFO -c 4   
 
+  ktn-nft-metadata-game-item-queue:
+    image:  ktn-nft-api
+    build: 
+      context: .
+      dockerfile: Dockerfile-server
+    restart: always
+    volumes:
+      - ./:/webapps
+    networks:
+      - base-network
+    command: celery --app worker worker -Q nft-metadata-game-item-queue -l INFO -c 4   
 
 networks:
   base-network:

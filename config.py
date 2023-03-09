@@ -34,7 +34,8 @@ class Config:
         'worker.task_on_payment': {'queue': 'nft-payment-queue'},
         'worker.task_record_tx': {'queue': 'nft-payment-queue'},
         'worker.task_confirm_tx': {'queue': 'nft-confirm-tx-queue'},
-        'worker.task_generate_metadata_file': {'queue': 'nft-tx-queue'}
+        'worker.task_generate_metadata_file': {'queue': 'nft-tx-queue'},
+        'worker.task_create_metadata_file_for_game_item': {'queue': 'nft-metadata-game-item-queue'}
     }
     PUBLIC_PATH = os.getenv('PUBLIC_PATH')
     REDIS_CLUSTER = json.loads(os.getenv('REDIS_CLUSTER'))
@@ -55,3 +56,10 @@ class Config:
 
     #  Simplex config
     SIMPLEX_URI = os.getenv('SIMPLEX_URI')
+
+    # S3 Config
+    S3_HOST = os.getenv("S3_HOST")
+    S3_STATIC = os.getenv("S3_STATIC")
+    BUCKET_NAME = os.getenv("BUCKET_NAME")
+    AWS_SECRET = os.getenv("AWS_SECRET")
+    AWS_KEY = os.getenv("AWS_KEY")

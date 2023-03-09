@@ -4,27 +4,38 @@
         -
         -
 """
+from pathlib import Path
+import boto3
 import json
-import sys
+from config import Config
+import os
+from connect import s3
+_contract_address = "0x00"
+_asset_id = 1
+filename = f"{_asset_id}.json"
+Path(f'metadata/{_contract_address}').mkdir(parents=True, exist_ok=True)
+_json = {
+    "test_json": 1
+}
+def get_path(filename: str, contract_address: str, folder='nft'):
+    return f'{folder}/{contract_address}/{filename}'
+def upload_callback(size, **args):    
+    print(size)
+    print(args)
 
-import w3storage
+with open(os.path.join('metadata', _contract_address, filename), 'w+') as _file:
+    _file.write(json.dumps(_json))
 
-import io
-
-IPFS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGZmZTZENzFjNmFhYUVGODg1NWY2YkU0MDVDYjNjOTBFM0JDMkZEMzciLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NjMwNTMxMTAyMjEsIm5hbWUiOiJzY2FuaHViIn0.RVXqjQKEJ1LhFIjsZXMY5ISs_cgZhuFn8q3zYNfOnWI"
-w3 = w3storage.API(
-    token=IPFS_TOKEN)
-_files = []
-
-for _file in range(0,3):
-    _file_io = io.BytesIO(json.dumps({
-        'id': _file
-    }).encode())
-    _file_io.name = f'{_file}.json'
-    _files.append(_file_io)
-
-
-ci = w3.post_car(
- *_files
+path = get_path(filename, _contract_address, folder="metadata")
+response = s3.upload_file(
+    os.path.join('metadata', _contract_address, filename),
+    Bucket="static.katanainu.com",
+    Key=path,
+    Callback=upload_callback,
+    ExtraArgs={
+        "ContentType": "application/json"
+    }
 )
-print(ci)
+print('Resp = ', response)
+
+print(f"Done: Generate metadata file for data => # {Config.S3_STATIC}/{path}")
