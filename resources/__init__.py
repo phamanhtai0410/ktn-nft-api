@@ -20,7 +20,6 @@ from resources.promotion import PromoResource
 from resources.referral import ReferralResource
 from resources.box import BoxResource
 from resources.signature_box import SignatureBoxResource
-from resources.game_items_metadata import GameItemMetadataResource
 
 api_resources = {
     '/hello': HelloWorld,
@@ -36,6 +35,5 @@ api_resources = {
     '/nfts_show': NFTShowResource,
     '/promo_code': PromoResource,
     '/referral_code': ReferralResource,
-    '/box': BoxResource,
-    '/game_item/metadata': GameItemMetadataResource
+    '/box': BoxResource
 }
