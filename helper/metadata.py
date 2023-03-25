@@ -97,13 +97,11 @@ class MetaDataHelper:
         [
             chain_id, 
             user_address, 
-            contract_address,
-            collection, 
+            creator_contract_address,
+            collection_address, 
             discount, 
             is_whitelist_mint,
-            rarities, 
-            mesh_indexes,
-            mesh_materials, 
+            nftIndexes[],
             deadline
         ]
         """
@@ -116,20 +114,16 @@ class MetaDataHelper:
                 'uint256',
                 'bool',
                 'uint256[]',
-                'uint256[]',
-                'uint256[]',
                 'uint256'
             ],
             [
-                Config.CHAIN_ID,
+                get(data, 'chain_id'),
                 get(data, 'address'),
                 get(data, 'contract'),
                 get(data, 'collection'),
                 get(data, 'discount'),
                 get(data, 'is_whitelist_mint'),
-                get(data, 'rarities'),
-                get(data, 'mesh_indexes'),
-                get(data, 'mesh_materials'),
+                get(data, 'nft_indexes'),
                 get(data, 'deadline')
             ]
         )

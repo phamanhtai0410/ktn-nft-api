@@ -9,7 +9,7 @@ from connect import security
 from helper.mesh import MeshHelper
 from helper.metadata import MetaDataHelper
 from lib import dt_utcnow, NotFound
-from models import SignatureLogModel
+from models import SignatureLogModel, CollectionModel
 from schemas.metadata import MetaDataSchema, ResMetaDataSchema
 from lib.logger import debug
 
@@ -24,38 +24,41 @@ class MetaDataResource(Resource):
     )
     async def post(self, form_data):
 
+        _chain_id = get(form_data, 'chain_id')
         _address = get(form_data, 'address').lower()
         _promotion_code = get(form_data, 'promotion_code')
         _ref_code = get(form_data, 'ref_code')
         _items = get(form_data, 'items')
-        _is_whitelist_mint = get(form_data, 'is_whitelist_mint')
+        _collection_address = get(form_data, 'collection_address')
+        # FIXME: check flow whitelist in BE later
+        _is_whitelist_mint = False
 
         _promotion_discount_percent = MetaDataHelper.promotion_discount_percent(promotion_code=_promotion_code)
         _promotion_discount_total = 0
         _referral_code_checked = MetaDataHelper.referral_discount_percent(ref_code=_ref_code, address=_address)
         _referral_discount_total = 0
 
-        _rarities = []
-        _mesh_indexes = []
-        _mesh_materials = []
         _collection = None
         _items_discount = []
 
-        for _item in _items:
-            _mesh_material_detail = MeshHelper.get_mesh_material_by_nft_id(_item)
-            if _mesh_material_detail is None:
-                debug(f'Nft id: {_item} not found in mesh_materials collection.')
-                raise NotFound(msg='Nft id not found.')
+        for _nft_index in _items:
+            # _mesh_material_detail = MeshHelper.get_mesh_material_by_nft_id(_item)
+            # if _mesh_material_detail is None:
+            #     debug(f'Nft id: {_item} not found in mesh_materials collection.')
+            #     raise NotFound(msg='Nft id not found.')
 
-            _mesh_id = get(_mesh_material_detail, 'mesh_id')
-            _mesh_detail = MeshHelper.get_mesh_by_id(mesh_id=_mesh_id)
-            if _mesh_detail is None:
-                debug(f'Mesh id: {_mesh_id} not found in meshes collection.')
-                raise NotFound(msg='Mesh id not found.')
+            # _mesh_id = get(_mesh_material_detail, 'mesh_id')
+            # _mesh_detail = MeshHelper.get_mesh_by_id(mesh_id=_mesh_id)
+            # if _mesh_detail is None:
+            #     debug(f'Mesh id: {_mesh_id} not found in meshes collection.')
+            #     raise NotFound(msg='Mesh id not found.')
+            _collection = CollectionModel.find_one({
+                'address': _collection_address
+            })
+            if not _collection:
+                debug(f'Collection address: {_collection_address}')
 
-            _price = get(_mesh_detail, 'price', 0)
-            _collection = get(_mesh_detail, 'address')
-
+            _price = float(get(_collection, f'types_list.{_nft_index}.price', 0))
             _promotion_discount_item = _price * (_promotion_discount_percent / 100)
             _promotion_discount_total += _promotion_discount_item
 
@@ -63,17 +66,16 @@ class MetaDataResource(Resource):
             _referral_discount_item = 0
 
             if _referral_code_checked:
-                _referral_discount_percent = get(_mesh_detail, 'discount')
+                _referral_discount_percent = get(_collection, 'discount', 0)
 
                 _referral_discount_item = (_price - _promotion_discount_item) * (_referral_discount_percent / 100)
 
                 _referral_discount_total += _referral_discount_item
 
             _discount_data = {
-                'nft_id': _item,
-                'rarity': get(_mesh_detail, 'rarity'),
-                'commission': get(_mesh_detail, 'commission'),
-                'commission_level_2': get(_mesh_detail, 'commission_level_2'),
+                'nft_id': _nft_index,
+                'commission': get(_collection, 'commission', 0),
+                'commission_level_2': get(_collection, 'commission_level_2', 0),
                 'promotion_percent': _promotion_discount_percent,
                 'promotion_discount': _promotion_discount_item,
                 'referral_percent': _referral_discount_percent,
@@ -83,9 +85,6 @@ class MetaDataResource(Resource):
             }
 
             _items_discount.append(_discount_data)
-            _rarities.append(get(_mesh_detail, 'rarity'))
-            _mesh_indexes.append(get(_mesh_detail, 'mesh_index'))
-            _mesh_materials.append(get(_mesh_material_detail, 'material'))
 
         _log_id = str(uuid.uuid4())
         SignatureLogModel.insert_one({
@@ -103,14 +102,13 @@ class MetaDataResource(Resource):
         _deadline = dt_utcnow().timestamp() + 60 * 60
         _discount = web3.Web3.toWei((_promotion_discount_total + _referral_discount_total), 'ether')
         _data = {
+            'chain_id': _chain_id,
             'address': web3.Web3.toChecksumAddress(_address),
             'contract': web3.Web3.toChecksumAddress(Config.CREATOR_ADDRESS),
-            'collection': web3.Web3.toChecksumAddress(_collection),
+            'collection': web3.Web3.toChecksumAddress(_collection_address),
             'discount': _discount,
             'is_whitelist_mint': _is_whitelist_mint,
-            'rarities': _rarities,
-            'mesh_indexes': _mesh_indexes,
-            'mesh_materials': _mesh_materials,
+            'nft_indexes': _items,
             'deadline': int(_deadline)
         }
         debug(f'Sign data: {_data}')
@@ -124,9 +122,9 @@ class MetaDataResource(Resource):
         return {
             'data': {
                 'discount': str(get(_data, 'discount')),
-                'rarities': get(_data, 'rarities'),
-                'mesh_indexes': get(_data, 'mesh_indexes'),
-                'mesh_materials': get(_data, 'mesh_materials'),
+                'nft_indexes': _items,
+                'collection_address': _collection_address,
+                'is_whitelist_mint': _is_whitelist_mint,
                 'deadline': get(_data, 'deadline'),
             },
             'signature': _signature,
