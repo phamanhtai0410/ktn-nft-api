@@ -22,7 +22,7 @@ variables:
   AWS_REGION: ap-southeast-1
   GITLAB_TOKEN: $GITLAB_RUNNER_TOKEN
   DOCKER_DRIVER: overlay
-  DOCKER_HOST: tcp://localhost:2375
+ # DOCKER_HOST: tcp://localhost:2375
   DOCKER_TLS_CERTDIR: ""
   GIT_SUBMODULE_STRATEGY: recursive
   PROD_SERVER_1_IP: 3.66.46.121
