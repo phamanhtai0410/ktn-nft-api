@@ -53,7 +53,8 @@ class MetaDataResource(Resource):
             #     debug(f'Mesh id: {_mesh_id} not found in meshes collection.')
             #     raise NotFound(msg='Mesh id not found.')
             _collection = CollectionModel.find_one({
-                'address': _collection_address
+                'address': _collection_address,
+                'chain_id': _chain_id
             })
             if not _collection:
                 debug(f'Collection address: {_collection_address}')
