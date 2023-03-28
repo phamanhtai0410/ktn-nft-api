@@ -65,4 +65,3 @@ class Config:
     AWS_KEY = os.getenv("AWS_KEY")
 
     # ChainId for multi-chain mint
-    SMC_CHAIN_IDS = json.loads(os.getenv('SMC_CHAIN_IDS', '[]'))
