@@ -65,3 +65,6 @@ class Config:
     AWS_KEY = os.getenv("AWS_KEY")
 
     # ChainId for multi-chain mint
+
+    SIGNATURE_EXPIRE_TIME = 60
+    

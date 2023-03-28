@@ -30,9 +30,12 @@ class MetaDataResource(Resource):
         _promotion_code = get(form_data, 'promotion_code')
         _ref_code = get(form_data, 'ref_code')
         _items = get(form_data, 'items')
-        _collection_address = get(form_data, 'collection_address')
+        _collection_address = get(form_data, 'collection_address').lower()
         # FIXME: check flow whitelist in BE later
-        _is_whitelist_mint = False
+        _is_whitelist_mint = True
+
+        # NOTE: check user address can mint
+        MetaDataHelper.check_whitelist(collection_address=_collection_address, address=_address, mint_amount=len(_items))
 
         _promotion_discount_percent = MetaDataHelper.promotion_discount_percent(promotion_code=_promotion_code)
         _promotion_discount_total = 0
@@ -102,7 +105,7 @@ class MetaDataResource(Resource):
             'created_time': dt_utcnow()
         })
 
-        _deadline = dt_utcnow().timestamp() + 60 * 60
+        _deadline = dt_utcnow().timestamp() + Config.SIGNATURE_EXPIRE_TIME
         _discount = web3.Web3.toWei((_promotion_discount_total + _referral_discount_total), 'ether')
 
         #NOTE: contract for sign will get from collection for multichain
