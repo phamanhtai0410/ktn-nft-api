@@ -13,7 +13,7 @@ class MetaDataSchema(Schema):
     address = fields.String(required=True, validate=NotBlank())
     items = fields.List(fields.Integer, required=True, validate=validate.Length(min=1))
     # is_whitelist_mint = fields.Bool(required=True)
-    chain_id = fields.Integer(required=True, validate=validate.OneOf(Config.SMC_CHAIN_IDS))
+    chain_id = fields.Integer(required=True)
     collection_address = fields.String(required=True)
 
 

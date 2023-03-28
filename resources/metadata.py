@@ -6,6 +6,7 @@ from pydash import get
 
 from config import Config
 from connect import security
+from exceptions.metadata import CollectionNotFoundEx
 from helper.mesh import MeshHelper
 from helper.metadata import MetaDataHelper
 from lib import dt_utcnow, NotFound
@@ -58,6 +59,7 @@ class MetaDataResource(Resource):
             })
             if not _collection:
                 debug(f'Collection address: {_collection_address}')
+                raise CollectionNotFoundEx
 
             _price = float(get(_collection, f'types_list.{_nft_index}.price', 0))
             _promotion_discount_item = _price * (_promotion_discount_percent / 100)
