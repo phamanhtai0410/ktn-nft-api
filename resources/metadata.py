@@ -104,10 +104,13 @@ class MetaDataResource(Resource):
 
         _deadline = dt_utcnow().timestamp() + 60 * 60
         _discount = web3.Web3.toWei((_promotion_discount_total + _referral_discount_total), 'ether')
+
+        #NOTE: contract for sign will get from collection for multichain
+        _dapp_creator_address = get(_collection, 'dapp_creator_address')
         _data = {
             'chain_id': _chain_id,
             'address': web3.Web3.toChecksumAddress(_address),
-            'contract': web3.Web3.toChecksumAddress(Config.CREATOR_ADDRESS),
+            'contract': web3.Web3.toChecksumAddress(_dapp_creator_address),
             'collection': web3.Web3.toChecksumAddress(_collection_address),
             'discount': _discount,
             'is_whitelist_mint': _is_whitelist_mint,
