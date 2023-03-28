@@ -155,7 +155,7 @@ class MetaDataHelper:
         }, cache=True)
         _nft_collection = CollectionModel.find_one({
             'address': collection_address
-        })
+        }, cache=True)
 
         if not _nft_whitelist or not _nft_collection:
             raise UserNotInWhitelistEx
