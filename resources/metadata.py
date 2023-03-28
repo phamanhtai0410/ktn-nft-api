@@ -129,7 +129,7 @@ class MetaDataResource(Resource):
             'data': {
                 'discount': str(get(_data, 'discount')),
                 'nft_indexes': _items,
-                'collection_address': _collection_address,
+                'collection_address': str(get(_data, 'collection')),
                 'is_whitelist_mint': _is_whitelist_mint,
                 'deadline': get(_data, 'deadline'),
             },
