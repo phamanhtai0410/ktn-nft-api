@@ -36,3 +36,14 @@ class UserMintLimitAmountEx(Exception):
         self.error_code = 'E_USER_MINT_LIMIT_AMOUNT_EX'
 
     pass
+
+
+class NftIdNotFoundEx(Exception):
+    def __init__(self, msg='Nft Id Not Found', *args: object, **kwargs) -> None:
+        super().__init__(*args)
+        self.status_code = 400
+        self.msg = msg
+        self.errors = kwargs.get('errors', [])
+        self.error_code = 'E_NFT_ID_NOT_FOUND_EX'
+
+    pass
