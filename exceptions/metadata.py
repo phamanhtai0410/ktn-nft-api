@@ -47,3 +47,13 @@ class NftIdNotFoundEx(Exception):
         self.error_code = 'E_NFT_ID_NOT_FOUND_EX'
 
     pass
+
+class NftMaxSupplyEx(Exception):
+    def __init__(self, msg='Nft Max Supply', *args: object, **kwargs) -> None:
+        super().__init__(*args)
+        self.status_code = 400
+        self.msg = msg
+        self.errors = kwargs.get('errors', [])
+        self.error_code = 'E_NFT_MAX_SUPPLY_EX'
+
+    pass

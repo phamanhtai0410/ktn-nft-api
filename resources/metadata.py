@@ -6,11 +6,11 @@ from pydash import get
 
 from config import Config
 from connect import security
-from exceptions.metadata import CollectionNotFoundEx, NftIdNotFoundEx
+from exceptions.metadata import CollectionNotFoundEx, NftIdNotFoundEx, NftMaxSupplyEx
 from helper.mesh import MeshHelper
 from helper.metadata import MetaDataHelper
 from lib import dt_utcnow, NotFound
-from models import SignatureLogModel, CollectionModel
+from models import NFTsModel, SignatureLogModel, CollectionModel
 from schemas.metadata import MetaDataSchema, ResMetaDataSchema
 from lib.logger import debug
 
@@ -45,7 +45,29 @@ class MetaDataResource(Resource):
         _collection = None
         _items_discount = []
 
+        _collection = CollectionModel.find_one({
+            'address': _collection_address,
+            'chain_id': _chain_id
+        })
+
+        _types_list = get(_collection, 'types_list')
+
+        if not _collection or not _types_list:
+            debug(f'Collection address: {_collection_address}')
+            raise CollectionNotFoundEx
+
+        # NOTE: check supply
+        _collection_total_supply = get(_collection, 'total_supply')
+        _count = NFTsModel.col.count_documents({
+            'address': _collection_address
+        })
+        if _count + len(_items) > _collection_total_supply:
+            raise NftMaxSupplyEx
+
         for _nft_index in _items:
+            # NOTE: if nft_index not in idx of _types_list
+            if not _nft_index  in range(len(_types_list)):
+                raise NftIdNotFoundEx
             # _mesh_material_detail = MeshHelper.get_mesh_material_by_nft_id(_item)
             # if _mesh_material_detail is None:
             #     debug(f'Nft id: {_item} not found in mesh_materials collection.')
@@ -56,20 +78,6 @@ class MetaDataResource(Resource):
             # if _mesh_detail is None:
             #     debug(f'Mesh id: {_mesh_id} not found in meshes collection.')
             #     raise NotFound(msg='Mesh id not found.')
-            _collection = CollectionModel.find_one({
-                'address': _collection_address,
-                'chain_id': _chain_id
-            })
-
-            _types_list = get(_collection, 'types_list')
-
-            if not _collection or not _types_list:
-                debug(f'Collection address: {_collection_address}')
-                raise CollectionNotFoundEx
-
-            # NOTE: if nft_index not in idx of _types_list
-            if not _nft_index  in range(len(_types_list)):
-                raise NftIdNotFoundEx
 
             _price = float(get(_collection, f'types_list.{_nft_index}.price', 0))
             _promotion_discount_item = _price * (_promotion_discount_percent / 100)
