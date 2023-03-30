@@ -59,7 +59,7 @@ class MetaDataResource(Resource):
         # NOTE: check supply
         _collection_total_supply = get(_collection, 'total_supply')
         _count = NFTsModel.col.count_documents({
-            'address': _collection_address
+            'contract': _collection_address
         })
         if _count + len(_items) > _collection_total_supply:
             raise NftMaxSupplyEx
