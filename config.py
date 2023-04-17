@@ -63,3 +63,8 @@ class Config:
     BUCKET_NAME = os.getenv("BUCKET_NAME")
     AWS_SECRET = os.getenv("AWS_SECRET")
     AWS_KEY = os.getenv("AWS_KEY")
+
+    # ChainId for multi-chain mint
+
+    SIGNATURE_EXPIRE_TIME = 60
+    

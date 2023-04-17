@@ -1,4 +1,5 @@
 from marshmallow import Schema, EXCLUDE, fields, validate
+from config import Config
 
 from lib import NotBlank
 
@@ -11,7 +12,9 @@ class MetaDataSchema(Schema):
     ref_code = fields.String(required=False, default=None, allow_none=True)
     address = fields.String(required=True, validate=NotBlank())
     items = fields.List(fields.Integer, required=True, validate=validate.Length(min=1))
-    is_whitelist_mint = fields.Bool(required=True)
+    # is_whitelist_mint = fields.Bool(required=True)
+    chain_id = fields.Integer(required=True)
+    collection_address = fields.String(required=True)
 
 
 class ResMetaDataSchema(Schema):

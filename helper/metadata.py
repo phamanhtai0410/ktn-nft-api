@@ -3,9 +3,10 @@ from web3 import Web3
 from connect import redis_cluster
 from config import Config
 from exception import ExPromoCodeInvalid, ExRefCodeInvalid, ExRefCodeOwner
+from exceptions.metadata import NotMintStartTimeYetEx, UserMintLimitAmountEx, UserNotInWhitelistEx
 from lib import dt_utcnow
-from models import PromotionCodeModel, ReferralModel, PromotionCodeUsedLogModel
-
+from models import CollectionModel, NFTsModel, NftWhitelistModel, PromotionCodeModel, ReferralModel, PromotionCodeUsedLogModel
+import pydash as py_
 
 class MetaDataHelper:
     @staticmethod
@@ -97,13 +98,11 @@ class MetaDataHelper:
         [
             chain_id, 
             user_address, 
-            contract_address,
-            collection, 
+            creator_contract_address,
+            collection_address, 
             discount, 
             is_whitelist_mint,
-            rarities, 
-            mesh_indexes,
-            mesh_materials, 
+            nftIndexes[],
             deadline
         ]
         """
@@ -116,20 +115,16 @@ class MetaDataHelper:
                 'uint256',
                 'bool',
                 'uint256[]',
-                'uint256[]',
-                'uint256[]',
                 'uint256'
             ],
             [
-                Config.CHAIN_ID,
+                get(data, 'chain_id'),
                 get(data, 'address'),
                 get(data, 'contract'),
                 get(data, 'collection'),
                 get(data, 'discount'),
                 get(data, 'is_whitelist_mint'),
-                get(data, 'rarities'),
-                get(data, 'mesh_indexes'),
-                get(data, 'mesh_materials'),
+                get(data, 'nft_indexes'),
                 get(data, 'deadline')
             ]
         )
@@ -140,3 +135,50 @@ class MetaDataHelper:
         )
 
         return _signed_message.signature.hex()
+
+    @staticmethod
+    def count_nft_minted(collection_address, address):
+        _total_amount = NFTsModel.col.count_documents({
+            'address': address,
+            'contract': collection_address
+        })
+
+        print('total_mint', _total_amount)
+
+        return _total_amount
+
+    @staticmethod
+    def check_whitelist(collection_address, address, mint_amount):
+        _nft_whitelist = NftWhitelistModel.find_one({
+            'collection': collection_address,
+            'address': address
+        }, cache=True)
+        _nft_collection = CollectionModel.find_one({
+            'address': collection_address
+        }, cache=True)
+
+        if not _nft_whitelist or not _nft_collection:
+            raise UserNotInWhitelistEx
+
+        _whitelist_time = get(_nft_collection, 'whitelist_time', [])
+        if not _whitelist_time:
+            raise NotMintStartTimeYetEx
+
+        _now = dt_utcnow()
+        # NOTE: if have any time in range at now -> can mint
+        _check_whitelist_time = py_.find(_whitelist_time, lambda x: py_.get(x, 'start_time') <= _now.timestamp() and py_.get(x, 'end_time') >= _now.timestamp())
+        if not _check_whitelist_time:
+            raise NotMintStartTimeYetEx
+
+        _total_amount = get(_nft_whitelist, 'amount', 0)
+        _minted_amount = MetaDataHelper.count_nft_minted(collection_address=collection_address, address=address)
+        if _minted_amount + mint_amount > _total_amount:
+            raise UserMintLimitAmountEx
+
+        return {
+            'minted_amount': _minted_amount,
+            'total_amount': _total_amount,
+            'whitelist_time': _check_whitelist_time
+        }
+
+

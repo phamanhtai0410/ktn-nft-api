@@ -47,3 +47,5 @@ SignatureLogModel = DaoModel(connect_db.db.signature_logs, redis=redis_cluster)
 
 MeshModel = DaoModel(connect_db.db.meshes, redis=redis_cluster)
 MeshMaterialModel = DaoModel(connect_db.db.mesh_materials, redis=redis_cluster)
+
+NftWhitelistModel = DaoModel(connect_db.db.nft_whitelist, redis=redis_cluster, project=Config.PROJECT)
