@@ -38,8 +38,8 @@ class MetaDataHelper:
 
             if _referral is None:
                 raise ExRefCodeInvalid()
-            if get(_referral, 'address') == address:
-                raise ExRefCodeOwner()
+            # if get(_referral, 'address') == address:
+            #     raise ExRefCodeOwner()
 
             return ref_code
 
