@@ -5,7 +5,7 @@ from flask_restful import Resource
 from pydash import get
 
 from config import Config
-from connect import security
+from connect import security, redis_cluster
 from exceptions.metadata import CollectionNotFoundEx, NftIdNotFoundEx, NftMaxSupplyEx
 from helper.mesh import MeshHelper
 from helper.metadata import MetaDataHelper
@@ -107,9 +107,14 @@ class MetaDataResource(Resource):
 
             _items_discount.append(_discount_data)
 
+        # Add nonce for limit order
+        _key = f'katana-dapp.sign_signature/nonce'
+        _nonce = redis_cluster.incr(name=_key, amount=1)
+
         _log_id = str(uuid.uuid4())
         SignatureLogModel.insert_one({
             'log_id': _log_id,
+            "nonce": _nonce,
             'address': _address.lower(),
             'collection': _collection,
             'ref_code': _ref_code,
@@ -127,6 +132,7 @@ class MetaDataResource(Resource):
         _dapp_creator_address = get(_collection, 'dapp_creator_address')
         _data = {
             'chain_id': _chain_id,
+            'nonce': _nonce,
             'address': web3.Web3.toChecksumAddress(_address),
             'contract': web3.Web3.toChecksumAddress(_dapp_creator_address),
             'collection': web3.Web3.toChecksumAddress(_collection_address),
@@ -146,6 +152,7 @@ class MetaDataResource(Resource):
         return {
             'data': {
                 'discount': str(get(_data, 'discount')),
+                'nonce': _nonce,
                 'nft_indexes': _items,
                 'collection_address': str(get(_data, 'collection')),
                 'is_whitelist_mint': _is_whitelist_mint,
