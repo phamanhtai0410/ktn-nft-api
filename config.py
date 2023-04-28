@@ -66,5 +66,5 @@ class Config:
 
     # ChainId for multi-chain mint
 
-    SIGNATURE_EXPIRE_TIME = 60
+    SIGNATURE_EXPIRE_TIME = 60 * 5
     
