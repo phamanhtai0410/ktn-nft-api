@@ -24,7 +24,7 @@ class MetaDataResource(Resource):
         response=ResMetaDataSchema()
     )
     async def post(self, form_data):
-
+        # print('Form data : ', form_data)
         _chain_id = get(form_data, 'chain_id')
         _address = get(form_data, 'address').lower()
         _promotion_code = get(form_data, 'promotion_code')
@@ -51,8 +51,9 @@ class MetaDataResource(Resource):
         })
 
         _types_list = get(_collection, 'types_list')
-
-        if not _collection or not _types_list:
+        _existing_metadata = get(_collection, 'is_existing_metadata')
+        
+        if not _collection or (not _types_list and not _existing_metadata):
             debug(f'Collection address: {_collection_address}')
             raise CollectionNotFoundEx
 
@@ -65,21 +66,26 @@ class MetaDataResource(Resource):
             raise NftMaxSupplyEx
 
         for _nft_index in _items:
-            # NOTE: if nft_index not in idx of _types_list
-            if not _nft_index  in range(len(_types_list)):
-                raise NftIdNotFoundEx
-            # _mesh_material_detail = MeshHelper.get_mesh_material_by_nft_id(_item)
-            # if _mesh_material_detail is None:
-            #     debug(f'Nft id: {_item} not found in mesh_materials collection.')
-            #     raise NotFound(msg='Nft id not found.')
+            
+            if not _existing_metadata:
+                # NOTE: if nft_index not in idx of _types_list
+                if not _nft_index  in range(len(_types_list)):
+                    raise NftIdNotFoundEx
+                # _mesh_material_detail = MeshHelper.get_mesh_material_by_nft_id(_item)
+                # if _mesh_material_detail is None:
+                #     debug(f'Nft id: {_item} not found in mesh_materials collection.')
+                #     raise NotFound(msg='Nft id not found.')
 
-            # _mesh_id = get(_mesh_material_detail, 'mesh_id')
-            # _mesh_detail = MeshHelper.get_mesh_by_id(mesh_id=_mesh_id)
-            # if _mesh_detail is None:
-            #     debug(f'Mesh id: {_mesh_id} not found in meshes collection.')
-            #     raise NotFound(msg='Mesh id not found.')
+                # _mesh_id = get(_mesh_material_detail, 'mesh_id')
+                # _mesh_detail = MeshHelper.get_mesh_by_id(mesh_id=_mesh_id)
+                # if _mesh_detail is None:
+                #     debug(f'Mesh id: {_mesh_id} not found in meshes collection.')
+                #     raise NotFound(msg='Mesh id not found.')
 
-            _price = float(get(_collection, f'types_list.{_nft_index}.price', 0))
+                _price = float(get(_collection, f'types_list.{_nft_index}.price', 0))
+            else:
+                _price = float(get(_collection, 'price', 0))
+            
             _promotion_discount_item = _price * (_promotion_discount_percent / 100)
             _promotion_discount_total += _promotion_discount_item
 
