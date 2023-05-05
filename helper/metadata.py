@@ -97,7 +97,8 @@ class MetaDataHelper:
         _w3 = Web3()
         """
         [
-            chain_id, 
+            chain_id,
+            nonce, 
             user_address, 
             creator_contract_address,
             collection_address, 
@@ -116,6 +117,7 @@ class MetaDataHelper:
                 'uint256',
                 'bool',
                 'uint256[]',
+                'uint256',
                 'uint256'
             ],
             [
@@ -126,6 +128,7 @@ class MetaDataHelper:
                 get(data, 'discount'),
                 get(data, 'is_whitelist_mint'),
                 get(data, 'nft_indexes'),
+                get(data, 'nonce'),
                 get(data, 'deadline')
             ]
         )
