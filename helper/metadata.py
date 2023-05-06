@@ -5,6 +5,7 @@ from config import Config
 from exception import ExPromoCodeInvalid, ExRefCodeInvalid, ExRefCodeOwner
 from exceptions.metadata import NotMintStartTimeYetEx, UserMintLimitAmountEx, UserNotInWhitelistEx
 from lib import dt_utcnow
+from lib.enum import NFT_AMOUNT_PUBLIC_MINT
 from models import CollectionModel, NFTsModel, NftWhitelistModel, PromotionCodeModel, ReferralModel, PromotionCodeUsedLogModel
 import pydash as py_
 
@@ -38,8 +39,8 @@ class MetaDataHelper:
 
             if _referral is None:
                 raise ExRefCodeInvalid()
-            if get(_referral, 'address') == address:
-                raise ExRefCodeOwner()
+            # if get(_referral, 'address') == address:
+            #     raise ExRefCodeOwner()
 
             return ref_code
 
@@ -96,7 +97,8 @@ class MetaDataHelper:
         _w3 = Web3()
         """
         [
-            chain_id, 
+            chain_id,
+            nonce, 
             user_address, 
             creator_contract_address,
             collection_address, 
@@ -115,6 +117,7 @@ class MetaDataHelper:
                 'uint256',
                 'bool',
                 'uint256[]',
+                'uint256',
                 'uint256'
             ],
             [
@@ -125,6 +128,7 @@ class MetaDataHelper:
                 get(data, 'discount'),
                 get(data, 'is_whitelist_mint'),
                 get(data, 'nft_indexes'),
+                get(data, 'nonce'),
                 get(data, 'deadline')
             ]
         )
@@ -157,9 +161,6 @@ class MetaDataHelper:
             'address': collection_address
         }, cache=True)
 
-        if not _nft_whitelist or not _nft_collection:
-            raise UserNotInWhitelistEx
-
         _whitelist_time = get(_nft_collection, 'whitelist_time', [])
         if not _whitelist_time:
             raise NotMintStartTimeYetEx
@@ -170,7 +171,10 @@ class MetaDataHelper:
         if not _check_whitelist_time:
             raise NotMintStartTimeYetEx
 
-        _total_amount = get(_nft_whitelist, 'amount', 0)
+        if (not _nft_whitelist or not _nft_collection) and py_.get(_check_whitelist_time, 'is_public', False) == False:
+            raise UserNotInWhitelistEx
+
+        _total_amount = get(_nft_whitelist, 'amount', 0) if py_.get(_check_whitelist_time, 'is_public', False) == False or _nft_whitelist else NFT_AMOUNT_PUBLIC_MINT
         _minted_amount = MetaDataHelper.count_nft_minted(collection_address=collection_address, address=address)
         if _minted_amount + mint_amount > _total_amount:
             raise UserMintLimitAmountEx

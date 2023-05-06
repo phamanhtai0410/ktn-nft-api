@@ -18,7 +18,7 @@ class UserNotInWhitelistEx(Exception):
     pass
 
 class NotMintStartTimeYetEx(Exception):
-    def __init__(self, msg='Not Mint Start Time Yet', *args: object, **kwargs) -> None:
+    def __init__(self, msg='Have not start time yet', *args: object, **kwargs) -> None:
         super().__init__(*args)
         self.status_code = 400
         self.msg = msg
