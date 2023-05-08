@@ -21,6 +21,7 @@ from resources.referral import ReferralResource
 from resources.box import BoxResource
 from resources.signature_box import SignatureBoxResource
 from resources.forging_result import ForgingResultResource
+from resources.forging_list import ForgingListResource
 
 api_resources = {
     '/hello': HelloWorld,
@@ -37,5 +38,6 @@ api_resources = {
     '/promo_code': PromoResource,
     '/referral_code': ReferralResource,
     '/box': BoxResource,
-    '/forging_result': ForgingResultResource
+    '/forging/result': ForgingResultResource,
+    '/forging/available_list': ForgingListResource,
 }
