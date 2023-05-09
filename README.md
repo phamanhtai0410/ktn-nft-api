@@ -13,8 +13,9 @@ See [requirements.txt](./requirements.txt).
 
 Run:
 ```commandline
-  git clone git@gitlab.rinznetwork.com:scan-hub/sh-lib.git lib
-  pip install -f ./lib/requirements.txt
+  git clone git@gitlab.rinznetwork.com:katana/ktn-lib.git lib
+  git checkout stag
+  pip install -r ./lib/requirements.txt
   pip --no-cache-dir install "Flask[async]"
 
 ```
