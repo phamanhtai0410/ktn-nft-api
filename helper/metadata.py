@@ -181,6 +181,7 @@ class MetaDataHelper:
 
         return {
             'minted_amount': _minted_amount,
+            'is_in_whitelist': True if _nft_whitelist else False,
             'total_amount': _total_amount,
             'whitelist_time': _check_whitelist_time
         }
