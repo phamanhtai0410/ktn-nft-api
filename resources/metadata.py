@@ -35,7 +35,7 @@ class MetaDataResource(Resource):
         _is_whitelist_mint = True
 
         # NOTE: check user address can mint
-        MetaDataHelper.check_whitelist(collection_address=_collection_address, address=_address, mint_amount=len(_items))
+        _whitelistChecking = MetaDataHelper.check_whitelist(collection_address=_collection_address, address=_address, mint_amount=len(_items))
 
         _promotion_discount_percent = MetaDataHelper.promotion_discount_percent(promotion_code=_promotion_code)
         _promotion_discount_total = 0
@@ -87,6 +87,10 @@ class MetaDataResource(Resource):
                 _price = float(get(_collection, 'price', 0))
             
             _promotion_discount_item = _price * (_promotion_discount_percent / 100)
+            
+            if get(_whitelistChecking, 'is_in_whitelist'):
+                _promotion_discount_total += float(get(_collection, 'price', 0)) - float(get(_collection, 'whitelist_price', 0))
+                
             _promotion_discount_total += _promotion_discount_item
 
             _referral_discount_percent = 0
