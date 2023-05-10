@@ -22,6 +22,7 @@ from resources.box import BoxResource
 from resources.signature_box import SignatureBoxResource
 from resources.forging_result import ForgingResultResource
 from resources.forging_list import ForgingListResource
+from resources.forging_signature import ForgingSignatureResource
 
 api_resources = {
     '/hello': HelloWorld,
@@ -40,4 +41,5 @@ api_resources = {
     '/box': BoxResource,
     '/forging/result': ForgingResultResource,
     '/forging/available_list': ForgingListResource,
+    '/forging/signature': ForgingSignatureResource,
 }
