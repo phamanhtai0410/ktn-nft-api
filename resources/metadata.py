@@ -36,6 +36,7 @@ class MetaDataResource(Resource):
 
         # NOTE: check user address can mint
         _whitelistChecking = MetaDataHelper.check_whitelist(collection_address=_collection_address, address=_address, mint_amount=len(_items))
+        debug(_whitelistChecking)
 
         _promotion_discount_percent = MetaDataHelper.promotion_discount_percent(promotion_code=_promotion_code)
         _promotion_discount_total = 0
