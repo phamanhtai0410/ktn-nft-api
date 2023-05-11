@@ -90,7 +90,6 @@ class MetaDataResource(Resource):
             _promotion_discount_item = _price * (_promotion_discount_percent / 100)
             
             if get(_whitelistChecking, 'is_in_whitelist'):
-                debug("DENUG - is in whitelist")
                 _promotion_discount_total += float(get(_collection, 'price', 0)) - float(get(_collection, 'whitelist_price', 0))
                 
             _promotion_discount_total += _promotion_discount_item
@@ -153,6 +152,7 @@ class MetaDataResource(Resource):
             'nft_indexes': _items,
             'deadline': int(_deadline)
         }
+        
         debug(f'Sign data: {_data}')
         _signature = MetaDataHelper.generate_signature(data=_data)
         MetaDataHelper.update_used_promotion_code(
@@ -160,16 +160,24 @@ class MetaDataResource(Resource):
             address=_address.lower(),
             updated_by='metadata:update_used_promotion_code'
         )
-
-        return {
-            'data': {
+        
+        _resp_data = {
                 'discount': str(get(_data, 'discount')),
                 'nonce': _nonce,
                 'nft_indexes': _items,
                 'collection_address': str(get(_data, 'collection')),
                 'is_whitelist_mint': _is_whitelist_mint,
                 'deadline': get(_data, 'deadline'),
-            },
+            }
+        
+        if get(_whitelistChecking, 'is_in_whitelist'):
+            _resp_data = {
+                **_resp_data,
+                'whitelist_price': get(_collection, 'whitelist_price')
+            }
+
+        return {
+            'data': _resp_data,
             'signature': _signature,
             'callback': _log_id
         }
