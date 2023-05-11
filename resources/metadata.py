@@ -88,8 +88,8 @@ class MetaDataResource(Resource):
             
             _promotion_discount_item = _price * (_promotion_discount_percent / 100)
             
-            # if get(_whitelistChecking, 'is_in_whitelist'):
-            #     _promotion_discount_total += float(get(_collection, 'price', 0)) - float(get(_collection, 'whitelist_price', 0))
+            if get(_whitelistChecking, 'is_in_whitelist'):
+                _promotion_discount_total += float(get(_collection, 'price', 0)) - float(get(_collection, 'whitelist_price', 0))
                 
             _promotion_discount_total += _promotion_discount_item
 
