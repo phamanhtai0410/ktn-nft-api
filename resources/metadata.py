@@ -90,9 +90,9 @@ class MetaDataResource(Resource):
             _promotion_discount_item = _price * (_promotion_discount_percent / 100)
             
             if get(_whitelistChecking, 'is_in_whitelist'):
-                _promotion_discount_total += float(get(_collection, 'price', 0)) - float(get(_collection, 'whitelist_price', 0))
+                _promotion_discount_total += web3.Web3.toWei(float(get(_collection, 'price', 0)), 'ether') - web3.Web3.toWei(float(get(_collection, 'whitelist_price', 0)), 'ether')
                 
-            _promotion_discount_total += _promotion_discount_item
+            _promotion_discount_total += web3.Web3.toWei(_promotion_discount_item, 'ether')
 
             _referral_discount_percent = 0
             _referral_discount_item = 0
@@ -102,7 +102,7 @@ class MetaDataResource(Resource):
 
                 _referral_discount_item = (_price - _promotion_discount_item) * (_referral_discount_percent / 100)
 
-                _referral_discount_total += _referral_discount_item
+                _referral_discount_total += web3.Web3.toWei(_referral_discount_item, 'ether')
 
             _discount_data = {
                 'nft_id': _nft_index,
@@ -137,7 +137,7 @@ class MetaDataResource(Resource):
         })
 
         _deadline = dt_utcnow().timestamp() + Config.SIGNATURE_EXPIRE_TIME
-        _discount = web3.Web3.toWei((_promotion_discount_total + _referral_discount_total), 'ether')
+        _discount = _promotion_discount_total + _referral_discount_total
 
         #NOTE: contract for sign will get from collection for multichain
         _dapp_creator_address = get(_collection, 'dapp_creator_address')
