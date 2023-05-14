@@ -8,6 +8,7 @@ from lib import dt_utcnow
 from lib.enum import NFT_AMOUNT_PUBLIC_MINT
 from models import CollectionModel, NFTsModel, NftWhitelistModel, PromotionCodeModel, ReferralModel, PromotionCodeUsedLogModel
 import pydash as py_
+from lib.logger import debug
 
 class MetaDataHelper:
     @staticmethod
@@ -157,6 +158,7 @@ class MetaDataHelper:
             'collection': collection_address,
             'address': address
         }, cache=True)
+        debug(f"* NFT whitelist checking for collection {collection_address} with address {address}: ", _nft_whitelist)
         _nft_collection = CollectionModel.find_one({
             'address': collection_address
         }, cache=True)
