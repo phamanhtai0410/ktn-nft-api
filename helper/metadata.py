@@ -158,7 +158,9 @@ class MetaDataHelper:
             'collection': collection_address,
             'address': address
         }, cache=True)
+        
         debug(f"* NFT whitelist checking for collection {collection_address} with address {address}: ", _nft_whitelist)
+
         _nft_collection = CollectionModel.find_one({
             'address': collection_address
         }, cache=True)
