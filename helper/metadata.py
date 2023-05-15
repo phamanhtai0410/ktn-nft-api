@@ -9,6 +9,7 @@ from lib.enum import NFT_AMOUNT_PUBLIC_MINT
 from models import CollectionModel, NFTsModel, NftWhitelistModel, PromotionCodeModel, ReferralModel, PromotionCodeUsedLogModel
 import pydash as py_
 from lib.logger import debug
+from datetime import datetime, timezone
 
 class MetaDataHelper:
     @staticmethod
@@ -151,6 +152,23 @@ class MetaDataHelper:
         print('total_mint', _total_amount)
 
         return _total_amount
+    
+    @staticmethod
+    def count_nft_minted_in_period(
+        collection_address,
+        address,
+        start_time,
+        end_time
+    ):
+        _total_amount = NFTsModel.col.count_documents({
+            'address': address,
+            'contract': collection_address,
+            'created_time': {
+                "$gt": datetime.fromtimestamp(start_time, tz=timezone.utc),
+                "$lt": datetime.fromtimestamp(end_time, tz=timezone.utc)
+            }
+        })
+        return _total_amount
 
     @staticmethod
     def check_whitelist(collection_address, address, mint_amount):
@@ -179,7 +197,16 @@ class MetaDataHelper:
             raise UserNotInWhitelistEx
 
         _total_amount = get(_nft_whitelist, 'amount', 0) if py_.get(_check_whitelist_time, 'is_public', False) == False or _nft_whitelist else NFT_AMOUNT_PUBLIC_MINT
-        _minted_amount = MetaDataHelper.count_nft_minted(collection_address=collection_address, address=address)
+        
+        # _minted_amount = MetaDataHelper.count_nft_minted(collection_address=collection_address, address=address)
+        _minted_amount = MetaDataHelper.count_nft_minted_in_period(
+            collection_address=collection_address,
+            address=address,
+            start_time=py_.get(_check_whitelist_time, 'start_time'),
+            end_time=py_.get(_check_whitelist_time, 'end_time')
+        )
+        debug("* Minted amount = ", _minted_amount)
+        
         if _minted_amount + mint_amount > _total_amount:
             raise UserMintLimitAmountEx
 
