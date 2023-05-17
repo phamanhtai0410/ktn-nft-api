@@ -196,8 +196,22 @@ class MetaDataHelper:
         if (not _nft_whitelist or not _nft_collection) and py_.get(_check_whitelist_time, 'is_public', False) == False:
             raise UserNotInWhitelistEx
 
-        _total_amount = get(_nft_whitelist, 'amount', 0) if py_.get(_check_whitelist_time, 'is_public', False) == False or _nft_whitelist else NFT_AMOUNT_PUBLIC_MINT
+        _total_whitelist_amount = get(_nft_whitelist, 'amount', 0) if py_.get(_check_whitelist_time, 'is_public', False) == False or _nft_whitelist else 0
         
+        if py_.get(_check_whitelist_time, 'is_public', False) == True:
+            _total_amount = _total_whitelist_amount + NFT_AMOUNT_PUBLIC_MINT
+        else:
+            _total_amount = _total_whitelist_amount
+        
+        """
+            is_public       in_whitelist
+            -----------     ---------------
+            False           False           =>          Not In Whitelist      
+            False           True            =>          amount
+            True            False           =>          public_limit
+            True            True            =>          amount + public
+        """
+        debug("* Total amount : ", _total_amount)
         # _minted_amount = MetaDataHelper.count_nft_minted(collection_address=collection_address, address=address)
         _minted_amount = MetaDataHelper.count_nft_minted_in_period(
             collection_address=collection_address,
@@ -206,7 +220,7 @@ class MetaDataHelper:
             end_time=py_.get(_check_whitelist_time, 'end_time')
         )
         debug("* Minted amount = ", _minted_amount)
-        
+                   
         if _minted_amount + mint_amount > _total_amount:
             raise UserMintLimitAmountEx
 
@@ -214,6 +228,7 @@ class MetaDataHelper:
             'minted_amount': _minted_amount,
             'is_in_whitelist': True if _nft_whitelist else False,
             'total_amount': _total_amount,
+            'total_whitelist_amount': _total_whitelist_amount,
             'whitelist_time': _check_whitelist_time
         }
 
