@@ -164,6 +164,7 @@ class MetaDataResource(Resource):
         
         _resp_data = {
                 'discount': str(get(_data, 'discount')),
+                'need_to_approve': (web3.Web3.toWei(_price * len(_items), 'ether') - web3.Web3.toInt(_discount)) / 10 ** 18,
                 'nonce': _nonce,
                 'nft_indexes': _items,
                 'collection_address': str(get(_data, 'collection')),
