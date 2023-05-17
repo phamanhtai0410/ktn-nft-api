@@ -155,6 +155,8 @@ class MetaDataResource(Resource):
         }
         
         debug(f'Sign data: {_data}')
+        
+        _need_to_approve = (web3.Web3.toWei(_price * len(_items), 'ether') - _discount) / 10 ** 18
         _signature = MetaDataHelper.generate_signature(data=_data)
         MetaDataHelper.update_used_promotion_code(
             promotion_code=_promotion_code,
@@ -164,7 +166,7 @@ class MetaDataResource(Resource):
         
         _resp_data = {
                 'discount': str(get(_data, 'discount')),
-                'need_to_approve': (web3.Web3.toWei(_price * len(_items), 'ether') - web3.Web3.toInt(_discount)) / 10 ** 18,
+                'need_to_approve': _need_to_approve,
                 'nonce': _nonce,
                 'nft_indexes': _items,
                 'collection_address': str(get(_data, 'collection')),
