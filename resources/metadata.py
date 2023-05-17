@@ -91,7 +91,7 @@ class MetaDataResource(Resource):
             
             if get(_whitelistChecking, 'is_in_whitelist') and get(_whitelistChecking, 'minted_amount', 0) + _idx + 1 <= get(_whitelistChecking, 'total_whitelist_amount'):
                 print("DEBUG - is in whitelist")
-                _promotion_discount_total += float(get(_collection, 'price', 0)) - float(get(_collection, 'whitelist_price', 0))
+                _promotion_discount_total += web3.Web3.toWei(float(get(_collection, 'price', 0)), 'ether') - web3.Web3.toWei(float(get(_collection, 'whitelist_price', 0)), 'ether')
                 
             _promotion_discount_total += web3.Web3.toWei(_promotion_discount_item, 'ether')
 
