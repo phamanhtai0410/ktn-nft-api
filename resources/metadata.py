@@ -90,7 +90,7 @@ class MetaDataResource(Resource):
             
             if get(_whitelistChecking, 'is_in_whitelist') and get(_whitelistChecking, 'minted_amount', 0) + _idx + 1 <= get(_whitelistChecking, 'total_whitelist_amount'):
                 print("DEBUG - is in whitelist")
-                _promotion_discount_total += float(get(_collection, 'price', 0)) - float(get(_collection, 'whitelist_price', 0))
+                _promotion_discount_total += web3.Web3.toWei(float(get(_collection, 'price', 0)), 'ether') - web3.Web3.toWei(float(get(_collection, 'whitelist_price', 0)), 'ether')
                 
             _promotion_discount_total += _promotion_discount_item
 
@@ -137,7 +137,7 @@ class MetaDataResource(Resource):
         })
 
         _deadline = dt_utcnow().timestamp() + Config.SIGNATURE_EXPIRE_TIME
-        _discount = web3.Web3.toWei((_promotion_discount_total + _referral_discount_total), 'ether')
+        _discount = _promotion_discount_total + _referral_discount_total
 
         #NOTE: contract for sign will get from collection for multichain
         _dapp_creator_address = get(_collection, 'dapp_creator_address')
