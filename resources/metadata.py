@@ -138,7 +138,7 @@ class MetaDataResource(Resource):
         })
 
         _deadline = dt_utcnow().timestamp() + Config.SIGNATURE_EXPIRE_TIME
-        _discount = _promotion_discount_total + _referral_discount_total
+        _discount = int(_promotion_discount_total + _referral_discount_total)
 
         #NOTE: contract for sign will get from collection for multichain
         _dapp_creator_address = get(_collection, 'dapp_creator_address')
