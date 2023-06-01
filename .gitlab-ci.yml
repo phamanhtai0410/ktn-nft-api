@@ -58,7 +58,7 @@ stages:
 build_stag:
   image: docker:19.03.1
   tags:
-  - esol-stag
+  - esol-stag-test
   stage: build
   services:
   - docker:19.03.1-dind
