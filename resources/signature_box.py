@@ -28,6 +28,7 @@ class SignatureBoxResource(Resource):
         _promotion_code = get(form_data, 'promotion_code')
         _ref_code = get(form_data, 'ref_code')
         _amount = get(form_data, 'amount')
+        _is_whitelist_mint = get(form_data, 'is_whitelist_mint')
 
         _promotion_discount_percent = MetaDataHelper.promotion_discount_percent(promotion_code=_promotion_code)
         _promotion_discount_total = 0
@@ -73,6 +74,7 @@ class SignatureBoxResource(Resource):
             'ref_code': _ref_code,
             'promotion_code': _promotion_code,
             'items': [_discount_data],
+            'is_whitelist_mint': _is_whitelist_mint,
             'created_by': 'signature_box_api',
             'created_time': dt_utcnow()
         })
@@ -84,6 +86,7 @@ class SignatureBoxResource(Resource):
             'contract': web3.Web3.toChecksumAddress(Config.BOX_CREATOR_CONTRACT),
             'collection': web3.Web3.toChecksumAddress(get(_box_detail, 'address')),
             'discount': _discount,
+            'is_whitelist_mint': _is_whitelist_mint,
             'amount': _amount,
             'deadline': int(_deadline)
         }

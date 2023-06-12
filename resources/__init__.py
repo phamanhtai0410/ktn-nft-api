@@ -20,6 +20,9 @@ from resources.promotion import PromoResource
 from resources.referral import ReferralResource
 from resources.box import BoxResource
 from resources.signature_box import SignatureBoxResource
+from resources.forging_result import ForgingResultResource
+from resources.forging_list import ForgingListResource
+from resources.forging_signature import ForgingSignatureResource
 
 api_resources = {
     '/hello': HelloWorld,
@@ -35,5 +38,8 @@ api_resources = {
     '/nfts_show': NFTShowResource,
     '/promo_code': PromoResource,
     '/referral_code': ReferralResource,
-    '/box': BoxResource
+    '/box': BoxResource,
+    '/forging/result': ForgingResultResource,
+    '/forging/available_list': ForgingListResource,
+    '/forging/signature': ForgingSignatureResource,
 }

@@ -35,15 +35,17 @@ class BoxHelper:
                 'address',
                 'address',
                 'uint256',
+                'bool',
                 'uint256',
                 'uint256'
-            ],  # [chain_id, user_address, contract_address, collection_address, discount, amount, deadline]
+            ],  # [chain_id, user_address, contract_address, collection_address, discount, is_whitelist_mint, amount, deadline]
             [
                 Config.CHAIN_ID,
                 get(data, 'address'),
                 get(data, 'contract'),
                 get(data, 'collection'),
                 get(data, 'discount'),
+                get(data, 'is_whitelist_mint'),
                 get(data, 'amount'),
                 get(data, 'deadline')
             ]

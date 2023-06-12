@@ -10,8 +10,8 @@ from models import NFTsModel
 
 class MyNFTsHelpers:
 
-    @staticmethod
-    def get_my_nfts(address: str, page: int, page_size: int, sort: int, nft_type: str = '', contract: str = '', token_ids: list = []):
+    @classmethod
+    def get_my_nfts(cls, address: str, page: int, page_size: int, sort: int, nft_type: str = '', contract: str = '', token_ids: list = []):
         _filter = {
             'address': address
         }
@@ -80,3 +80,42 @@ class MyNFTsHelpers:
 
         _results['items'] = _items_formatted
         return _results
+
+    @classmethod
+    def get_forging_list(cls, address: str, chain: str, collection_type: str):
+        _pipeline = [
+            {
+                '$match': {
+                    'address': address,
+                    'chain': chain,
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'forging_address',
+                    'localField': 'contract',
+                    'foreignField': 'collection_address',
+                    'as': 'forging_address',
+                    # 'pipeline': [
+                    #     {
+                    #         '$match': {
+                    #             'collection_type': collection_type
+                    #         }
+                    #     }
+                    # ]
+                }
+            },
+            # {
+            #     '$unwind': '$forging_address'
+            # },
+        ]
+
+        _items = NFTsModel.col.aggregate(pipeline=_pipeline)
+
+        _items = list(_items)
+
+        print(_items)
+
+        return {
+            'items': _items
+        }

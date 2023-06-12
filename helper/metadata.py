@@ -3,9 +3,13 @@ from web3 import Web3
 from connect import redis_cluster
 from config import Config
 from exception import ExPromoCodeInvalid, ExRefCodeInvalid, ExRefCodeOwner
+from exceptions.metadata import NotMintStartTimeYetEx, UserMintLimitAmountEx, UserNotInWhitelistEx
 from lib import dt_utcnow
-from models import PromotionCodeModel, ReferralModel, PromotionCodeUsedLogModel
-
+from lib.enum import NFT_AMOUNT_PUBLIC_MINT
+from models import CollectionModel, NFTsModel, NftWhitelistModel, PromotionCodeModel, ReferralModel, PromotionCodeUsedLogModel
+import pydash as py_
+from lib.logger import debug
+from datetime import datetime, timezone
 
 class MetaDataHelper:
     @staticmethod
@@ -37,8 +41,8 @@ class MetaDataHelper:
 
             if _referral is None:
                 raise ExRefCodeInvalid()
-            if get(_referral, 'address') == address:
-                raise ExRefCodeOwner()
+            # if get(_referral, 'address') == address:
+            #     raise ExRefCodeOwner()
 
             return ref_code
 
@@ -95,14 +99,14 @@ class MetaDataHelper:
         _w3 = Web3()
         """
         [
-            chain_id, 
+            chain_id,
+            nonce, 
             user_address, 
-            contract_address,
-            collection, 
+            creator_contract_address,
+            collection_address, 
             discount, 
-            rarities, 
-            mesh_indexes,
-            mesh_materials, 
+            is_whitelist_mint,
+            nftIndexes[],
             deadline
         ]
         """
@@ -113,20 +117,20 @@ class MetaDataHelper:
                 'address',
                 'address',
                 'uint256',
+                'bool',
                 'uint256[]',
-                'uint256[]',
-                'uint256[]',
+                'uint256',
                 'uint256'
             ],
             [
-                Config.CHAIN_ID,
+                get(data, 'chain_id'),
                 get(data, 'address'),
                 get(data, 'contract'),
                 get(data, 'collection'),
                 get(data, 'discount'),
-                get(data, 'rarities'),
-                get(data, 'mesh_indexes'),
-                get(data, 'mesh_materials'),
+                get(data, 'is_whitelist_mint'),
+                get(data, 'nft_indexes'),
+                get(data, 'nonce'),
                 get(data, 'deadline')
             ]
         )
@@ -137,3 +141,95 @@ class MetaDataHelper:
         )
 
         return _signed_message.signature.hex()
+
+    @staticmethod
+    def count_nft_minted(collection_address, address):
+        _total_amount = NFTsModel.col.count_documents({
+            'address': address,
+            'contract': collection_address
+        })
+
+        print('total_mint', _total_amount)
+
+        return _total_amount
+    
+    @staticmethod
+    def count_nft_minted_in_period(
+        collection_address,
+        address,
+        start_time,
+        end_time
+    ):
+        _total_amount = NFTsModel.col.count_documents({
+            'address': address,
+            'contract': collection_address,
+            'created_time': {
+                "$gt": datetime.fromtimestamp(start_time, tz=timezone.utc),
+                "$lt": datetime.fromtimestamp(end_time, tz=timezone.utc)
+            }
+        })
+        return _total_amount
+
+    @staticmethod
+    def check_whitelist(collection_address, address, mint_amount):
+        _nft_whitelist = NftWhitelistModel.find_one({
+            'collection': collection_address,
+            'address': address
+        }, cache=True)
+        
+        debug(f"* NFT whitelist checking for collection {collection_address} with address {address}: ", _nft_whitelist)
+
+        _nft_collection = CollectionModel.find_one({
+            'address': collection_address
+        }, cache=True)
+
+        _whitelist_time = get(_nft_collection, 'whitelist_time', [])
+        if not _whitelist_time:
+            raise NotMintStartTimeYetEx
+
+        _now = dt_utcnow()
+        # NOTE: if have any time in range at now -> can mint
+        _check_whitelist_time = py_.find(_whitelist_time, lambda x: py_.get(x, 'start_time') <= _now.timestamp() and py_.get(x, 'end_time') >= _now.timestamp())
+        if not _check_whitelist_time:
+            raise NotMintStartTimeYetEx
+
+        if (not _nft_whitelist or not _nft_collection) and py_.get(_check_whitelist_time, 'is_public', False) == False:
+            raise UserNotInWhitelistEx
+
+        _total_whitelist_amount = get(_nft_whitelist, 'amount', 0) if py_.get(_check_whitelist_time, 'is_public', False) == False or _nft_whitelist else 0
+        
+        if py_.get(_check_whitelist_time, 'is_public', False) == True:
+            _total_amount = _total_whitelist_amount + NFT_AMOUNT_PUBLIC_MINT
+        else:
+            _total_amount = _total_whitelist_amount
+        
+        """
+            is_public       in_whitelist
+            -----------     ---------------
+            False           False           =>          Not In Whitelist      
+            False           True            =>          amount
+            True            False           =>          public_limit
+            True            True            =>          amount + public
+        """
+        debug("* Total amount : ", _total_amount)
+        # _minted_amount = MetaDataHelper.count_nft_minted(collection_address=collection_address, address=address)
+        _minted_amount = MetaDataHelper.count_nft_minted_in_period(
+            collection_address=collection_address,
+            address=address,
+            start_time=py_.get(_check_whitelist_time, 'start_time'),
+            end_time=py_.get(_check_whitelist_time, 'end_time')
+        )
+        debug("* Minted amount = ", _minted_amount)
+                   
+        if _minted_amount + mint_amount > _total_amount:
+            raise UserMintLimitAmountEx
+
+        return {
+            'minted_amount': _minted_amount,
+            'is_in_whitelist': True if _nft_whitelist else False,
+            'total_amount': _total_amount,
+            'total_whitelist_amount': _total_whitelist_amount,
+            'whitelist_time': _check_whitelist_time
+        }
+
+

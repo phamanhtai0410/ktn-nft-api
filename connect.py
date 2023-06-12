@@ -18,7 +18,8 @@ from redlock import Redlock
 
 from enums.order import Chains
 from socket_io_emitter import Emitter
-
+import boto3
+from config import Config
 
 class InterfaceAsync:
     def __init__(self):
@@ -38,14 +39,33 @@ redis_cluster = RedisCluster(
 dlm = Redlock(Config.REDLOCK_REDIS, retry_count=2)
 
 web3_providers = {
-    Chains.BSC_CHAIN: Blockchain(Chains.BSC_CHAIN,
-                                 Web3.HTTPProvider(Config.BSC_RPC_URI, request_kwargs={'timeout': 60})),
-    Chains.ETHEREUM_CHAIN: Blockchain(Chains.ETHEREUM_CHAIN,
-                                      Web3.HTTPProvider(Config.ETH_RPC_URI, request_kwargs={'timeout': 60}))
+    Chains.BSC_CHAIN: Blockchain(
+        Chains.BSC_CHAIN,
+        Web3.HTTPProvider(
+            Config.BSC_RPC_URI, 
+            request_kwargs={'timeout': 60}
+        )
+    ),
+    Chains.ETHEREUM_CHAIN: Blockchain(
+        Chains.ETHEREUM_CHAIN, 
+        Web3.HTTPProvider(
+            Config.ETH_RPC_URI,
+            request_kwargs={'timeout': 60}
+        )
+    )
 }
+
 socket_io = Emitter(Config.REDIS_CLUSTER[0])
 
 from lib import HTTPSecurity
 
 security = HTTPSecurity(redis=redis_cluster, auth_address=Config.AUTH_ADDRESS)
 
+# S3
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=Config.AWS_KEY,
+    aws_secret_access_key=Config.AWS_SECRET,
+    endpoint_url=Config.S3_HOST,
+    use_ssl=False,
+)

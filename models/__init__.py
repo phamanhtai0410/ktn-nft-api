@@ -4,7 +4,7 @@
         -
         -
 """
-__models__ = ['OrderModel', 'PromotionCodeModel', 'PromotionCodeUsedLogModel']
+__models__ = ['OrderModel', 'PromotionCodeModel', 'PromotionCodeUsedLogModel', 'CollectionModel']
 
 from config import Config
 from connect import connect_db, redis_cluster
@@ -12,6 +12,7 @@ from lib import DaoModel
 from models.order import OrderDao
 from models.promotion_code import PromotionCodeDao
 from models.promotion_code_log import PromotionCodeLogDao
+
 
 NFTDetailModel = DaoModel(col=connect_db.db.nft_details, redis=redis_cluster)
 
@@ -36,6 +37,7 @@ OrderModel = OrderDao(col=connect_db.db.orders, redis=redis_cluster, project=Con
 NFTsModel = DaoModel(col=connect_db.db.nfts, redis=redis_cluster)
 
 CollectionModel = DaoModel(col=connect_db.db.collection, redis=redis_cluster)
+
 BoxModel = DaoModel(col=connect_db.db.boxes, redis=redis_cluster)
 
 NFTsHistoryModel = DaoModel(col=connect_db.db.nfts_history, redis=redis_cluster)
@@ -43,5 +45,9 @@ NFTsHistoryModel = DaoModel(col=connect_db.db.nfts_history, redis=redis_cluster)
 ReferralModel = DaoModel(connect_db.db.referral, redis=redis_cluster)
 SignatureLogModel = DaoModel(connect_db.db.signature_logs, redis=redis_cluster)
 
+ForgingLogsModel = DaoModel(connect_db.db.forging_logs, redis=redis_cluster)
+
 MeshModel = DaoModel(connect_db.db.meshes, redis=redis_cluster)
 MeshMaterialModel = DaoModel(connect_db.db.mesh_materials, redis=redis_cluster)
+
+NftWhitelistModel = DaoModel(connect_db.db.nft_whitelist, redis=redis_cluster, project=Config.PROJECT)
